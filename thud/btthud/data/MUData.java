@@ -12,19 +12,14 @@ package btthud.data;
 import java.util.*;
 
 /**
-* This class is for storing all the information from contacts, tactical, status, etc.
+ * This class is for storing all the information from contacts and tactical.
  *
  * Some notes:
  *   Since a lot of other classes (mainly ones for displaying info) use this, we should keep things
  *  thread safe if possible. We want to store most (if not all) of the info in this one class so that
  * 	we can keep things simple when passing data around.
  *
- *   We could keep the map as another hashtable, with a key value of a string "x,y" where x and y are
- *	the hex values of course. This would work okay because we'll probably need to access hexes in a
- *	non-linear order sometimes (for example, to check to see if a specific hex terrain has changed).
- *
  * @author Anthony Parker
- * @version 1.0, 11.20.01
  */
 
 
@@ -38,20 +33,23 @@ public class MUData {
     
     public boolean				hudRunning = false;
     
-    public Hashtable			contacts = null;
     public MUMyInfo				myUnit = null;
 
-    private MUHex				map[][] = null;
+    protected MUHex				map[][] = null;
+
+    // We store the contact data in a ArrayList, because we need to iterate over it efficiently
+    // The hashtable allows us to associate units with a specific string ID, so we don't get multiples of the same unit
+    protected ArrayList			contacts = null;
+    protected Hashtable			contactIndex = null;
     
     public MUData()
     {
         hudRunning = false;
-        
-        contacts = new Hashtable();			// data for our contact list
+
+        clearData();
     
         map = new MUHex[MAX_X][MAX_Y];		// individual hexes will be allocated if they are needed.. this is not very memory efficient still
         
-        myUnit = new MUMyInfo();			// data that represents our own unit
     }
 
     /**
@@ -59,67 +57,83 @@ public class MUData {
       */
     public void newContact(MUUnitInfo con)
     {
-        try 
+        if (haveId(con.id))
         {
-            synchronized (contacts)
+            contacts.set(indexForId(con.id), con);
+        }
+        else
+        {
+            // Add the contact to our list, and make sure it's in the hash table
+            contacts.add(con);
+            contactIndex.put(con.id, new Integer(contacts.indexOf(con)));
+        }            
+    }
+
+    /**
+      * Iterates through the contact list and marks contacts as expired or old or whatever
+      */
+    public void expireAllContacts()
+    {
+        try
+        {
+            // We need a ListIterator because it allows us to modify the list while we iterate
+            ListIterator		it = contacts.listIterator();
+
+            while (it.hasNext())
             {
-                if (contacts.containsKey(con.id))
+                MUUnitInfo		unit = (MUUnitInfo) it.next();
+
+                if (unit.isExpired())
                 {
-                    // remove old contact
-                    contacts.remove(con.id);
-                    // insert new contact
-                    contacts.put(con.id, con);
+                    // Remove this contact from our contacts list as well as our hashtable
+                    it.remove();
+                    contactIndex.remove(unit.id); 
                 }
                 else
                 {
-                    contacts.put(con.id, con);
-                }    
-           }
+                    // Increase the age of the contact
+                    unit.expireMore();                    
+                }
+            }
         }
         catch (Exception e)
         {
-            System.out.println("Error: newContact: " + e);
-        }
-    }
-    
-    /**
-      * Removes a contact from our list
-      */
-    public void removeContact(String id)
-    {
-        try
-        {
-            if (contacts.containsKey(id))
-                contacts.remove(id);
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error: removeContact: " + e);
-        }
-    }
-    
-    /**
-      * Marks a contact as 'expired'. If it is expired, it will be removed next pass
-      */
-    public void expireContact(String id)
-    {
-        MUUnitInfo		unit;
-        
-        try
-        {
-            unit = (MUUnitInfo) contacts.get(id);
-            unit.expireMore();
-            contacts.remove(id);
-            contacts.put(id, unit);
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error: expireContact: " + e);
-        }
+            System.out.println("Error: expireAllContacts: " + e);
+        }            
     }
 
+    /**
+      * Returns the index of a specified id
+      * Since we keep track of everything in our LinkedList in our hashtable, just check the hashtable to see if we have it
+      */
+    protected int indexForId(String id)
+    {
+        return ((Integer) contactIndex.get(id)).intValue();
+    }
+
+    /**
+      * Returns true if we have an index matching this id
+      */
+    protected boolean haveId(String id)
+    {
+        return contactIndex.containsKey(id);
+    }
+
+    /**
+      * Returns an Iterator for the contact list. Used for looping on contacts when drawing the map, for example
+      */
+    public Iterator getContactsIterator()
+    {
+        return contacts.iterator();
+    }
+    
     // ----------------------------------
 
+    /**
+      * Get the terrain of a specific hex
+      * @param x X coordinate
+      * @param y Y coordinate
+      */
     public char getHexTerrain(int x, int y)
     {        
         if (x > 0 && x < MAX_X && y > 0 && y < MAX_Y)
@@ -133,6 +147,11 @@ public class MUData {
         return '?';
     }
 
+    /**
+     * Get the elevation of a specific hex
+     * @param x X coordinate
+     * @param y Y coordinate
+     */
     public int getHexElevation(int x, int y)
     {
         if (x > 0 && x < MAX_X && y > 0 && y < MAX_Y)
@@ -146,6 +165,11 @@ public class MUData {
         return 0;
     }
 
+    /**
+     * Get the absolute elevation of a specific hex
+     * @param x X coordinate
+     * @param y Y coordinate
+     */
     public int getHexAbsoluteElevation(int x, int y)
     {
         int	e = getHexElevation(x, y);
@@ -158,7 +182,14 @@ public class MUData {
         
         return e;
     }
-    
+
+    /**
+     * Set the details of a specific hex
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @param ter The terrain character representation
+     * @param elevation The elevation of the hex
+     */
     public void setHex(int x, int y, char ter, int elevation)
     {
         if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y)
@@ -171,6 +202,11 @@ public class MUData {
         }
     }
 
+    /**
+      * Get a MUHex for given coordinates
+      * @param x X coordinate
+      * @param y Y coordinate
+      */
     public MUHex getHex(int x, int y)
     {
         if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y)
@@ -184,13 +220,14 @@ public class MUData {
         return new MUHex();
     }
     
-    /**
-        * Clear data that is 'Mech specific, so that when we start the HUD again we have a clean slate.
-      */
+  /**
+    * Clear data that is 'Mech specific, so that when we start the HUD again we have a clean slate.
+    */
     public void clearData()
     {
         // Clear contacts and our unit, but leave the map alone
-        contacts = new Hashtable();			// data for our contact list
+        contacts = new ArrayList(20);			// data for our contact list
+        contactIndex = new Hashtable();
         myUnit = new MUMyInfo();			// data that represents our own unit
     }
 }

@@ -147,16 +147,14 @@ public class MUContactList extends JFrame
                 if (data.hudRunning)
                 {                    
                     elements.clear();
-
-                    TreeSet				contactsTree = null;
                     
-                    synchronized (data.contacts)
+                    synchronized (data)
                     {
-                        contactsTree = new TreeSet((data.contacts).values());
+                        Iterator		contacts = data.getContactsIterator();
                         
-                        for (Iterator it = contactsTree.iterator(); it.hasNext(); )
+                        while (contacts.hasNext())
                         {
-                            unit = (MUUnitInfo) it.next();
+                            unit = (MUUnitInfo) contacts.next();
 
                             elements.add(new DefaultStyledDocument.ElementSpec(conRegular, DefaultStyledDocument.ElementSpec.EndTagType));
                             elements.add(new DefaultStyledDocument.ElementSpec(conRegular, DefaultStyledDocument.ElementSpec.StartTagType));

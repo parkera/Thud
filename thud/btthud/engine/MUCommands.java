@@ -148,21 +148,14 @@ public class MUCommands
             {
                 if (sendCommands)
                 {
-                    MUUnitInfo			unit;
-
-                    for (Enumeration enum = (data.contacts).elements(); enum.hasMoreElements(); )
+                    synchronized (data)
                     {
-                        unit = (MUUnitInfo) enum.nextElement();
-
-                        if (unit.isExpired())
-                            data.removeContact(unit.id);
-                        else
-                            data.expireContact(unit.id);
-                    }                    
+                        data.expireAllContacts();
+                    }
                 }
                 else
                 {
-                    cancel();
+                    cancel();                    
                 }
             }
         };

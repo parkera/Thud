@@ -427,26 +427,21 @@ public class MUMapComponent extends JComponent implements MouseListener
     public void paintContacts(Graphics2D g)
     {
         AffineTransform			oldTrans = g.getTransform();
-
-        TreeSet					conTree;
         
         MUUnitInfo				unit;
         Point2D					conPoint = new Point2D.Float();
 
         int						hexX = myLocX - (numAcross / 2);
         int						hexY = myLocY - (numDown / 2);
-    
-        synchronized (data.contacts)
-        {
-            conTree = new TreeSet((data.contacts).values());   
-        }
+
+        Iterator				contacts = data.getContactsIterator();
         
         // We could sort these by range, so closer units always stay on top... or something
         // But really, who cares
-        for (Iterator it = conTree.iterator(); it.hasNext(); )
+        while (contacts.hasNext())
         {
             // Get the next unit...
-            unit = (MUUnitInfo) it.next();
+            unit = (MUUnitInfo) contacts.next();
 
             // Figure out where it is supposed to be drawn
             conPoint = realForUnit(unit);
@@ -460,7 +455,6 @@ public class MUMapComponent extends JComponent implements MouseListener
             // Draw box for contact ID
             // last 3 bools: friend, expired, target -- should get from contact data
             drawIDBox(g, unit, conPoint, false, false, null);
-
         }
         
         // Reset the transformation

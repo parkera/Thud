@@ -54,6 +54,9 @@ Version History:
   
 1.0b6
 
+ The focus of this release is efficiency of speed and, to a lesser extent, memory. 
+ The vast majority of the work was put into bug fixes and not new features, but the result is a much more stable and useful Thud.
+ 
  New Features:
  
   * Better ANSI support: background colors and underline mode now supported
@@ -65,6 +68,7 @@ Version History:
   * Much much quicker connect-to-MUX time
   * Much quicker text handling
   * More efficient and usable map scrolling
+  * Contact window listing is quicker and flickers less
   * Elevation numbers now show when 'Darken Elevations' is turned off
   * If the connection is dropped for some reason, Thud should now behave better -- choose your connection from the menu to reconnect
   * Menu items properly disabled/enabled depending on connection status
