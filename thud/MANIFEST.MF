@@ -1,2 +1,2 @@
-Main-Class: com/btthud/thud/Thud
+Main-Class: com.btthud.thud.Thud
 
