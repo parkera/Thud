@@ -403,18 +403,21 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         // ----
 
-        // Paint the terrain
-        paintTerrain(g);
+        synchronized (data)
+        {
+            // Paint the terrain
+            paintTerrain(g);
 
-        // Paint contacts on the map, including our own unit
-        paintContacts(g);
+            // Paint contacts on the map, including our own unit
+            paintContacts(g);
 
-        // Paint hex numbers
-        if (h >= 20)
-            paintNumbers(g);
+            // Paint hex numbers
+            if (h >= 20)
+                paintNumbers(g);
 
-        // Finally, draw our status bar at the bottom of the screen
-        paintStatusBar(g);
+            // Finally, draw our status bar at the bottom of the screen
+            paintStatusBar(g);            
+        }
 
         // ----
         
@@ -471,31 +474,28 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             g.setTransform(setupStandardTransform(oldTrans, bounds));
         }
 
-        synchronized (data)
+        // Paint our own unit first
+        paintUnit(g);
+        
+        // We could sort these by range, so closer units always stay on top... or something
+        // But really, who cares
+        while (contacts.hasNext())
         {
-            // We could sort these by range, so closer units always stay on top... or something
-            // But really, who cares
-            while (contacts.hasNext())
-            {
-                // Get the next unit...
-                unit = (MUUnitInfo) contacts.next();
+            // Get the next unit...
+            unit = (MUUnitInfo) contacts.next();
 
-                // Figure out where it is supposed to be drawn
-                conPoint = realForUnit(unit);
+            // Figure out where it is supposed to be drawn
+            conPoint = realForUnit(unit);
 
-                // Draw it
-                drawHeading(g, conPoint, unit, HEADING_NORMAL);
-                if (unit.isJumping())
-                    drawHeading(g, conPoint, unit, HEADING_JUMP);
-                // Limitations in hudinfo keep us from knowing the turret heading of enemy contacts, or we could draw that as well
+            // Draw it
+            drawHeading(g, conPoint, unit, HEADING_NORMAL);
+            if (unit.isJumping())
+                drawHeading(g, conPoint, unit, HEADING_JUMP);
+            // Limitations in hudinfo keep us from knowing the turret heading of enemy contacts, or we could draw that as well
 
-                // Draw box for contact ID
-                // last 3 bools: friend, expired, target -- should get from contact data
-                drawIDBox(g, unit, conPoint, false, false, null);
-            }
-
-            // Paint our own unit first
-            paintUnit(g);
+            // Draw box for contact ID
+            // last 3 bools: friend, expired, target -- should get from contact data
+            drawIDBox(g, unit, conPoint, false, false, null);
         }
         
         // Reset the transformation
@@ -555,14 +555,11 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                 g2.setTransform(setupStandardTransform(g2oldTrans, savedTerrainBounds));
             }
 
-            synchronized (data)
-            {
-                // Paint the terrain
-                paintTerrainGraphics(g2);
+            // Paint the terrain
+            paintTerrainGraphics(g2);
 
-                // Clear the changed flag
-                data.setTerrainChanged(false);                
-            }
+            // Clear the changed flag
+            data.setTerrainChanged(false);
             
             // Note the center of this picture
             savedTerrainCenter = realForUnit(data.myUnit);
