@@ -92,6 +92,8 @@ public class MUMapComponent extends JComponent implements MouseListener
     private int					heatBarMaxLength = 50;
 
     RenderingHints				rHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+    Rectangle					bounds;
         
     public MUMapComponent(MUData data, MUPrefs prefs)
     {
@@ -110,6 +112,8 @@ public class MUMapComponent extends JComponent implements MouseListener
         changeHeight(prefs.hexHeight);
         precalculateNumbers();
 
+        bounds = getBounds();
+        
         //rHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         //rHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         
@@ -123,9 +127,10 @@ public class MUMapComponent extends JComponent implements MouseListener
      */
     public void mouseClicked(MouseEvent e)
     {
-        Rectangle				bounds = getBounds();
+        getBounds(bounds);
+
         // Check to see if the click is in our status bar...
-        if (e.getY() > getBounds().height - barHeight)
+        if (e.getY() > bounds.height - barHeight)
         {
             if (e.getX() > 10 && e.getX() < 20)
             {
@@ -301,10 +306,11 @@ public class MUMapComponent extends JComponent implements MouseListener
      */
     public void paint(Graphics gfx)
     {
-        super.paint(gfx);
+        // Why bother? We're going to draw over it in a minute anyway...
+        //super.paint(gfx);
         // -----------
 
-        Rectangle			bounds = getBounds();
+        getBounds(bounds);
         
         //Graphics2D			g = (Graphics2D) (gfx.create(0, 0, bounds.width, bounds.height));
         Graphics2D			g = (Graphics2D) gfx;
@@ -361,7 +367,6 @@ public class MUMapComponent extends JComponent implements MouseListener
      */
     public void paintUnit(Graphics2D g)
     {
-        Rectangle		bounds = getBounds();
         Point	 		unitPt = new Point();
 
         float			unitXOffset = prefs.xOffset * (w + l);
@@ -389,7 +394,6 @@ public class MUMapComponent extends JComponent implements MouseListener
     {
         AffineTransform			oldTrans = g.getTransform();
         AffineTransform			baseTrans; // = g.getTransform();
-        
 
         TreeSet					conTree;
         
@@ -604,8 +608,6 @@ public class MUMapComponent extends JComponent implements MouseListener
       */
     public AffineTransform setupStandardTransform(AffineTransform base)
     {
-        Rectangle				bounds = getBounds();
-        
         AffineTransform			newTrans = new AffineTransform(base);
         
         int						hexX = myLocX - (numAcross / 2);
@@ -731,8 +733,6 @@ public class MUMapComponent extends JComponent implements MouseListener
         
         int			startX = 0;
         int			startY = 0;
-
-        Rectangle	bounds = getBounds();
 
         //int						myLocX = data.myUnit.x;
         //int						myLocY = data.myUnit.y;
@@ -1057,7 +1057,6 @@ public class MUMapComponent extends JComponent implements MouseListener
         
         AffineTransform			oldTrans = g.getTransform();
         AffineTransform			baseTrans = g.getTransform();
-        Rectangle				bounds = getBounds();
         Rectangle				barRect = new Rectangle(0, bounds.height - barHeight, bounds.width, barHeight);
         String					tempString;
         Rectangle2D				tempRect;
