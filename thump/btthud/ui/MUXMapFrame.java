@@ -26,7 +26,7 @@ import java.awt.print.*;
 
 import java.io.*;
 
-public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseMotionListener {
+public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseMotionListener, MouseWheelListener {
 
     Thump				mapper;
     
@@ -103,6 +103,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         
         mapComponent.addMouseListener(this);
         mapComponent.addMouseMotionListener(this);
+        mapComponent.addMouseWheelListener(this);
         resetCursor();
         
         // Setup the rulers (hex indicators on the side/top)
@@ -361,7 +362,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
     {
         ListIterator			it = hexes.listIterator(0);
         Point					h = null;
-
+        
         // Go through the list and get rid of hexes we don't want to change
         // Also, set the data in the map object
         while (it.hasNext())
@@ -372,6 +373,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
                 if (!hexAlreadyChanged(h))
                     changedHexes.addLast(new ChangedMUXHex(h, map.getHex(h)));
                 map.setHexTerrain(h, tools.selectedTerrain());
+                mapComponent.repaint(mapComponent.rectForHex(h));
             }
             else
                 it.remove();
@@ -380,7 +382,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         // Paint it!
         if (hexes.size() > 0)
         {
-            mapComponent.repaint();
+            //mapComponent.repaint();
             return true;		// We changed something
         }
         else
@@ -406,6 +408,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
                 if (!hexAlreadyChanged(h))
                     changedHexes.addLast(new ChangedMUXHex(h, map.getHex(h)));
                 map.setHexElevation(h, tools.selectedElevation());
+                mapComponent.repaint(mapComponent.rectForHex(h));
             }
             else
                 it.remove();
@@ -414,7 +417,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         // Paint it!
         if (hexes.size() > 0)
         {
-            mapComponent.repaint();
+            // mapComponent.repaint();
             return true;		// We changed something
         }
         else
@@ -439,11 +442,12 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
                 map.setHex((Point) hexes.get(i),
                             ((Integer) terrain.get(i)).intValue(),
                             ((Integer) elevation.get(i)).intValue());
+                mapComponent.repaint(mapComponent.rectForHex((Point) hexes.get(i)));
             }
         }
 
-        if (changedHex)
-            mapComponent.repaint();
+        //if (changedHex)
+        //    mapComponent.repaint();
         return changedHex;
     }
 
@@ -473,6 +477,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
                 if (!hexAlreadyChanged(h))
                     changedHexes.addLast(new ChangedMUXHex(h, map.getHex(h)));
                 map.setHex(h, selectedTerrain, selectedElevation);
+                mapComponent.repaint(mapComponent.rectForHex(h));
             }
             else
                 it.remove();
@@ -481,7 +486,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         // Paint it!
         if (hexes.size() > 0)
         {
-            mapComponent.repaint();
+            //mapComponent.repaint();
             return true;		// We changed something
         }
         else
@@ -507,13 +512,16 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         {
             h = (Point) it.next();
             if (!map.getHexSelected(h))
+            {
                 map.setHexSelected(h, true);
+                mapComponent.repaint(mapComponent.rectForHex(h));
+            }
             else
                 it.remove();
         }
 
         // Paint it!
-        mapComponent.repaint();
+        //mapComponent.repaint();
         mapper.resetMenus();
 
         // didn't change anything (no need for an undo)
@@ -605,7 +613,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
                 {
                     // Match!
                     map.setHex(changedHex.getLocation(), changedHex.getPrevTerrain(), changedHex.getPrevElevation());
-                    mapComponent.repaint();
+                    mapComponent.repaint(mapComponent.rectForHex(changedHex.getLocation()));
                     // We've found our match, so let's get out of this nasty looping
                     return false;
                 }
@@ -774,6 +782,14 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         }
     }
 
+    public void mouseWheelMoved(MouseWheelEvent e)
+    {
+        int 		rotateAmount = e.getWheelRotation();
+        
+        // Negative rotateAmount means up/away from user (zoom in), positive means down/towards user (zoom out)
+        adjustZoom(-rotateAmount * 5);
+    }
+    
     // ----------------------------
 
     protected boolean hexAlreadyChanged(Point p)
@@ -826,10 +842,11 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
                 changedHex = (ChangedMUXHex) it.next();
                 // We'll assume the hex is valid since it's in this list
                 map.setHex(changedHex.getLocation(), changedHex.getPrevTerrain(), changedHex.getPrevElevation());
+                mapComponent.repaint(mapComponent.rectForHex(changedHex.getLocation()));
             }
 
             // Repaint the hexes
-            mapComponent.repaint();
+            //mapComponent.repaint();
 
             // Remove what we just undid from our undoable list
             undoableChanges.removeLast();

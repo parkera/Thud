@@ -59,9 +59,13 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
     int						h = 40;
     float					w = h / (2 * sin60);
     float					l = h / (2 * tan60);
-
+    
     RenderingHints			rHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     Rectangle				bounds;
+
+    AlphaComposite			renderComposite;
+
+    Rectangle2D				dirtyRegion;
     
     public MUXMapComponent(MUXMap map, MPrefs prefs, int hexHeight)
     {
@@ -69,6 +73,16 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
 
         this.map = map;
         this.prefs = prefs;
+
+        dirtyRegion = new Rectangle2D.Double();
+
+        rHints.put(RenderingHints.KEY_TEXT_ANTIALIASING,
+                   prefs.antiAliasText ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        rHints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        rHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        rHints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+        rHints.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        rHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
         setupFonts();
 
@@ -79,10 +93,6 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
         precalculateNumbers();
 
         bounds = getBounds();
-    
-        rHints.put(RenderingHints.KEY_TEXT_ANTIALIASING,
-                   prefs.antiAliasText ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-        
     }
 
     // ---------------
@@ -163,7 +173,7 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
       */
     public int getTotalWidth()
     {
-        return (int) (l + ((w + l) * map.getSizeX()));
+        return (int) (l + ((w + l) * map.getSizeX()) + 10);
     }
 
     /**
@@ -173,7 +183,7 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
     {
         // This would be the total number of hexes in y times height
         // Also adjust 1/2 hex
-        return (int) ((h * ((float) map.getSizeY() + 0.5)));
+        return (int) ((h * ((float) map.getSizeY() + 0.5)) + 10);
     }
 
     
@@ -184,6 +194,8 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
       */
     private void changeHeight(int newHeight)
     {
+        //Color		alphaColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+        
         // Set some variables
         if (newHeight < 5)
             h = 5;
@@ -207,6 +219,10 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
                 // Get the graphics context for this BufferedImage
                 Graphics2D		g = (Graphics2D) newImage.getGraphics();
 
+                g.addRenderingHints(rHints);
+                
+                //g.setColor(alphaColor);
+                //g.fillRect(0, 0, hexPoly.getBounds().width, hexPoly.getBounds().height);
                 // Setup the color
                 if (prefs.tacDarkenElev)
                     g.setColor(MUXHex.colorForElevation(colorForTerrain(i), j, prefs.elevationColorMultiplier));
@@ -300,6 +316,15 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
         return Printable.PAGE_EXISTS;
     }
 
+    public void repaint(Rectangle2D r)
+    {
+        Rectangle		intRectangle = new Rectangle((int) Math.floor(r.getX()),
+                                                (int) Math.floor(r.getY()),
+                                                (int) (Math.ceil(r.getWidth() + r.getX()) - Math.floor(r.getX())),
+                                                (int) (Math.ceil(r.getHeight() + r.getY()) - Math.floor(r.getY())));
+        super.repaint(intRectangle);
+    }
+    
     public void paint(Graphics gfx)
     {
         paint2d((Graphics2D) gfx);
@@ -313,8 +338,8 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
         // -----------
         
         //getBounds(bounds);
-        Dimension		dim = getPreferredSize();
-        bounds = new Rectangle(0, 0, dim.width, dim.height);
+        //Dimension		dim = getPreferredSize();
+        //bounds = new Rectangle(0, 0, dim.width, dim.height);
         
         AffineTransform		oldTrans = g.getTransform();
 
@@ -322,8 +347,8 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
         
         // ----
 
-        g.setColor(Color.white);
-        g.fill(bounds);
+        //g.setColor(Color.white);
+        //g.fill(g.getClip());
 
         // Paint the terrain
         paintTerrainGraphics(g);
@@ -344,7 +369,11 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
         for (int x = 0; x < map.getSizeX(); x++)
         {
             for (int y = 0; y < map.getSizeY(); y++)
-                paintOneHex(g, x, y);
+            {
+                if (hexInRect(x, y, g.getClip())) {
+                    paintOneHex(g, x, y);
+                }
+            }
         }
     }
 
@@ -529,6 +558,22 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
         return hexPoly.realToHex(rX, rY);
     }
 
+    public Point2D hexToReal(int hX, int hY, boolean center)
+    {
+        return hexPoly.hexToReal(hX, hY, center);
+    }
+
+    public boolean hexInRect(int hX, int hY, Shape s)
+    {
+        return s.intersects(hexPoly.hexToRect(hX, hY));
+    }
+
+    public Rectangle2D rectForHex(Point h)
+    {
+        return hexPoly.hexToRect((int) h.getX(), (int) h.getY());
+    }
+
+    
     static public float toRadians(float a)
     {
         return (float) ((a / 180.0f) * Math.PI + Math.PI);

@@ -16,7 +16,8 @@ public class MUXMap implements Serializable {
 
     MUXHex			hexCache[][] = new MUXHex[MUXHex.TOTAL_TERRAIN][19];		// 19 different elevations
     MUXHex			map[][] = null;
-
+    boolean			hexesChanged[][];
+    
     int				sizeX, sizeY;
 
     boolean			hasChanged;
@@ -32,7 +33,8 @@ public class MUXMap implements Serializable {
         sizeY = y;
         
         map = new MUXHex[x][y];
-
+        hexesChanged = new boolean[x][y];
+        
         hasChanged = false;
 
         selectedHexes = new LinkedList();
@@ -50,12 +52,17 @@ public class MUXMap implements Serializable {
         // I think this will break for non-square maps
         
         for (int x = 0; x < sizeX; x++)
-        {
             for (int y = 0; y < sizeY; y++)
-            {
                 map[x][y] = hexCache[MUXHex.PLAIN][9];
-            }
-        }
+
+        resetChanged();
+    }
+
+    public void resetChanged()
+    {
+        for (int x = 0; x < sizeX; x++)
+            for (int y = 0; y < sizeY; y++)
+                hexesChanged[x][y] = true;
     }
 
     // ----------------------------------
@@ -162,6 +169,19 @@ public class MUXMap implements Serializable {
     }
 
     /**
+      * Get the changed flag on a hex
+      */
+    public boolean getHexChanged(int x, int y)
+    {
+        return hexesChanged[x][y];
+    }
+
+    public boolean getHexChanged(Point h)
+    {
+        return getHexChanged((int) h.getX(), (int) h.getY());
+    }
+
+    /**
       * Set only the elevation of a hex
       */
     public void setHexElevation(int x, int y, int elevation)
@@ -185,6 +205,19 @@ public class MUXMap implements Serializable {
     public void setHexTerrain(Point h, int terr)
     {
         setHexTerrain((int) h.getX(), (int) h.getY(), terr);
+    }
+
+    /**
+      * Set the 'changed' flag on a hex
+      */
+    public void setHexChanged(int x, int y, boolean c)
+    {
+        hexesChanged[x][y] = c;
+    }
+
+    public void setHexChanged(Point h, boolean c)
+    {
+        setHexChanged((int) h.getX(), (int) h.getY(), c);
     }
     
     /**
@@ -258,6 +291,7 @@ public class MUXMap implements Serializable {
 
         // Well, we've changed now...
         hasChanged = true;
+        hexesChanged[x][y] = true;
     }
 
     public void setHex(Point h, int ter, int elevation)

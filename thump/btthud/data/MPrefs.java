@@ -54,7 +54,7 @@ public class MPrefs extends Object implements Serializable, Cloneable
      */
     public void defaultPrefs()
     {
-        antiAliasText = false;
+        antiAliasText = true;
 
         mapFrameSize = new Dimension((int) (800f * (3f / 4f)), (int) (600f * (3f / 4f)));
 

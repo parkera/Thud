@@ -65,7 +65,7 @@ public class MUXHex
     public int elevation() {
         return elevation;
     }
-
+    
     // Take a character and turn it into an id for storage
     public void setTerrain(char t) {
         terrain = idForTerrain(t);
@@ -74,7 +74,7 @@ public class MUXHex
     public void setElevation(int e) {
         elevation = e;
     }
-
+    
     // -----------------------------------
     // STATIC METHODS
     // -----------------------------------

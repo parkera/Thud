@@ -128,7 +128,7 @@ public class HexShape implements Shape {
     {
         return (gp.getBounds2D());
     }
-
+    
     /**
      * Gives us the real coordinates (appropriate for drawing in a window) of a specified hex at a certain height.
      * If the center flag is true, then it will give us the exact center of the hex. Otherwise, it returns the upper-left corner.
@@ -333,7 +333,22 @@ public class HexShape implements Shape {
         else		// Bad hex, maybe
             return new Point(-1, -1);
     }
-            
+
+    /**
+      * Gives us a box which encloses a particular hex (for drawing/clipping purposes)
+      */
+    public Rectangle2D hexToRect(int x, int y)
+    {
+        Point2D		hexCenter = hexToReal(x, y, false);
+        Rectangle2D	hexRect;
+
+        hexCenter.setLocation(hexCenter.getX() - l, hexCenter.getY());
+
+        hexRect = new Rectangle2D.Double(hexCenter.getX(), hexCenter.getY(), w + 2f * l, h);
+
+        return hexRect;
+    }
+    
     // ----------------
 
     public PathIterator getPathIterator(AffineTransform at)
