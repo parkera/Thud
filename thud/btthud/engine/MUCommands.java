@@ -32,7 +32,7 @@ public class MUCommands
         this.conn = conn;
         this.data = data;
         this.prefs = prefs;
-
+        
         sendCommands = false;
     }
 
@@ -53,7 +53,7 @@ public class MUCommands
     
     public void startTimers()
     {
-
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         sendCommands = true;
         
         // Send some initial commands
@@ -70,7 +70,7 @@ public class MUCommands
         }
 
         // create a new timer for all of our fun commands to be sent to the MUX
-        timer = new Timer();
+        timer = new Timer(true);
 
         // --------
 
@@ -83,8 +83,6 @@ public class MUCommands
                         conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight);
                     else
                         cancel();
-
-                    yield();
                 }
                 catch (Exception e) {
                     System.out.println("Error: send hudinfo t: " + e);

@@ -103,7 +103,7 @@ public class MUTacticalMap extends JFrame
     
     public void actionPerformed(ActionEvent newEvent)
     {
-        
+        map.repaint(map.getBounds());
     }
 
 

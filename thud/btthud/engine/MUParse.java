@@ -103,14 +103,15 @@ public class MUParse {
         
         try
         {
-            ParsedString	ps = doc.parseString(l);
+            ArrayList		es = doc.parseString(l);
 
-            matched = matchHudInfoCommand(ps.l);
-            matchForCommandSending(ps.l);
-
+            matched = matchHudInfoCommand(l);
+            matchForCommandSending(l);
+            
             if (!matched)
             {
-                doc.insertParsedString(ps);
+                doc.insertParsedString(es);
+                doc.insertNewLine();			// Not sure why, but we need an extra \n in here
                 // Move the cursor to where it belongs
                 textPane.setCaretPosition(doc.getLength());
             }

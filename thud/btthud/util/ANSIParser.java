@@ -32,28 +32,15 @@ import java.awt.*;
 
 public class ANSIParser {
 
-    // ---------
-    // Utility methods
-    
-    /**
-    * Check to see if this is a 'normal' code
-    */
-    static public boolean normalEscapeCode(int charCode1)
-    {
-        if (charCode1 == 0)
-            return true;
-        else
-            return false;
-    }
-    
+    // ------------------------------
+    // Static Methods
+    // ------------------------------
+
     /**
     * Parse 2 integers, and return an AttributeSet that holds the proper color information.
     */
-    static public MutableAttributeSet parseEscapeCode(int charCode1, int charCode2)
+    static public void parseEscapeCode(int charCode1, int charCode2, MutableAttributeSet a)
     {
-        // Make an attribute set that represents our current settings
-        MutableAttributeSet			a = new SimpleAttributeSet();
-
         // if (charCode1 == 0) { /* do nothing */ }
 
         // some more esoteric styles:
@@ -137,7 +124,16 @@ public class ANSIParser {
                     break;
             }
         }
-    
-        return a;
+    }
+
+    /**
+      * Check to see if this is a 'normal' code
+      */
+    static public boolean normalEscapeCode(int charCode1)
+    {
+        if (charCode1 == 0)
+            return true;
+        else
+            return false;
     }
 }
