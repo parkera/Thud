@@ -46,6 +46,9 @@ public class MUData {
     
     // We store the contact data in a ArrayList, because we need to iterate over it efficiently
     ArrayList					contacts = null;
+
+    // This is the time that we received our last hudinfo data
+    public long					lastDataTime;
     
     public MUData()
     {
@@ -220,8 +223,9 @@ public class MUData {
     public void clearData()
     {
         // Clear contacts and our unit, but leave the map alone
-        contacts = new ArrayList(20);			// data for our contact list
+        contacts = new ArrayList(20);		// data for our contact list
         myUnit = new MUMyInfo();			// data that represents our own unit
+        lastDataTime = 0;					// clear our last recieved data
     }
 
     /**

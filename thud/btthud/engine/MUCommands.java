@@ -20,8 +20,6 @@ public class MUCommands
 
     Timer				timer;
 
-    boolean				sendCommands;
-
     MUCommandsTask		commandSendingTask;
     
     public MUCommands(MUConnection conn, MUData data, MUPrefs prefs)
@@ -29,8 +27,6 @@ public class MUCommands
         this.conn = conn;
         this.data = data;
         this.prefs = prefs;
-        
-        sendCommands = false;
     }
 
     public void sendCommand(String c)
@@ -49,9 +45,7 @@ public class MUCommands
     }
     
     public void startTimers()
-    {
-        sendCommands = true;
-        
+    {        
         // Send some initial commands
         try
         {
@@ -76,6 +70,6 @@ public class MUCommands
 
     public void endTimers()
     {
-        sendCommands = false;
+        timer.cancel();
     }
 }

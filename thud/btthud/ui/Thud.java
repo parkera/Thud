@@ -906,6 +906,8 @@ public class Thud extends JFrame implements  ActionListener
         if (connected)
         {
             data.hudRunning = !data.hudRunning;		// turn the HUD actions on/off
+            data.lastDataTime = System.currentTimeMillis();
+            
             if (data.hudRunning)
             {
                 parse.messageLine("*** Display Started ***");

@@ -244,6 +244,9 @@ public class MUParse implements Runnable {
         {
             synchronized (data)
             {
+                // We got some data!
+                data.lastDataTime = System.currentTimeMillis();
+                
                 // Must be a result for us to parse
                 StringTokenizer st = new StringTokenizer(l);
                 // Get the first word, ie #HUD:key:GS:R#

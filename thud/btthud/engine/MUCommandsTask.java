@@ -44,38 +44,52 @@ public class MUCommandsTask extends TimerTask {
         
         try
         {
-            // Do we send general status?
-            if (forceGeneralStatus || (count % (4 * prefs.fastCommandUpdate) == 0))
+            // If we're above twice the medium update time with no data, then don't send commands, unless the data.lastDataTime is 0
+            if ((System.currentTimeMillis() - data.lastDataTime) > (2000 * prefs.mediumCommandUpdate) && data.lastDataTime != 0)
             {
-                conn.sendCommand("hudinfo gs");
-                forceGeneralStatus = false;
-            }
-
-            // Do we send a contacts?
-            if (forceContacts || (count % (4 * prefs.fastCommandUpdate) == 0))
-            {
-                conn.sendCommand("hudinfo c");
-                synchronized (data)
+                if (System.currentTimeMillis() - data.lastDataTime > (2000 * prefs.slugCommandUpdate))
                 {
-                    data.expireAllContacts();                    
+                    // If we're over twice the slowest command, reset the timer and try again anyway
+                    data.lastDataTime = System.currentTimeMillis();
                 }
 
-                forceContacts = false;
+                System.out.println("-> Lag: " + (System.currentTimeMillis() - data.lastDataTime));
             }
-
-            // Do we send a tactical?
-            if (forceTactical || (count % (4 * prefs.slugCommandUpdate) == 0))
+            else
             {
-                conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight);
-                forceTactical = false;
-            }
+                // Do we send general status?
+                if (forceGeneralStatus || (count % (4 * prefs.fastCommandUpdate) == 0))
+                {
+                    conn.sendCommand("hudinfo gs");
+                    forceGeneralStatus = false;
+                }
 
-            // Do we send an armor status?
-            if (forceArmorStatus || (count % (4 * prefs.mediumCommandUpdate) == 0))
-            {
-                conn.sendCommand("hudinfo as");
-                forceArmorStatus = false;
-            }            
+                // Do we send a contacts?
+                if (forceContacts || (count % (4 * prefs.fastCommandUpdate) == 0))
+                {
+                    conn.sendCommand("hudinfo c");
+                    synchronized (data)
+                    {
+                        data.expireAllContacts();
+                    }
+
+                    forceContacts = false;
+                }
+
+                // Do we send a tactical?
+                if (forceTactical || (count % (4 * prefs.slugCommandUpdate) == 0))
+                {
+                    conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight);
+                    forceTactical = false;
+                }
+
+                // Do we send an armor status?
+                if (forceArmorStatus || (count % (4 * prefs.mediumCommandUpdate) == 0))
+                {
+                    conn.sendCommand("hudinfo as");
+                    forceArmorStatus = false;
+                }                
+            }           
         }
         catch (Exception e)
         {

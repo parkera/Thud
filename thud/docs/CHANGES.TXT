@@ -12,11 +12,13 @@ Version History:
   * A preference to adjust the length of heading/speed indicator lines on contacts on the map. The lower the number, the longer the line.
   * A preference to limit the amount of lines in the scrollback. Keeping this number lower reduces memory usage and speeds up Thud.
   * A new menu with 3 menu items to control the speed of updates that Thud sends. Keep it on Slow to reduce bandwidth usage, crank it to Fast when bad guys show up.
+  * Thud now has an option to keep 'old' data instead of overwriting it with 'unknown.' If it 'Erase Unknown Terrain' is set, Thud will overwrite any old terrain and turn it to a black hex if it gets a '?' for it now. This mostly happens underground. If you want to keep a 'backlog' of terrain underground, uncheck this option.
   
  Bug fixes:
  
   * Reduced memory usage of map data
   * Increased efficiency of parsing data from the MUX
+  * Thud won't keep sending commands if it's lagged... it'll hold up until it gets some data again before resuming spamming you
   
 1.0
 
