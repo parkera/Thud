@@ -9,6 +9,7 @@ package btthud.util;
 
 import javax.swing.text.*;
 import java.awt.*;
+import java.util.*;
 
 /* This is a class full of static methods to help with ANSI parsing */
 
@@ -31,23 +32,16 @@ import java.awt.*;
  */
 
 public class ANSIParser {
-
+    
     // ------------------------------
     // Static Methods
     // ------------------------------
-
+    
     /**
     * Parse 2 integers, and return an AttributeSet that holds the proper color information.
     */
     static public void parseEscapeCode(int charCode1, int charCode2, MutableAttributeSet a)
-    {
-        // if (charCode1 == 0) { /* do nothing */ }
-
-        // some more esoteric styles:
-        // #define ANSI_INVERSE  "\033[7m"
-        // #define ANSI_BLINK    "\033[5m"
-        // #define ANSI_UNDER    "\033[4m"
-        
+    {        
         if (charCode1 == 1)		// highlight
         {
             StyleConstants.setBold(a, true);

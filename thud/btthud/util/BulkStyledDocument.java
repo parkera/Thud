@@ -30,6 +30,8 @@ public class BulkStyledDocument extends DefaultStyledDocument
     MutableAttributeSet		attrCommand;
     MutableAttributeSet		attrHudMessage;
 
+    LinkedList				cachedAttributes = new LinkedList();
+
     // ---------------
     
     public BulkStyledDocument(int fontSize)
@@ -64,7 +66,30 @@ public class BulkStyledDocument extends DefaultStyledDocument
 
     // -----------------------
 
+    /**
+      * By caching AttributeSets instead of creating new ones each time, we save a lot of memory and the HUD goes way faster.
+      */
+    protected SimpleAttributeSet cachedAttributeSet(MutableAttributeSet matchMe)
+    {
+        Iterator			it = cachedAttributes.iterator();
 
+        while (it.hasNext())
+        {
+            SimpleAttributeSet 	attr = (SimpleAttributeSet) it.next();
+            if (attr.isEqual(matchMe))
+                return attr;
+        }
+
+        // Must not have matched any. Let's add this one to our list
+        cachedAttributes.add(matchMe);
+        return (SimpleAttributeSet) matchMe;
+    }
+
+    protected void clearCachedAttributeSets()
+    {
+        cachedAttributes = new LinkedList();
+    }
+    
     /**
       * Converts color codes into strings, then returns the uncolored string for parsing.
       * @param l The raw string we want to convert
@@ -92,8 +117,8 @@ public class BulkStyledDocument extends DefaultStyledDocument
         // The StartTagType creates a new branch element on the root to indicate this new line.
         // The ContentTypes below create each branch element which represents the text and style.
         
-        elements.add(new ElementSpec(new SimpleAttributeSet(thisAttrSet), ElementSpec.EndTagType));
-        elements.add(new ElementSpec(new SimpleAttributeSet(thisAttrSet), ElementSpec.StartTagType));
+        elements.add(new ElementSpec(cachedAttributeSet(thisAttrSet), ElementSpec.EndTagType));
+        elements.add(new ElementSpec(cachedAttributeSet(thisAttrSet), ElementSpec.StartTagType));
         
         try
         {
@@ -106,7 +131,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
                     // Don't bother adding an empty string
                     if (i - start > 0)
                     {
-                        elements.add(new ElementSpec(new SimpleAttributeSet(thisAttrSet),
+                        elements.add(new ElementSpec(cachedAttributeSet(thisAttrSet),
                                                      ElementSpec.ContentType,
                                                      l.substring(i - thisStr.length(), i).toCharArray(),
                                                      start,
@@ -168,7 +193,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
             // Put the final section of the string into our holder
             if (i - start != 0)
             {
-                elements.add(new ElementSpec(new SimpleAttributeSet(thisAttrSet),
+                elements.add(new ElementSpec(cachedAttributeSet(thisAttrSet),
                                              ElementSpec.ContentType,
                                              l.substring(i - thisStr.length(), i).toCharArray(),
                                              start,
