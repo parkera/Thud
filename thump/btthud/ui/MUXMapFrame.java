@@ -474,14 +474,31 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
     
     protected boolean selectToolClicked(LinkedList hexes, MouseEvent e)
     {
-        ListIterator			it = hexes.listIterator(0);
-        Point					h;
+        ListIterator            it = hexes.listIterator(0);
+        Point                   h;
+        LinkedList              selectedHexes;
+        ListIterator		selectedIt;
 
-        // Go through the list and get rid of hexes we don't want to select
-        // Also, set the data in the map object
-
-        if (!e.isShiftDown())			// Must hold shift to select multiple hexes
-            map.deselectAll();
+        if (!e.isShiftDown())
+        {   
+            // Must hold shift to select multiple hexes
+            
+            // Repaint previously selected hexes
+            selectedHexes = map.selectedHexes();
+            
+            if (!selectedHexes.isEmpty())
+            {
+                selectedIt = selectedHexes.listIterator();
+                
+                while (selectedIt.hasNext())
+                {
+                    // Get the next hex
+                    h = (Point) selectedIt.next();
+                    selectedIt.remove();            // Deselect this hex (have to do it here so it is drawn properly)
+                    mapComponent.repaint(mapComponent.expandedRectForHex(h));
+                }                
+            }
+        }
         
         while (it.hasNext())
         {
@@ -494,9 +511,22 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
             else
                 it.remove();
         }
+        
+        // Now repaint all the selected hexes
+        selectedHexes = map.selectedHexes();
+        
+        if (!selectedHexes.isEmpty())
+        {
+            selectedIt = selectedHexes.listIterator();
+            
+            while (selectedIt.hasNext())
+            {
+                // Get the next hex
+                h = (Point) selectedIt.next();
+                mapComponent.repaint(mapComponent.expandedRectForHex(h));
+            }                
+        }
 
-        // Paint it!
-        //mapComponent.repaint();
         mapper.resetMenus();
 
         // didn't change anything (no need for an undo)
@@ -535,7 +565,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         {
             return selectiveUndoClicked(hex);
         }
-        if (tools.selectedTool() == ToolPalette.PAINT_TOOL)
+        else if (tools.selectedTool() == ToolPalette.PAINT_TOOL)
         {
             if (prefs.paintType == ToolManager.TERRAIN_ONLY)
                 return terrainToolClicked(hexes);

@@ -281,6 +281,10 @@ public class MUXMap implements Serializable {
         return selectedHexes;
     }
     
+    public ListIterator selectedHexesIterator()
+    {
+        return selectedHexes.listIterator();
+    }
     /**
       * Set the details of a specific hex using internal int type for terrain
       */

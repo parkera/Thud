@@ -15,5 +15,5 @@ Bug Fixes:
 - Fixed bug that allowed palettes to show up on startup regardless of 'show/hide' preference
 
 
-1.0b1
+1.0b1 Jan 23, 2003
 - Initial version

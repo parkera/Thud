@@ -17,9 +17,11 @@ import java.awt.image.*;
 
 public class HexShape implements Shape {
 
-    public static final int     HEX_CENTER = 0;
-    public static final int     HEX_UPPER_LEFT = 1;
-    public static final int     HEX_LEFT = 2;
+    public static final int     HEX_CENTER = 0;             // Center of a hex
+    public static final int     HEX_UPPER_LEFT = 1;         // Upper-left corner of a hex
+    public static final int     HEX_LEFT = 2;               // Leftmost point of a hex
+    public static final int     HEX_UPPER_LEFT_BOUND = 3;   // Upper-left boundary of a hex (outside, for a bounding box)
+    public static final int     HEX_LOWER_RIGHT_BOUND = 4;  // Lower-right boundary of a hex (outside, for a bounding box)
     
     float                       x[] = {0f, 0f, 0f, 0f, 0f, 0f};
     float                       y[] = {0f, 0f, 0f, 0f, 0f, 0f};
@@ -179,11 +181,18 @@ public class HexShape implements Shape {
         
         xoffset = (float)x * (w + l);
         
-        if (center == HEX_CENTER || center == HEX_UPPER_LEFT)
-            xoffset += l;
-        
         if (center == HEX_CENTER)
-            xoffset += w / 2f;
+        {
+            xoffset += l + (w / 2f);
+        }
+        else if (center == HEX_UPPER_LEFT)
+        {
+            xoffset += l;
+        }
+        else if (center == HEX_LOWER_RIGHT_BOUND)
+        {
+            xoffset += (2 * l) + w;
+        }
         
         return xoffset;
     }
@@ -202,7 +211,13 @@ public class HexShape implements Shape {
             yoffset += h / 2f;
         
         if (center == HEX_CENTER || center == HEX_LEFT)
+        {
             yoffset += h / 2f;
+        }
+        else if (center == HEX_LOWER_RIGHT_BOUND)
+        {
+            yoffset += h;
+        }
         
         return yoffset;
     }
@@ -218,12 +233,43 @@ public class HexShape implements Shape {
       */
     public Rectangle2D hexToRect(int x, int y)
     {
-        Point2D         hexCenter = hexToReal(x, y, HexShape.HEX_UPPER_LEFT);
-        Rectangle2D     hexRect;
+        Rectangle2D     hexRect = new Rectangle2D.Double();
         
-        hexCenter.setLocation(hexCenter.getX() - l, hexCenter.getY());
+        hexRect.setFrame(hexToRealXPart(x, y, HEX_UPPER_LEFT_BOUND),
+                         hexToRealYPart(x, y, HEX_UPPER_LEFT_BOUND),
+                         (2f * l) + w,
+                         h);
         
-        hexRect = new Rectangle2D.Double(hexCenter.getX(), hexCenter.getY(), w + 2f * l, h);
+        return hexRect;
+    }
+    
+    /**
+      * Gives us a box which encloses a particular hex and all surrounding hexes
+      * Useful for redrawing when something has been drawn on a border between hexes
+      */
+    public Rectangle2D hexToExpandedRect(int x, int y)
+    {
+        Rectangle2D     hexRect = hexToRect(x, y);
+        
+        if (x % 2 == 0)
+        {
+            hexRect.add(hexToRealXPart(x-1, y  , HEX_UPPER_LEFT_BOUND),
+                        hexToRealYPart(x-1, y  , HEX_UPPER_LEFT_BOUND));
+            hexRect.add(hexToRealXPart(x+1, y+1, HEX_LOWER_RIGHT_BOUND),
+                        hexToRealYPart(x+1, y+1, HEX_LOWER_RIGHT_BOUND));
+        }
+        else
+        {
+            hexRect.add(hexToRealXPart(x-1, y-1, HEX_UPPER_LEFT_BOUND),
+                        hexToRealYPart(x-1, y-1, HEX_UPPER_LEFT_BOUND));
+            hexRect.add(hexToRealXPart(x+1, y  , HEX_LOWER_RIGHT_BOUND),
+                        hexToRealYPart(x+1, y  , HEX_LOWER_RIGHT_BOUND));
+        }
+        
+        hexRect.add(hexToRealXPart(x  , y-1, HEX_UPPER_LEFT_BOUND),
+                    hexToRealYPart(x  , y-1, HEX_UPPER_LEFT_BOUND));
+        hexRect.add(hexToRealXPart(x  , y+1, HEX_LOWER_RIGHT_BOUND),
+                    hexToRealYPart(x  , y+1, HEX_LOWER_RIGHT_BOUND));
         
         return hexRect;
     }
