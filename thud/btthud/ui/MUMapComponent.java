@@ -437,6 +437,22 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         // Get the location of our own unit
         unitPt = realForUnit(data.myUnit);
 
+        if (prefs.highlightMyHex)
+        {
+            Stroke				saveStroke = g.getStroke();
+            AffineTransform		saveTrans = g.getTransform();
+            AffineTransform		newTrans = new AffineTransform(saveTrans);
+            
+            g.setStroke(new BasicStroke(2.0f));
+            newTrans.translate(unitPt.getX(), unitPt.getY());
+            g.setTransform(newTrans);
+            g.setColor(Color.black);
+            g.draw(hexPoly);
+
+            g.setTransform(saveTrans);
+            g.setStroke(saveStroke);
+        }
+        
         // Draw it
         drawHeading(g, unitPt, data.myUnit, HEADING_NORMAL);
         if (data.myUnit.heading != data.myUnit.desiredHeading)
@@ -667,17 +683,6 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                             g.drawString(hexString, hexPoly.getX(2) + 2,
                                          hexPoly.getY(2) + (hexNumberFont.getLineMetrics(hexString, frc)).getAscent());
                             g.setTransform(beforeNumberRot);
-                        }
-
-                        if (prefs.highlightMyHex && (hexX + j == data.myUnit.x) && (hexY + i == data.myUnit.y))
-                        {
-                            Stroke		saveStroke = g.getStroke();
-                            g.setStroke(new BasicStroke(2.0f));
-                            g.setColor(Color.black);
-
-                            g.draw(hexPoly);
-
-                            g.setStroke(saveStroke);
                         }
                         
                         if (prefs.tacShowCliffs)

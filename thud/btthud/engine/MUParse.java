@@ -126,7 +126,7 @@ public class MUParse implements Runnable {
 
         if (l == null)
             return;
-        
+
         try
         {
             matched = matchHudInfoCommand(l);

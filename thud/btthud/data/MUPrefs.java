@@ -96,11 +96,11 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         commandHistory = 20;
         echoCommands = true;
 
-        contactsDelay = 2.0;
-        findcenterDelay = 2.0;
-        tacticalRedrawDelay = 2.0;
-        tacticalDelay = 30.0;
-        armorRedrawDelay = 2.0;
+        contactsDelay = 1.0;
+        findcenterDelay = 1.0;
+        tacticalRedrawDelay = 1.0;
+        tacticalDelay = 15.0;
+        armorRedrawDelay = 1.0;
         hudinfoTacHeight = 40;
         elevationColorMultiplier = 0.08f;
 

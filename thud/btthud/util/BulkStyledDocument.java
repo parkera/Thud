@@ -30,7 +30,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
     MutableAttributeSet		attrCommand;
     MutableAttributeSet		attrHudMessage;
 
-    LinkedList				cachedAttributes = new LinkedList();
+    HashMap					cachedAttributes = new HashMap();
 
     // ---------------
     
@@ -71,23 +71,15 @@ public class BulkStyledDocument extends DefaultStyledDocument
       */
     protected SimpleAttributeSet cachedAttributeSet(MutableAttributeSet matchMe)
     {
-        Iterator			it = cachedAttributes.iterator();
-
-        while (it.hasNext())
-        {
-            SimpleAttributeSet 	attr = (SimpleAttributeSet) it.next();
-            if (attr.isEqual(matchMe))
-                return attr;
-        }
-
-        // Must not have matched any. Let's add this one to our list
-        cachedAttributes.add(matchMe);
-        return (SimpleAttributeSet) matchMe;
+        if (!cachedAttributes.containsKey(matchMe.toString()))
+            cachedAttributes.put(matchMe.toString(), matchMe.copyAttributes());
+        
+        return (SimpleAttributeSet) cachedAttributes.get(matchMe.toString());
     }
 
     protected void clearCachedAttributeSets()
     {
-        cachedAttributes = new LinkedList();
+        cachedAttributes = new HashMap();
     }
     
     /**
@@ -104,7 +96,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
         boolean						done;
 
         ArrayList					elements = new ArrayList();	// we could specify an initial capacity here
-
+        
         if (l == null)
             return elements;
 
