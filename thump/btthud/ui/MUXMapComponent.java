@@ -455,7 +455,7 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
             g.setColor(Color.red);
             g.setStroke(new BasicStroke(2.0f));		// Make the red line wider
             
-            if (x % 2 == 0)
+        if (x % 2 == 0)
             {
                 // Even X
                 if (Math.abs(map.getHexElevation(x + 0, y - 1) - thisElevation) > prefs.cliffDiff)
@@ -505,72 +505,79 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
         ListIterator                    it = map.selectedHexesIterator();
         float                           dash[] = {w / 4f};
         float                           dashOffset = w / 4f;
+        Rectangle                       clipBounds = g.getClipBounds();
+        Rectangle2D                     hexBounds = new Rectangle2D.Double();
         
         while (it.hasNext())
         {
             h = (Point) it.next();
-            x = (int) h.getX();
-            y = (int) h.getY();
+            expandedRectForHex(h, hexBounds);
             
-            trans.setTransform(oldTrans);
-            hexPoly.hexToReal(x, y, HexShape.HEX_UPPER_LEFT, realHex);
-            trans.translate(realHex.getX() - l, realHex.getY());
-            g.setTransform(trans);
-
-            // We draw a black line on edges with an unselected adjacent hex
-            Stroke		saveStroke = g.getStroke();
-            
-            for (int i = 0; i < 2; i++)
+            if (clipBounds.intersects(hexBounds))
             {
-                if (i == 0)
+                x = (int) h.getX();
+                y = (int) h.getY();
+            
+                trans.setTransform(oldTrans);
+                hexPoly.hexToReal(x, y, HexShape.HEX_UPPER_LEFT, realHex);
+                trans.translate(realHex.getX() - l, realHex.getY());
+                g.setTransform(trans);
+                
+                // We draw a black line on edges with an unselected adjacent hex
+                Stroke		saveStroke = g.getStroke();
+                
+                for (int i = 0; i < 2; i++)
                 {
-                    g.setColor(Color.black);
-                    g.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 1.0f, dash, 0.0f));
-                }
-                else
-                {
-                    g.setColor(Color.red);
-                    g.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 1.0f, dash, dashOffset));
+                    if (i == 0)
+                    {
+                        g.setColor(Color.black);
+                        g.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 1.0f, dash, 0.0f));
+                    }
+                    else
+                    {
+                        g.setColor(Color.red);
+                        g.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 1.0f, dash, dashOffset));
+                    }
+                    
+                    if (x % 2 == 0)
+                    {
+                        // Even X
+                        if (!map.getHexSelected(x + 0, y - 1))
+                            g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
+                        if (!map.getHexSelected(x - 1, y + 0))
+                            g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(1), (int) hexPoly.getY(1));
+                        if (!map.getHexSelected(x - 1, y + 1))
+                            g.drawLine((int) hexPoly.getX(1), (int) hexPoly.getY(1), (int) hexPoly.getX(2), (int) hexPoly.getY(2));
+                        if (!map.getHexSelected(x + 0, y + 1))
+                            g.drawLine((int) hexPoly.getX(2), (int) hexPoly.getY(2), (int) hexPoly.getX(3), (int) hexPoly.getY(3));
+                        if (!map.getHexSelected(x + 1, y + 1))
+                            g.drawLine((int) hexPoly.getX(3), (int) hexPoly.getY(3), (int) hexPoly.getX(4), (int) hexPoly.getY(4));
+                        if (!map.getHexSelected(x + 1, y + 0))
+                            g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
+                    }
+                    else
+                    {
+                        // Odd X
+                        if (!map.getHexSelected(x + 0, y - 1))
+                            g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
+                        if (!map.getHexSelected(x - 1, y - 1))
+                            g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(1), (int) hexPoly.getY(1));
+                        if (!map.getHexSelected(x - 1, y + 0))
+                            g.drawLine((int) hexPoly.getX(1), (int) hexPoly.getY(1), (int) hexPoly.getX(2), (int) hexPoly.getY(2));
+                        if (!map.getHexSelected(x + 0, y + 1))
+                            g.drawLine((int) hexPoly.getX(2), (int) hexPoly.getY(2), (int) hexPoly.getX(3), (int) hexPoly.getY(3));
+                        if (!map.getHexSelected(x + 1, y + 0))
+                            g.drawLine((int) hexPoly.getX(3), (int) hexPoly.getY(3), (int) hexPoly.getX(4), (int) hexPoly.getY(4));
+                        if (!map.getHexSelected(x + 1, y - 1))
+                            g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
+                    }                
                 }
                 
-                if (x % 2 == 0)
-                {
-                    // Even X
-                    if (!map.getHexSelected(x + 0, y - 1))
-                        g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
-                    if (!map.getHexSelected(x - 1, y + 0))
-                        g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(1), (int) hexPoly.getY(1));
-                    if (!map.getHexSelected(x - 1, y + 1))
-                        g.drawLine((int) hexPoly.getX(1), (int) hexPoly.getY(1), (int) hexPoly.getX(2), (int) hexPoly.getY(2));
-                    if (!map.getHexSelected(x + 0, y + 1))
-                        g.drawLine((int) hexPoly.getX(2), (int) hexPoly.getY(2), (int) hexPoly.getX(3), (int) hexPoly.getY(3));
-                    if (!map.getHexSelected(x + 1, y + 1))
-                        g.drawLine((int) hexPoly.getX(3), (int) hexPoly.getY(3), (int) hexPoly.getX(4), (int) hexPoly.getY(4));
-                    if (!map.getHexSelected(x + 1, y + 0))
-                        g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
-                }
-                else
-                {
-                    // Odd X
-                    if (!map.getHexSelected(x + 0, y - 1))
-                        g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
-                    if (!map.getHexSelected(x - 1, y - 1))
-                        g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(1), (int) hexPoly.getY(1));
-                    if (!map.getHexSelected(x - 1, y + 0))
-                        g.drawLine((int) hexPoly.getX(1), (int) hexPoly.getY(1), (int) hexPoly.getX(2), (int) hexPoly.getY(2));
-                    if (!map.getHexSelected(x + 0, y + 1))
-                        g.drawLine((int) hexPoly.getX(2), (int) hexPoly.getY(2), (int) hexPoly.getX(3), (int) hexPoly.getY(3));
-                    if (!map.getHexSelected(x + 1, y + 0))
-                        g.drawLine((int) hexPoly.getX(3), (int) hexPoly.getY(3), (int) hexPoly.getX(4), (int) hexPoly.getY(4));
-                    if (!map.getHexSelected(x + 1, y - 1))
-                        g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
-                }                
+                g.setStroke(saveStroke);				// Restore the old stroke
             }
             
-            g.setStroke(saveStroke);				// Restore the old stroke
+            g.setTransform(oldTrans);
         }
-        
-        g.setTransform(oldTrans);
     }
     
     /**
@@ -612,9 +619,9 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
         return hexPoly.hexToRect((int) h.getX(), (int) h.getY());
     }
     
-    public Rectangle2D expandedRectForHex(Point h)
+    public void expandedRectForHex(Point h, Rectangle2D r)
     {
-        return hexPoly.hexToExpandedRect((int) h.getX(), (int) h.getY());
+        hexPoly.hexToExpandedRect((int) h.getX(), (int) h.getY(), r);
     }
     
     static public float toRadians(float a)

@@ -447,7 +447,8 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
     {
         Point                   h;
         ListIterator		selectedIt;
-
+        Rectangle2D             r = new Rectangle2D.Double();
+        
         // If control is down, then a control-click removes the selection
         if (e.isControlDown())
         {
@@ -477,7 +478,8 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
                 {
                     // Get the next hex
                     h = (Point) selectedIt.next();
-                    mapComponent.repaint(mapComponent.expandedRectForHex(h));
+                    mapComponent.expandedRectForHex(h, r);
+                    mapComponent.repaint(r);
                 }                
             }            
         }

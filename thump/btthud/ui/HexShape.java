@@ -234,44 +234,45 @@ public class HexShape implements Shape {
     public Rectangle2D hexToRect(int x, int y)
     {
         Rectangle2D     hexRect = new Rectangle2D.Double();
-        
-        hexRect.setFrame(hexToRealXPart(x, y, HEX_UPPER_LEFT_BOUND),
-                         hexToRealYPart(x, y, HEX_UPPER_LEFT_BOUND),
-                         (2f * l) + w,
-                         h);
-        
+        hexToRect(x, y, hexRect);
         return hexRect;
+    }
+    
+    public void hexToRect(int x, int y, Rectangle2D r)
+    {
+        r.setFrame(hexToRealXPart(x, y, HEX_UPPER_LEFT_BOUND),
+                   hexToRealYPart(x, y, HEX_UPPER_LEFT_BOUND),
+                   (2f * l) + w,
+                   h);
     }
     
     /**
       * Gives us a box which encloses a particular hex and all surrounding hexes
       * Useful for redrawing when something has been drawn on a border between hexes
       */
-    public Rectangle2D hexToExpandedRect(int x, int y)
+    public void hexToExpandedRect(int x, int y, Rectangle2D r)
     {
-        Rectangle2D     hexRect = hexToRect(x, y);
+        hexToRect(x, y, r);
         
         if (x % 2 == 0)
         {
-            hexRect.add(hexToRealXPart(x-1, y  , HEX_UPPER_LEFT_BOUND),
-                        hexToRealYPart(x-1, y  , HEX_UPPER_LEFT_BOUND));
-            hexRect.add(hexToRealXPart(x+1, y+1, HEX_LOWER_RIGHT_BOUND),
+            r.add(hexToRealXPart(x-1, y  , HEX_UPPER_LEFT_BOUND),
+                  hexToRealYPart(x-1, y  , HEX_UPPER_LEFT_BOUND));
+            r.add(hexToRealXPart(x+1, y+1, HEX_LOWER_RIGHT_BOUND),
                         hexToRealYPart(x+1, y+1, HEX_LOWER_RIGHT_BOUND));
         }
         else
         {
-            hexRect.add(hexToRealXPart(x-1, y-1, HEX_UPPER_LEFT_BOUND),
+            r.add(hexToRealXPart(x-1, y-1, HEX_UPPER_LEFT_BOUND),
                         hexToRealYPart(x-1, y-1, HEX_UPPER_LEFT_BOUND));
-            hexRect.add(hexToRealXPart(x+1, y  , HEX_LOWER_RIGHT_BOUND),
+            r.add(hexToRealXPart(x+1, y  , HEX_LOWER_RIGHT_BOUND),
                         hexToRealYPart(x+1, y  , HEX_LOWER_RIGHT_BOUND));
         }
         
-        hexRect.add(hexToRealXPart(x  , y-1, HEX_UPPER_LEFT_BOUND),
+        r.add(hexToRealXPart(x  , y-1, HEX_UPPER_LEFT_BOUND),
                     hexToRealYPart(x  , y-1, HEX_UPPER_LEFT_BOUND));
-        hexRect.add(hexToRealXPart(x  , y+1, HEX_LOWER_RIGHT_BOUND),
+        r.add(hexToRealXPart(x  , y+1, HEX_LOWER_RIGHT_BOUND),
                     hexToRealYPart(x  , y+1, HEX_LOWER_RIGHT_BOUND));
-        
-        return hexRect;
     }
     
     /*
