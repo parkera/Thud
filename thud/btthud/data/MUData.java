@@ -128,11 +128,11 @@ public class MUData {
     // ----------------------------------
 
     /**
-      * Get the terrain of a specific hex
+      * Get the terrain of a specific hex (return the id, not the char)
       * @param x X coordinate
       * @param y Y coordinate
       */
-    public char getHexTerrain(int x, int y)
+    public int getHexTerrain(int x, int y)
     {        
         if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y)
         {
@@ -199,26 +199,6 @@ public class MUData {
             map[x][y].setElevation(elevation);
         }
     }
-
-    /**
-      * Get a MUHex for given coordinates
-      * @param x X coordinate
-      * @param y Y coordinate
-      */
-    /*
-    public MUHex getHex(int x, int y)
-    {
-        if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y)
-        {
-            if (map[x][y] != null)
-                return map[x][y];
-            else
-                return new MUHex();
-        }
-
-        return new MUHex();
-    }
-     */
     
   /**
     * Clear data that is 'Mech specific, so that when we start the HUD again we have a clean slate.

@@ -53,7 +53,8 @@ public class MUPrefs extends Object implements Serializable, Cloneable
 
     public Properties			theSystem;
 
-    public Color				cBuilding, cRoad, cPlains, cWater, cLightForest, cHeavyForest, cWall, cMountain, cRough, cFire, cSmoke, cIce, cSmokeOnWater, cUnknown;
+    public Color				terrainColors[] = new Color[MUHex.TOTAL_TERRAIN];
+    //public Color				cBuilding, cRoad, cPlains, cWater, cLightForest, cHeavyForest, cWall, cMountain, cRough, cFire, cSmoke, cIce, cSmokeOnWater, cUnknown;
 
     public int					mainFontSize, smallFontSize, hexNumberFontSize, infoFontSize, elevationFontSize, contactFontSize;
 
@@ -122,6 +123,23 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         backgroundColor = Color.black;
         foregroundColor = Color.white;
 
+        terrainColors[MUHex.PLAIN] = Color.white;
+        terrainColors[MUHex.WATER] = Color.blue;
+        terrainColors[MUHex.LIGHT_FOREST] = Color.green;
+        terrainColors[MUHex.HEAVY_FOREST] = Color.green;
+        terrainColors[MUHex.MOUNTAIN] = Color.yellow;
+        terrainColors[MUHex.ROUGH] = Color.yellow;
+        terrainColors[MUHex.BUILDING] = Color.magenta;
+        terrainColors[MUHex.ROAD] = Color.lightGray;
+        terrainColors[MUHex.BRIDGE] = Color.lightGray;
+        terrainColors[MUHex.FIRE] = Color.red;
+        terrainColors[MUHex.WALL] = Color.orange;
+        terrainColors[MUHex.ICE] = Color.white;
+        terrainColors[MUHex.SMOKE] = Color.lightGray;
+        terrainColors[MUHex.SMOKE_OVER_WATER] = Color.lightGray;
+        terrainColors[MUHex.UNKNOWN] = Color.black;
+        
+        /*
         cPlains = Color.white;
         cWater = Color.blue;
         cLightForest = Color.green;
@@ -136,7 +154,8 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         cIce = Color.white;
         cSmokeOnWater = Color.lightGray;
         cUnknown = Color.black;
-
+         */
+        
         mainFontSize = 10;
         contactFontSize = 10;
         smallFontSize = 9;

@@ -55,33 +55,14 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     int						numAcross = 20;
     int						numDown = 20;
 
-    int						elevWidth[] = new int[10]; 	// Stores width of each elevation number glyph, 0 - 9
-
-    static final int		UNKNOWN = 0;
-    static final int		PLAIN = 1;
-    static final int		WATER = 2;
-    static final int		LIGHT_FOREST = 3;
-    static final int		HEAVY_FOREST = 4;
-    static final int		MOUNTAIN = 5;
-    static final int		ROUGH = 6;
-    static final int		BUILDING = 7;
-    static final int		ROAD = 8;
-    static final int		FIRE = 9;
-    static final int		WALL = 10;
-    static final int		SMOKE = 11;
-    static final int		ICE = 12;
-    static final int		SMOKE_OVER_WATER = 13;
-
-    static final int		TOTAL_TERRAIN = 14;
-
     static final int		HEADING_NORMAL = 0;
     static final int		HEADING_DESIRED = 1;
     static final int		HEADING_JUMP = 2;
     static final int		HEADING_TURRET = 3;
     
-    // There should be the same number of items in this array as TOTAL_TERRAIN
-    char					terrainTypes[] = {'?', '.', '~', '`', '"', '^', '%', '@', '#', '&', '=', ':', '-', '+'};
-    BufferedImage			hexImages[][] = new BufferedImage[TOTAL_TERRAIN][10];			// One for each hex type and elevation
+    int						elevWidth[] = new int[10]; 	// Stores width of each elevation number glyph, 0 - 9
+    
+    BufferedImage			hexImages[][] = new BufferedImage[MUHex.TOTAL_TERRAIN][10];			// One for each hex type and elevation
 
     GeneralPath				gp = new GeneralPath();
     HexShape				hexPoly;
@@ -285,7 +266,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         hexPoly = new HexShape(h);
         
         // Now draw our images      
-        for (int i = 0; i < TOTAL_TERRAIN; i++)
+        for (int i = 0; i < MUHex.TOTAL_TERRAIN; i++)
         {
             for (int j = 0; j < 10; j++)
             {
@@ -299,9 +280,9 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
                 // Setup the color
                 if (prefs.tacDarkenElev)
-                    g.setColor(colorForElevation(colorForTerrain(terrainTypes[i]), j));
+                    g.setColor(MUHex.colorForElevation(colorForTerrain(i), j, prefs.elevationColorMultiplier));
                 else
-                    g.setColor(colorForTerrain(terrainTypes[i]));
+                    g.setColor(colorForTerrain(i));
 
                 // Fill the hex
                 g.fill(hexPoly);
@@ -338,10 +319,10 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                 // Draw the terrain type (upper left corner)
                 if (prefs.tacShowTerrainChar && h >= 20)
                 {
-                    if (terrainTypes[i] != '.')			// we don't draw plain types
+                    if (i != MUHex.PLAIN)			// we don't draw plain types
                     {
                         g.setFont(terrainFont);
-                        g.drawString(String.valueOf(terrainTypes[i]), hexPoly.getX(0), hexPoly.getY(0) + h/2);
+                        g.drawString(String.valueOf(MUHex.terrainForId(i)), hexPoly.getX(0), hexPoly.getY(0) + h/2);
                     }
                 }
                 
@@ -820,84 +801,18 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     /**
       * Get the proper color to describe a terrain character.
       */
-    public Color colorForTerrain(char terrain)
+    public Color colorForTerrain(int terrain)
     {
-        switch (terrain)
-        {
-            case '.':							// plain
-                return prefs.cPlains;
-            case '~':							// water
-                return prefs.cWater;
-            case '`':							// light forest
-                return prefs.cLightForest;
-            case '"':							// heavy forest
-                return prefs.cHeavyForest;
-            case '^':							// mountain
-                return prefs.cMountain;
-            case '%':							// rough
-                return prefs.cRough;
-            case '@':							// building
-                return prefs.cBuilding;
-            case '#':							// road or
-            case '/':							// bridge
-                return prefs.cRoad;
-            case '&':							// fire
-                return prefs.cFire;
-            case '=':							// wall
-                return prefs.cWall;
-            case ':':							// smoke
-                return prefs.cSmoke;
-            case '-':							// ice
-                return prefs.cIce;
-            case '+':
-                return prefs.cSmokeOnWater;
-            case '?':
-                return prefs.cUnknown;				// unknown
-            default:
-                return prefs.cUnknown;
-      }
+        return prefs.terrainColors[terrain];
     }
 
     /**
       * Get the Image that we want to copy for a given terrain character.
       */
     
-    protected BufferedImage imageForTerrain(char terrain, int elevation)
-    {        
-        switch (terrain)
-        {
-            case '.':							// plain
-                return hexImages[PLAIN][elevation];
-            case '~':							// water
-                return hexImages[WATER][elevation];
-            case '`':							// light forest
-                return hexImages[LIGHT_FOREST][elevation];
-            case '"':							// heavy forest
-                return hexImages[HEAVY_FOREST][elevation];
-            case '^':							// mountain
-                return hexImages[MOUNTAIN][elevation];
-            case '%':							// rough
-                return hexImages[ROUGH][elevation];
-            case '@':							// building
-                return hexImages[BUILDING][elevation];
-            case '#':							// road or
-            case '/':							// bridge
-                return hexImages[ROAD][elevation];
-            case '&':							// fire
-                return hexImages[FIRE][elevation];
-            case '=':							// wall
-                return hexImages[WALL][elevation];
-            case ':':							// smoke
-                return hexImages[SMOKE][elevation];
-            case '-':							// ice
-                return hexImages[ICE][elevation];
-            case '+':							// smoke over water
-                return hexImages[SMOKE_OVER_WATER][elevation];
-            case '?':
-                return hexImages[UNKNOWN][elevation];				// unknown
-            default:
-                return hexImages[UNKNOWN][elevation];
-        }
+    protected BufferedImage imageForTerrain(int terrain, int elevation)
+    {
+        return hexImages[terrain][elevation];
     }
 
     /**
@@ -1420,21 +1335,5 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     static public double toRadians(double a)
     {
         return (a / 180.0d) * Math.PI + Math.PI;
-    }
-
-    public Color colorForElevation(Color ic, int e)
-    {
-        float[] 	comp = ic.getRGBColorComponents(null);
-        float		mod = prefs.elevationColorMultiplier * e;
-        float[]		newComp = {comp[0], comp[1], comp[2]};
-
-        for (int i = 0; i < 3; i++)
-        {
-            newComp[i] -= mod;
-            if (newComp[i] < 0.0f)
-                newComp[i] = 0.0f;
-        }
-
-        return new Color(newComp[0], newComp[1], newComp[2]);   
     }
 }
