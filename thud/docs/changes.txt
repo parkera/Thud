@@ -34,20 +34,21 @@ Version History:
   * More intuitive controls for scrolling the map are needed.
   * A better armor display of some kind, instead of just an overall percentage.
 
-1.0fc1
+1.0b5
 
  I've decided to move to a more traditional version numbering system as we approach a final 1.0 release. :)
  
  New Features:
 
-  * Thud will now exit when the main window is closed.
-  * Your own unit is now drawn in a bold line on the tactical map to help differentiate it in large battles.
-  * New option: Showing cliffs will highlight edges in red which will cause a fall if crossed by a 'Mech or tank (greater than 2 elevation changes).
   * There is now a preferences window which allows for changing of colors on the map display, font sizes, and more.
+  * Your own unit is now drawn in a bold line on the tactical map to help differentiate it in large battles.
+  * You can now show cliffs, which will highlight edges in red which will cause a fall or halt.
   * Changes to internal way that maps are stored.
+  * Thud will now exit when the main window is closed.
   
  Bug Fixes:
   
   * Thud now handles underground maps properly (unknown hexes show up black on the tactical display).
   * Some work on map correctness done, but there's still more to do.
+  * A lot of small bug fixes
   
