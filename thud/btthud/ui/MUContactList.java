@@ -32,7 +32,7 @@ public class MUContactList extends JFrame
 
     Font				mFont;
     
-    OptionTextPane		contactPane;
+    JTextPane			contactPane;
     Thread				thread = null;
     
     boolean				go = true;
@@ -56,7 +56,7 @@ public class MUContactList extends JFrame
         
         // Setup our new contact list pane
         BulkStyledDocument	bsd = new BulkStyledDocument(prefs.contactFontSize, 1000, mFont);        // Yes, max of 1000 contacts. So sue me.
-        contactPane = new OptionTextPane(bsd, prefs.antiAliasText);
+        contactPane = new JTextPane(bsd);
         contactPane.setBackground(Color.black);
         contactPane.setEditable(false);
         contactPane.setDoubleBuffered(true);
@@ -91,31 +91,6 @@ public class MUContactList extends JFrame
         conRegular = new SimpleAttributeSet();
         StyleConstants.setFontSize(conRegular, prefs.contactFontSize);
         StyleConstants.setForeground(conRegular, Color.white);
-
-        conEnemy = new SimpleAttributeSet();
-        conEnemy.setResolveParent(conRegular);
-        StyleConstants.setForeground(conEnemy, Color.yellow);
-        StyleConstants.setBold(conEnemy, true);
-
-        conLocked = new SimpleAttributeSet();
-        conLocked.setResolveParent(conRegular);
-        StyleConstants.setForeground(conLocked, Color.red);
-        StyleConstants.setBold(conLocked, true);
-
-        conFriend = new SimpleAttributeSet();
-        conFriend.setResolveParent(conRegular);
-
-        conExpired = new SimpleAttributeSet();
-        conExpired.setResolveParent(conRegular);
-        StyleConstants.setForeground(conExpired, Color.gray);
-
-        /*
-        conDestroyed = new SimpleAttributeSet();
-        conDestroyed.setResolveParent(conRegular);
-        StyleConstants.setForeground(conDestroyed, Color.white);
-        StyleConstants.setStrikeThrough(conDestroyed, true);
-        */
-        
     }
     
     public void newPreferences(MUPrefs prefs)

@@ -82,8 +82,8 @@ public class Thud extends JFrame implements  ActionListener
     
     // ------------------
     
-    OptionTextField			textField;
-    OptionTextPane			textPane;
+    JTextField				textField;
+    JTextPane				textPane;
     BulkStyledDocument		bsd;
 
     boolean					connected = false;
@@ -100,10 +100,10 @@ public class Thud extends JFrame implements  ActionListener
 
     LinkedList				commandHistory = new LinkedList();
     int						historyLoc = 1;							// how far we are from end of history list
-
-    boolean					firstLaunch = false;
     
     static final int		DEBUG = 0;
+
+    boolean					firstLaunch = false;
     
     // ------------------------------------------------------------------------
     // MENU ITEM SETUP
@@ -544,13 +544,13 @@ public class Thud extends JFrame implements  ActionListener
     protected void setupNewTextFields()
     {
         bsd = new BulkStyledDocument(prefs.mainFontSize, prefs.maxScrollbackSize, mFont);
-        
-        textField = new OptionTextField(80, prefs.antiAliasText);
+
+        textField = new JTextField(80);
         textField.addActionListener(this);
         textField.setFont(mFont);
         textField.setEnabled(true);
         
-        textPane = new OptionTextPane(bsd, prefs.antiAliasText);
+        textPane = new JTextPane(bsd);
         textPane.setDocument(bsd);
         textPane.setBackground(Color.black);
         textPane.setEditable(false);
@@ -643,16 +643,16 @@ public class Thud extends JFrame implements  ActionListener
         
         bsd.insertPlainString(" *** Thud, (c) 2001-2002 Anthony Parker <asp@mac.com> ***");
         bsd.insertPlainString(" *** bt-thud.sourceforge.net                          ***");
-        bsd.insertPlainString(" *** Version: 1.1                                     ***");
+        bsd.insertPlainString(" *** Version: 1.1.2 (beta)                            ***");
         bsd.insertPlainString(" *** Built: " + buildNumber + "              ***");
         bsd.insertPlainString(" *** Contact Tony @ 3030MUX with questions/comments   ***\n");
 
         // Show ourselves
         setVisible(true);
 
+        // Show version notes
         if (firstLaunch)
         {
-            // Display the new changes dialog
             doReleaseNotes();
             firstLaunch = false;
         }
@@ -712,11 +712,17 @@ public class Thud extends JFrame implements  ActionListener
         {
             connected = false;
             
-            commands.endTimers();
-            
-            conList.pleaseStop();
-            tacMap.pleaseStop();
-            conn.pleaseStop();
+            if (commands != null)
+                commands.endTimers();
+
+            if (conList != null)
+                conList.pleaseStop();
+
+            if (tacMap != null)
+                tacMap.pleaseStop();
+
+            if (conn != null)
+                conn.pleaseStop();
 
             parse.messageLine("*** Disconnected ***");
 
@@ -735,7 +741,11 @@ public class Thud extends JFrame implements  ActionListener
     // -----------------------
     // Guess we need to repaint ourselves
     public void paint(Graphics g) {
-        super.paint(g);
+
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                            prefs.antiAliasText ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
+        super.paint(g2);
     }
     
     // -----------------------
@@ -753,8 +763,8 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miEraseCommand.getActionCommand())) doEraseCommand();
         else if (newEvent.getActionCommand().equals(miSelectAll.getActionCommand())) doSelectAll();
         else if (newEvent.getActionCommand().equals(miStartStop.getActionCommand())) doStartStop();
-        else if (newEvent.getActionCommand().equals(miZoomIn.getActionCommand())) doZoom(6);
-        else if (newEvent.getActionCommand().equals(miZoomOut.getActionCommand())) doZoom(-6);
+        else if (newEvent.getActionCommand().equals(miZoomIn.getActionCommand())) doZoom(5);
+        else if (newEvent.getActionCommand().equals(miZoomOut.getActionCommand())) doZoom(-5);
         else if (newEvent.getActionCommand().equals(miMakeArcsWeaponRange.getActionCommand())) doMakeArcsWeaponRange();
         else if (newEvent.getActionCommand().equals(miArcRetract.getActionCommand())) doChangeArc(-1);
         else if (newEvent.getActionCommand().equals(miArcExtend.getActionCommand())) doChangeArc(1);
@@ -844,7 +854,7 @@ public class Thud extends JFrame implements  ActionListener
         }
         catch (Exception e)
         {
-            System.out.println("Error: handleQuit: " + e);
+            System.out.println("Error: doQuit: " + e);
         }
 
         // We're done
@@ -975,8 +985,8 @@ public class Thud extends JFrame implements  ActionListener
     {
         // Let's try to keep the hex height even, since there are a lot of places that divide it by 2 - and it's an int
         prefs.hexHeight += z;
-        if (prefs.hexHeight < 6)
-            prefs.hexHeight = 6;
+        if (prefs.hexHeight < 5)
+            prefs.hexHeight = 5;
         if (prefs.hexHeight > 300)
             prefs.hexHeight = 300;
         
@@ -1213,6 +1223,7 @@ public class Thud extends JFrame implements  ActionListener
             {
                 prefs = new MUPrefs();
                 prefs.defaultPrefs();
+
                 firstLaunch = true;
             }
             else

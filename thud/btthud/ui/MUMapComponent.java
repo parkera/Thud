@@ -258,8 +258,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     private void changeHeight(int newHeight)
     {
         // Set some variables
-        if (newHeight < 6)
-            h = 6;
+        if (newHeight < 5)
+            h = 5;
         else
             h = newHeight;
 
