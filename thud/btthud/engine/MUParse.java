@@ -792,24 +792,14 @@ public class MUParse implements Runnable {
         w.damage = Integer.parseInt(st.nextToken());
         w.recycle = Integer.parseInt(st.nextToken());
 
-        /*
-        // This whole section is a mess because it's hard to check for no ammo mode, etc 
-        tempStr = st.nextToken();
-        if (tempStr != null)
-            w.fireModes = new String(tempStr);
-        tempStr = st.nextToken();
-        if (tempStr != null)
-            w.ammoModes = new String(tempStr);
-        tempStr = st.nextToken();
-        if (tempStr != null)
-            w.damageType = new String(tempStr);
-
         if (data.hiSupportsWLHeatInfo())
         {
-            // We have heat as well
+            // Get the last data items - supported in minor version 7 and above
+            w.fireModes = st.nextToken();
+            w.ammoModes = st.nextToken();
+            w.damageType = st.nextToken();
             w.heat = Integer.parseInt(st.nextToken());
         }
-        */
 
         MUUnitInfo.newWeapon(w);
     }
