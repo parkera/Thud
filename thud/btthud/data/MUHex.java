@@ -12,7 +12,7 @@ package btthud.data;
 public class MUHex
 {
 
-    char			terrain;
+    char		terrain;
     int			elevation;
     
     public MUHex()
@@ -26,11 +26,6 @@ public class MUHex
     {
         this.terrain = terrain;
         this.elevation = elevation;
-    }
-
-    public int absElevation()
-    {
-        return Math.abs(elevation);
     }
 
     // ---------------

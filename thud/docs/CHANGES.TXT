@@ -61,4 +61,6 @@ Version History:
  Bug Fixes:
  
   * Much much quicker connect-to-MUX time
+  * Much quicker text handling
+  
   

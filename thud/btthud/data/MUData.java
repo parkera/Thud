@@ -33,8 +33,8 @@ public class MUData {
     // Making these public sorta defeats the purpose of hiding them in the class in the first place, but
     // I just want to make it easier on myself at this point. Maybe I'll fix it later.
 
-    public static final int		MAX_X = 999;
-    public static final int		MAX_Y = 999;
+    public static final int		MAX_X = 1000;
+    public static final int		MAX_Y = 1000;
     
     public boolean				hudRunning = false;
     
@@ -42,7 +42,7 @@ public class MUData {
     public MUMyInfo				myUnit = null;
 
     private MUHex				map[][] = null;
-
+    
     public MUData()
     {
         hudRunning = false;
@@ -50,7 +50,7 @@ public class MUData {
         contacts = new Hashtable();			// data for our contact list
     
         map = new MUHex[MAX_X][MAX_Y];		// individual hexes will be allocated if they are needed.. this is not very memory efficient still
-
+        
         myUnit = new MUMyInfo();			// data that represents our own unit
     }
 
@@ -125,7 +125,7 @@ public class MUData {
         if (x > 0 && x < MAX_X && y > 0 && y < MAX_Y)
         {
             if (map[x][y] != null)
-                return map[x][y].terrain;
+                return map[x][y].terrain();
             else
                 return '?';
         }
@@ -138,7 +138,7 @@ public class MUData {
         if (x > 0 && x < MAX_X && y > 0 && y < MAX_Y)
         {
             if (map[x][y] != null)
-                return map[x][y].elevation;
+                return map[x][y].elevation();
             else
                 return 0;
         }
@@ -146,13 +146,23 @@ public class MUData {
         return 0;
     }
 
+    public int getHexAbsoluteElevation(int x, int y)
+    {
+        int	e = getHexElevation(x, y);
+        if (e < 0)
+            e = -e;
+        return e;
+    }
+    
     public void setHex(int x, int y, char ter, int elevation)
     {
         if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y)
         {
-            map[x][y] = new MUHex();
-            map[x][y].terrain = ter;
-            map[x][y].elevation = elevation;
+            if (map[x][y] == null)
+                map[x][y] = new MUHex();
+            
+            map[x][y].setTerrain(ter);
+            map[x][y].setElevation(elevation);
         }
     }
 
@@ -168,7 +178,7 @@ public class MUData {
 
         return new MUHex();
     }
-
+    
     /**
         * Clear data that is 'Mech specific, so that when we start the HUD again we have a clean slate.
       */
