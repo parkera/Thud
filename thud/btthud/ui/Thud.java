@@ -953,10 +953,13 @@ public class Thud extends JFrame implements  ActionListener
         data.mainWindowMuted = !data.mainWindowMuted;
         miMuteMainWindow.setState(data.mainWindowMuted);
 
-        if (data.mainWindowMuted)
-            parse.messageLine("*** Main Window Text Output Muted ***");
-        else
-            parse.messageLine("*** Main Window Text Output Unmuted ***");
+        if (parse != null)
+        {
+            if (data.mainWindowMuted)
+                parse.messageLine("*** Main Window Text Output Muted ***");
+            else
+                parse.messageLine("*** Main Window Text Output Unmuted ***");            
+        }
     }
     
     // -----------------------
