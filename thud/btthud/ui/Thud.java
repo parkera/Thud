@@ -24,20 +24,14 @@ import java.lang.*;
 import java.util.*;
 
 public class Thud extends JFrame implements  ActionListener
-{
-
-    int					numHosts;
-    String[]			hosts = null;
-    int[]				ports = null;
-
-    
+{    
     Font	mFont = new Font("Monospaced", Font.PLAIN, 10);		// default main font
     AboutBox aboutBox = null;
     // Declarations for menus
     
-    static final JMenuBar mainMenuBar = new JMenuBar();
+    JMenuBar mainMenuBar = new JMenuBar();
 	
-    static final JMenu fileMenu = new JMenu("File");
+    JMenu fileMenu;
     protected JMenuItem miNew;
     protected JMenuItem miOpen;
     protected JMenuItem miClose;
@@ -45,7 +39,7 @@ public class Thud extends JFrame implements  ActionListener
     protected JMenuItem miSaveAs;
     protected JMenuItem miQuit;
 	
-    static final JMenu editMenu = new JMenu("Edit");
+    JMenu editMenu;
     protected JMenuItem miUndo;
     protected JMenuItem miCut;
     protected JMenuItem miCopy;
@@ -55,7 +49,7 @@ public class Thud extends JFrame implements  ActionListener
     protected JMenuItem miEraseCommand;
     protected JMenuItem miPreviousCommand;
 
-    static final JMenu mapMenu = new JMenu("Map");
+    JMenu mapMenu;
     protected JMenuItem miZoomIn;
     protected JMenuItem miZoomOut;
     
@@ -73,11 +67,16 @@ public class Thud extends JFrame implements  ActionListener
 
     protected JMenuItem	miMoveRight, miMoveLeft, miMoveDown, miMoveUp, miCenterMap;
 
-    static final JMenu hudMenu = new JMenu("HUD");
+    JMenu hudMenu;
     protected JMenuItem miStartStop;
     protected JMenuItem miPreferences;
     protected JMenuItem[] miConnections = null;
+    protected JMenuItem miAddNewHost;
+    protected JMenuItem miRemoveHost;
     protected JMenuItem miDisconnect;
+
+    JMenu debugMenu;
+    protected JMenuItem miDumpDocument;
     
     // ------------------
     
@@ -148,15 +147,23 @@ public class Thud extends JFrame implements  ActionListener
 
         miStartStop.addActionListener(l);
         miPreferences.addActionListener(l);
+        for (int i = 0; i < prefs.hosts.size(); i++)
+            miConnections[i].addActionListener(l);
+        miAddNewHost.addActionListener(l);
+        miRemoveHost.addActionListener(l);
         miDisconnect.addActionListener(l);
 
-        for (int i = 0; i < numHosts; i++)
-            miConnections[i].addActionListener(l);
+        miDumpDocument.addActionListener(l);
     }
     
     // -----------------------
     // File Menu Items
-    public void addFileMenuItems() {
+    public void addFileMenuItems()
+    {
+        fileMenu = new JMenu("File");
+
+        // ----------
+        
         miNew = new JMenuItem ("New");
         miNew.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N,
                                                     Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -195,6 +202,13 @@ public class Thud extends JFrame implements  ActionListener
     // HUD Menu Items
     public void addHUDMenuItems()
     {
+        hudMenu = new JMenu("HUD");
+
+        // Setup the connection menu items
+        initConnectionMenus();
+        
+        // -------------
+        
         miPreferences = new JMenuItem("Preferences...");
         hudMenu.add(miPreferences).setEnabled(true);
 
@@ -206,14 +220,23 @@ public class Thud extends JFrame implements  ActionListener
         hudMenu.add(miStartStop).setEnabled(false);
 
         hudMenu.addSeparator();
-        
-        for (int i = 0; i < numHosts; i++)
+
+        for (int i = 0; i < prefs.hosts.size(); i++)
         {
-            miConnections[i] = new JMenuItem(hosts[i] + " " + ports[i]);
+            MUHost		nextHost = (MUHost) prefs.hosts.get(i);
+            miConnections[i] = new JMenuItem(nextHost.toString());
             acceleratorForConnectionItem(miConnections[i], i);
             hudMenu.add(miConnections[i]).setEnabled(true);
         }
 
+        hudMenu.addSeparator();
+
+        miAddNewHost = new JMenuItem("Add New Host...");
+        hudMenu.add(miAddNewHost).setEnabled(true);
+
+        miRemoveHost = new JMenuItem("Remove Host...");
+        hudMenu.add(miRemoveHost).setEnabled(true);
+        
         hudMenu.addSeparator();
 
         miDisconnect = new JMenuItem("Disconnect");
@@ -222,6 +245,21 @@ public class Thud extends JFrame implements  ActionListener
         hudMenu.add(miDisconnect).setEnabled(false);
         
         mainMenuBar.add(hudMenu);
+    }
+
+    // -----------------------
+    // Debug Menu Items
+    public void addDebugMenuItems()
+    {
+        debugMenu = new JMenu("Debug");
+
+        // ----------
+        
+        miDumpDocument = new JMenuItem("Dump Document Structure");
+        debugMenu.add(miDumpDocument).setEnabled(true);
+
+        // Debug off for now
+        // mainMenuBar.add(debugMenu);
     }
 
     // -----------------------
@@ -277,6 +315,10 @@ public class Thud extends JFrame implements  ActionListener
     // Map Menu items (mostly options)
     public void addMapMenuItems()
     {
+        mapMenu = new JMenu("Map");
+
+        // -------------
+
         miZoomIn = new JMenuItem("Zoom In");
         miZoomIn.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_CLOSE_BRACKET,
                                                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -383,7 +425,12 @@ public class Thud extends JFrame implements  ActionListener
 
     // -----------------------
 	// Edit menu items
-    public void addEditMenuItems() {
+    public void addEditMenuItems()
+    {
+        editMenu = new JMenu("Edit");
+
+        // -------------
+        
         miUndo = new JMenuItem("Undo");
         miUndo.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z,
                                                      Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -434,32 +481,35 @@ public class Thud extends JFrame implements  ActionListener
     // -----------------------
     // Initialize the connection items for the HUD menu
     public void initConnectionMenus()
-    {
-        // Busted: Should use the preferences, not create the menu again
-        numHosts = 2;
-        hosts = new String[numHosts];
-        ports = new int[numHosts];
-        miConnections = new JMenuItem[numHosts];
-
-        hosts[0] = "btech.dhs.org";
-        ports[0] = 3030;
-
-        hosts[1] = "btech.no-ip.com";
-        ports[1] = 3049;
-
+    {        
+        miConnections = new JMenuItem[prefs.hosts.size()];
     }
     
     // -----------------------
     // Add all of the menus
     public void addMenus()
     {
+        clearMenus();
+        
         addFileMenuItems();
         addEditMenuItems();
         addMapMenuItems();
         addHUDMenuItems();
+        addDebugMenuItems();
+
+        // Make sure our menus are listening to us
+        setupListeners(this);
+        
         setJMenuBar(mainMenuBar);
     }
 
+    // -----------------------
+    // Clear menu bar
+    public void clearMenus()
+    {
+        mainMenuBar.removeAll();
+    }
+    
     // ------------------------------------------------------------------------
     // TEXT FIELD SETUP
     // ------------------------------------------------------------------------
@@ -542,13 +592,8 @@ public class Thud extends JFrame implements  ActionListener
         // Only works for Java 1.4
         //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        // Setup the connection menus
-        initConnectionMenus();
-
         // Add all of our menus
         addMenus();
-        // Make sure our menus are listening to us
-        setupListeners(this);
 
         // Create an about box
         aboutBox = new AboutBox();
@@ -685,7 +730,10 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miCenterMap.getActionCommand())) doCenterMap();
         else if (newEvent.getActionCommand().equals(miPreferences.getActionCommand())) doPreferences();
         else if (matchesConnectionMenu(newEvent.getActionCommand())) doNewConnection(newEvent.getActionCommand());
+        else if (newEvent.getActionCommand().equals(miAddNewHost.getActionCommand())) doAddNewHost();
+        else if (newEvent.getActionCommand().equals(miRemoveHost.getActionCommand())) doRemoveHost();
         else if (newEvent.getActionCommand().equals(miDisconnect.getActionCommand())) doDisconnect();
+        else if (newEvent.getActionCommand().equals(miDumpDocument.getActionCommand())) doDumpDocumentStructure();
         else		// this is sorta bad, we assume that if it's not a menu item they hit return in the text field. need to fix
         {
             String text = textField.getText();
@@ -764,6 +812,22 @@ public class Thud extends JFrame implements  ActionListener
             conList.newPreferences(prefs);
         
         mainFontChanged();
+    }
+
+    // -----------------------
+    // Display the "Add New Host" dialog
+    public void doAddNewHost()
+    {
+        AddHostDialog		addDialog = new AddHostDialog(this, true);
+        addDialog.setVisible(true);
+    }
+
+    // -----------------------
+    // Display the "Remove Host" dialog
+    public void doRemoveHost()
+    {
+        RemoveHostDialog	removeDialog = new RemoveHostDialog(this, true);
+        removeDialog.setVisible(true);
     }
     
     // -----------------------
@@ -973,6 +1037,12 @@ public class Thud extends JFrame implements  ActionListener
     }
 
     // -----------------------
+    public void doDumpDocumentStructure()
+    {
+        bsd.dump(System.out);        
+    }
+    
+    // -----------------------
     // These two are for future expansion of setting the colors in the main window
     public void doGetBackgroundColor()
     {
@@ -990,9 +1060,11 @@ public class Thud extends JFrame implements  ActionListener
     {
         boolean match = false;
 
-        for (int i = 0; i < numHosts; i++)
+        for (int i = 0; i < prefs.hosts.size(); i++)
         {
-            if (action.equals(hosts[i] + " " + ports[i]))
+            MUHost			nextHost = (MUHost) prefs.hosts.get(i);
+            
+            if (action.equals(nextHost.getHost() + " " + nextHost.getPort()))
                 match = true;
         }
 

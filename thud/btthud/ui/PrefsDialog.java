@@ -11,12 +11,8 @@ package btthud.ui;
 
 import btthud.data.*;
 import btthud.util.*;
-
-/* Note: The "GEN" comments are in here since the file was first automagically generated, but I've modified it manually since then. -asp */
-
 import java.awt.*;
 import javax.swing.*;
-
 
 public class PrefsDialog extends javax.swing.JDialog {
     

@@ -57,10 +57,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
 
     public int					mainFontSize, smallFontSize, hexNumberFontSize, infoFontSize, elevationFontSize, contactFontSize;
 
-    public static final int		TOTAL_HOSTS = 10;
-
-    public String[]				hosts;
-    public int[]				hostPorts;
+    public ArrayList			hosts = new ArrayList();
     
     public MUPrefs()
     {
@@ -147,14 +144,28 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         infoFontSize = 9;
         elevationFontSize = 10;
 
-        hosts = new String[TOTAL_HOSTS];
-        hostPorts = new int[TOTAL_HOSTS];
+        MUHost bt3030 = new MUHost("btech.dhs.org", 3030);
+        MUHost bt3049 = new MUHost("btech.no-ip.com", 3049);
 
-        hosts[0] = "btech.dhs.org";
-        hostPorts[0] = 3030;
+        hosts.add(bt3030);
+        hosts.add(bt3049);        
+    }
 
-        hosts[1] = "btech.no-ip.com";
-        hostPorts[1] = 3049;
-        
+    public void addHost(String newHost, int newPort)
+    {
+        hosts.add(new MUHost(newHost, newPort));
+    }
+
+    public void addHost(MUHost newHost) {
+        hosts.add(newHost);
+    }
+
+    public void removeHost(String oldHost, int oldPort)
+    {
+        hosts.remove(hosts.indexOf(new MUHost(oldHost, oldPort)));
+    }
+
+    public void removeHost(MUHost oldHost) {
+        hosts.remove(hosts.indexOf(oldHost));
     }
 }
