@@ -613,19 +613,40 @@ public class MUUnitInfo extends Object implements Comparable {
     {
         if (p >= 99)
             return new Color(0, 200, 0);			// Bright green
-        else if (p > 60)
+        else if (p > 70)
             return new Color(0, 150, 0);			// Darker green
-        else if (p > 40)
+        else if (p > 50)
             return new Color(150, 150, 0);			// Darker yellow
-        else if (p > 20)
+        else if (p > 34)
             return new Color(200, 200, 0);			// Bright yellow
-        else
+        else if (p >= 1)
             return new Color(200, 0, 0);			// Bright red
+        else
+            return new Color(0, 0, 0);
     }
 
     /**
-        * Return a constant representing our movement type
-     */
+      * Return a color with Transparency
+      */
+    static public Color colorForPercent(float p, int a)
+    {
+        if (p >= 99)
+            return new Color(0, 255, 0, a);			// Bright green
+        else if (p > 70)
+            return new Color(0, 175, 0, a);			// Darker green
+        else if (p > 50)
+            return new Color(150, 175, 0, a);			// Darker yellow
+        else if (p > 34)
+            return new Color(255, 255, 0, a);			// Bright yellow
+        else if (p >= 1)
+            return new Color(255, 0, 0, a);			// Bright red
+        else
+            return new Color(0, 0, 0, a);
+    }
+
+    /**
+      * Return a constant representing our movement type
+      */
     
     static public int movementForType(String s)
     {
