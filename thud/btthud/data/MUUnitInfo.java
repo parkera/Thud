@@ -59,7 +59,7 @@ public class MUUnitInfo extends Object implements Comparable {
     // After 'expired - oldThreshold' cycles they will turn grey
     // After 'expired' cycles, they will disappear from the contacts screen
     int					expired = 10;
-    static final int	oldThreshold = 5;
+    static final int	oldThreshold = 7;
 
     static public MUWeapon		weapons[] = new MUWeapon[200];		// data that stores info on /all/ weapons ... assume 200 of them for now
     
