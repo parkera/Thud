@@ -71,7 +71,7 @@ public class Thud extends JFrame implements  ActionListener
     protected JCheckBoxMenuItem	miShowCliffs;
     protected JCheckBoxMenuItem miShowIndicators;
 
-    protected JMenuItem	miMoveRight, miMoveLeft, miMoveDown, miMoveUp, miResetOffsets;
+    protected JMenuItem	miMoveRight, miMoveLeft, miMoveDown, miMoveUp, miCenterMap;
 
     static final JMenu hudMenu = new JMenu("HUD");
     protected JMenuItem miStartStop;
@@ -307,11 +307,11 @@ public class Thud extends JFrame implements  ActionListener
         mapMenu.add(miMoveDown);
         miMoveDown.addActionListener(this);
 
-        miResetOffsets = new JMenuItem("Reset Map Offsets");
-        miResetOffsets.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R,
-                                                             java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miResetOffsets);
-        miResetOffsets.addActionListener(this);
+        miCenterMap = new JMenuItem("Center Map On Unit");
+        miCenterMap.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R,
+                                                          java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        mapMenu.add(miCenterMap);
+        miCenterMap.addActionListener(this);
 
         // ---
         mapMenu.addSeparator();
@@ -597,7 +597,7 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miMoveRight.getActionCommand())) doChangeXOffset(1f);
         else if (newEvent.getActionCommand().equals(miMoveUp.getActionCommand())) doChangeYOffset(-1f);
         else if (newEvent.getActionCommand().equals(miMoveDown.getActionCommand())) doChangeYOffset(1f);
-        else if (newEvent.getActionCommand().equals(miResetOffsets.getActionCommand())) doResetOffsets();
+        else if (newEvent.getActionCommand().equals(miCenterMap.getActionCommand())) doCenterMap();
         else if (newEvent.getActionCommand().equals(miPreferences.getActionCommand())) doPreferences();
         else if (matchesConnectionMenu(newEvent.getActionCommand())) doNewConnection(newEvent.getActionCommand());
         else		// this is sorta bad, we assume that if it's not a menu item they hit return in the text field. need to fix
@@ -757,7 +757,7 @@ public class Thud extends JFrame implements  ActionListener
         tacMap.repaint();
     }
 
-    public void doResetOffsets()
+    public void doCenterMap()
     {
         prefs.xOffset = 0f;
         prefs.yOffset = 0f;
