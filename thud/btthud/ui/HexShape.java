@@ -140,8 +140,8 @@ public class HexShape implements Shape {
      *    \__/
      *
      *     _____
-     *    /|   |\    & = l (2*l + w = width of hex at widest point)
-     *   /&|   |&\
+     *    /|   |\    _ = l (2*l + w = width of hex at widest point)
+     *   /_|   |_\
      *   \ |   | /
      *    \|___|/
      *
