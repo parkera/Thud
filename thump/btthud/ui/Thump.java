@@ -356,8 +356,38 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
 
     protected void makeNewMapFrame(File file)
     {
+        int			mapSize = 0;
         
-        MUXMapFrame		newMap = new MUXMapFrame(this, file, prefs, DEFAULT_HEIGHT, tools);
+        if (file == null)
+        {
+            // Have to ask how big the map's gonna be....
+            String		mapSizeStr = JOptionPane.showInputDialog(this,
+                                                             "What size should this new map be?\n(Only square maps are currently supported)",
+                                                             "Map Size",
+                                                             JOptionPane.QUESTION_MESSAGE);        
+            try {
+                
+                if (mapSizeStr == null)
+                {
+                    // They cancelled...
+                    return;
+                }
+                
+                mapSize = Integer.parseInt(mapSizeStr);
+                
+                if (mapSize <= 0 || mapSize > 1000)
+                    throw new Exception("mapSize must be between 1 and 1000");
+                
+            } catch (Exception e) {
+                ErrorHandler.displayError("The map size must be an whole number between 1 and 1000.", ErrorHandler.ERR_BAD_INPUT);
+                // Try again
+                makeNewMapFrame(null);
+            }
+        }
+        
+        MUXMapFrame		newMap;
+        
+        newMap = new MUXMapFrame(this, file, mapSize, prefs, DEFAULT_HEIGHT, tools);
         newMap.setVisible(true);
 
         desktop.add(newMap);

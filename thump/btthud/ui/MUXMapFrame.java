@@ -60,7 +60,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
     
     // -----------------
     
-    public MUXMapFrame(Thump mapper, File file, MPrefs prefs, int hexHeight, ToolManager tools)
+    public MUXMapFrame(Thump mapper, File file, int mapSize, MPrefs prefs, int hexHeight, ToolManager tools)
     {
         super("Untitled");
         
@@ -72,11 +72,13 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         
         if (file == null)
         {
-            newMap();
             setTitle("Untitled " + documentsOpened + sizeString());
             this.file = new File("Untitled " + documentsOpened);
             documentsOpened++;
             newFile = true;
+            
+            map = new MUXMap(mapSize, mapSize);
+            map.clearMap();
         }
         else
         {
@@ -183,34 +185,6 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         scrollPane.setRowHeaderView(yRule);
         scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, new Corner());
         scrollPane.doLayout();
-    }
-    
-    /**
-      * Setup values for a new map file
-      */
-    void newMap()
-    {
-        // Have to ask how big the map's gonna be....
-
-        int			mapSize = 0;
-        String		mapSizeStr = JOptionPane.showInputDialog(this,
-                                                         "What size should this new map be?\n(Only square maps are currently supported)",
-                                                         "Map Size",
-                                                         JOptionPane.QUESTION_MESSAGE);        
-        try {
-            
-            mapSize = Integer.parseInt(mapSizeStr);
-
-            if (mapSize <= 0 || mapSize > 1000)
-                throw new Exception("mapSize must be between 1 and 1000");
-
-            map = new MUXMap(mapSize, mapSize);
-            map.clearMap();
-            
-        } catch (Exception e) {
-            ErrorHandler.displayError("The map size must be an whole number between 1 and 1000.", ErrorHandler.ERR_BAD_INPUT);
-            newMap();
-        }
     }
 
     /**
