@@ -408,8 +408,6 @@ public class MUMapComponent extends JComponent implements MouseListener
         MUUnitInfo				unit;
         Point2D					conPoint = new Point2D.Float();
 
-        //int						myLocX = data.myUnit.x;
-        //int						myLocY = data.myUnit.y;
         int						hexX = myLocX - (numAcross / 2);
         int						hexY = myLocY - (numDown / 2);
 
@@ -428,16 +426,35 @@ public class MUMapComponent extends JComponent implements MouseListener
         {
             unit = (MUUnitInfo) it.next();
 
+            
             int			ubtc = unit.bearingToCenter;
             double 		urtc = unit.rangeToCenter;
+            double		ufcOffsetX = 0;
+            double		ufcOffsetY = 0;
 
-            int ub = ubtc + 180;
-            if (ub > 360)
-                ub -= 360;
-            ub += 90;
-
-            double 		ufcOffsetX = urtc * (w + 2 * l) * Math.cos(toRadians(ub));
-            double 		ufcOffsetY = urtc * h * Math.sin(toRadians(ub));
+            if (ubtc >= 0 && ubtc <= 90)
+            {
+                ufcOffsetX =  (urtc * (h) * Math.sin(toRadians(ubtc)));
+                ufcOffsetY = -(urtc * (h) * Math.cos(toRadians(ubtc)));
+            }
+            else if (ubtc >= 91 && ubtc <= 180)
+            {
+                ubtc -= 90;
+                ufcOffsetX =  (urtc * (h) * Math.cos(toRadians(ubtc)));
+                ufcOffsetY =  (urtc * (h) * Math.sin(toRadians(ubtc)));
+            }
+            else if (ubtc >= 181 && ubtc <= 270)
+            {
+                ubtc -= 180;
+                ufcOffsetX = -(urtc * (h) * Math.sin(toRadians(ubtc)));
+                ufcOffsetY =  (urtc * (h) * Math.cos(toRadians(ubtc)));
+            }
+            else if (ubtc >= 271 && ubtc <= 359)
+            {
+                ubtc -= 270;
+                ufcOffsetX = -(urtc * (h) * Math.cos(toRadians(ubtc)));
+                ufcOffsetY = -(urtc * (h) * Math.sin(toRadians(ubtc)));
+            }
             
             // Find out where the center of the hex they're in is at
             Point2D	realHex = hexPoly.hexToReal(unit.x, unit.y, true);
@@ -619,15 +636,33 @@ public class MUMapComponent extends JComponent implements MouseListener
         int						hexY = myLocY - (numDown / 2);
 
         int 					btc = data.myUnit.bearingToCenter;
-        float 					rtc = data.myUnit.rangeToCenter;
+        double 					rtc = data.myUnit.rangeToCenter;
+        double					fcOffsetX = 0;
+        double					fcOffsetY = 0;
 
-        int b = btc + 180;
-        if (b > 360)
-            b -= 360;
-        b += 90;
-
-        double 					fcOffsetX = rtc * (w + 2 * l) * -Math.cos(toRadians(b));
-        double				 	fcOffsetY = rtc * h * -Math.sin(toRadians(b));
+        if (btc >= 0 && btc <= 90)
+        {
+            fcOffsetX = -(rtc * (h) * Math.sin(toRadians(btc)));
+            fcOffsetY =  (rtc * (h) * Math.cos(toRadians(btc)));
+        }
+        else if (btc >= 91 && btc <= 180)
+        {
+            btc -= 90;
+            fcOffsetX = -(rtc * (h) * Math.cos(toRadians(btc)));
+            fcOffsetY = -(rtc * (h) * Math.sin(toRadians(btc)));
+        }
+        else if (btc >= 181 && btc <= 270)
+        {
+            btc -= 180;
+            fcOffsetX =  (rtc * (h) * Math.sin(toRadians(btc)));
+            fcOffsetY = -(rtc * (h) * Math.cos(toRadians(btc)));
+        }
+        else if (btc >= 271 && btc <= 359)
+        {
+            btc -= 270;
+            fcOffsetX =  (rtc * (h) * Math.cos(toRadians(btc)));
+            fcOffsetY =  (rtc * (h) * Math.sin(toRadians(btc)));
+        }
 
         Point2D					unitDraw = hexPoly.hexToReal(myLocX, myLocY, true);
 
