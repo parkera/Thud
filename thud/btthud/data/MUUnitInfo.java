@@ -139,7 +139,7 @@ public class MUUnitInfo extends Object implements Comparable {
     
     public MUUnitInfo()
     {
-        
+        turretHeading = 180;
     }
     
     public String toString()
