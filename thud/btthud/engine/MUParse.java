@@ -23,6 +23,9 @@ import java.util.*;
 
 import btthud.util.*;
 
+/* Note: We use a lot of == comparison in this class, because it's faster than .equals(). When coding here, we have to make sure to intern() the temporary strings so they compare properly.
+*/
+
 public class MUParse implements Runnable {
 
     // Variables
@@ -42,44 +45,6 @@ public class MUParse implements Runnable {
     private Thread			parseThread = null;
 
     LineHolder				lh = null;
-
-    // --------------------
-    // Statics
-
-    // By storing these strings 'intern()', we can compare them using == instead of .equals() and save a lot time
-    // Hopefully it will also reduce the number of temporary Strings we have floating around as well
-
-    // Hudinfo commands/subcommands
-    static final String		STR_GS = "GS";
-    static final String		STR_C = "C";
-    static final String		STR_T = "T";
-    static final String		STR_TS = "S#";
-    static final String		STR_TL = "L#";
-    static final String		STR_TD = "D#";
-    static final String		STR_SGI = "SGI";
-    static final String		STR_AS = "AS";
-    static final String		STR_OAS = "OAS";
-    static final String		STR_KEY = "KEY";
-    static final String		STR_WL = "WL";
-    static final String		STR_WE = "WE";
-
-    // Contact sensors
-    static final String		STR_PS = "PS";
-    static final String		STR_P = "P";
-    static final String		STR_S = "S";
-    
-    // Misc
-    static final String		STR_DASH = "-";
-    static final String		STR_COLON = ":";
-    static final String		STR_SPACE = " ";
-    static final String		STR_COMMA = ",";
-    static final String		STR_PERIOD = ".";
-
-    static final String		STR_DONE = "Done";
-    static final String		STR_UNKNOWN = "???";
-    static final String		STR_SHUTDOWN = "Reactor is not online";
-    static final String		STR_DESTROYED = "You are destroyed!";
-    static final String		STR_NOT_BT_UNIT = "Not in a BattleTech unit";
 
     // ---------------------
     
@@ -283,7 +248,7 @@ public class MUParse implements Runnable {
                 // Get the first word, ie #HUD:key:GS:R#
                 String			firstWord = st.nextToken();
                 // And get the part which specifies which command we're looking at
-                StringTokenizer st2 = new StringTokenizer(firstWord, STR_COLON);
+                StringTokenizer st2 = new StringTokenizer(firstWord, ":");
                 // Skip the #HUD and key
                 st2.nextToken(); st2.nextToken();
 
@@ -293,14 +258,14 @@ public class MUParse implements Runnable {
                 StringBuffer	restOfCommandBuf = new StringBuffer(st.nextToken());
                 while (st.hasMoreTokens())
                 {
-                    restOfCommandBuf.append(STR_SPACE);
+                    restOfCommandBuf.append(" ");
                     restOfCommandBuf.append(st.nextToken());
                 }
 
                 String			restOfCommand = restOfCommandBuf.toString().intern();
                 
-                if (whichCommand == STR_UNKNOWN || restOfCommand == STR_NOT_BT_UNIT ||
-                    restOfCommand == STR_DESTROYED || restOfCommand == STR_SHUTDOWN)
+                if (whichCommand == "???" || restOfCommand == "Not in a BattleTech unit" ||
+                    restOfCommand == "You are destroyed!" || restOfCommand == "Reactor is not online")
                 {
                     //data.hudRunning = false;
                     //commands.endTimers();
@@ -309,32 +274,32 @@ public class MUParse implements Runnable {
                 }
                 
                 // Now we check it against everything
-                if (whichCommand == STR_GS)		// general status
+                if (whichCommand == "GS")		// general status
                     parseHudInfoGS(restOfCommand);
-                else if (whichCommand == STR_C)	// contacts
+                else if (whichCommand == "C")	// contacts
                     parseHudInfoC(restOfCommand);
-                else if (whichCommand == STR_T)	// tactical
+                else if (whichCommand == "T")	// tactical
                 {
                     // Now we're expecting an 'S', an 'L', or a 'D'
                     String subCommand = st2.nextToken().intern();
-                    if (subCommand == STR_TS)
+                    if (subCommand == "S#")
                         parseHudInfoTS(restOfCommand);
-                    else if (subCommand == STR_TL)
+                    else if (subCommand == "L#")
                         parseHudInfoTL(restOfCommand);
-                    else if (subCommand == STR_TD)
+                    else if (subCommand == "D#")
                         parseHudInfoTD(restOfCommand);
                 }
-                else if (whichCommand == STR_SGI)	// static general information
+                else if (whichCommand == "SGI")	// static general information
                     parseHudInfoSGI(restOfCommand);
-                else if (whichCommand == STR_AS)		// Armor status
+                else if (whichCommand == "AS")		// Armor status
                     parseHudInfoAS(restOfCommand);
-                else if (whichCommand == STR_OAS)	// Original armor status
+                else if (whichCommand == "OAS")	// Original armor status
                     parseHudInfoOAS(restOfCommand);
-                else if (whichCommand == STR_KEY)	// 'Key set' .. don't need to do anything further
+                else if (whichCommand == "KEY")	// 'Key set' .. don't need to do anything further
                     return true;
-                else if (whichCommand == STR_WL)		// Weapon list
+                else if (whichCommand == "WL")		// Weapon list
                     parseHudInfoWL(restOfCommand);
-                else if (whichCommand == STR_WE)		// Our own weapons
+                else if (whichCommand == "WE")		// Our own weapons
                     parseHudInfoWE(restOfCommand);
                 else
                     messageLine("> Unrecognized HUDINFO data: " + whichCommand);
@@ -359,7 +324,7 @@ public class MUParse implements Runnable {
         // Skip #HUD hudinfo version
         st.nextToken(); st.nextToken(); st.nextToken();
 
-        StringTokenizer st2 = new StringTokenizer(st.nextToken(), STR_PERIOD);
+        StringTokenizer st2 = new StringTokenizer(st.nextToken(), ".");
         hudInfoMajorVersion = Integer.parseInt(st2.nextToken());
         hudInfoMinorVersion = Integer.parseInt(st2.nextToken());
     }
@@ -372,7 +337,7 @@ public class MUParse implements Runnable {
     {
         try
         {
-            StringTokenizer st = new StringTokenizer(l, STR_COMMA);
+            StringTokenizer st = new StringTokenizer(l, ",");
             MUMyInfo		info = data.myUnit;
             String			tempStr;
             
@@ -397,7 +362,7 @@ public class MUParse implements Runnable {
             info.heatDissipation = Integer.parseInt(st.nextToken());
     
             tempStr = st.nextToken().intern();
-            if (tempStr != STR_DASH)
+            if (tempStr != "-")
                 info.fuel = Integer.parseInt(tempStr);
     
             info.verticalSpeed = Float.parseFloat(st.nextToken());
@@ -407,7 +372,7 @@ public class MUParse implements Runnable {
             info.bearingToCenter = Integer.parseInt(st.nextToken());
 
             tempStr = st.nextToken().intern();
-            if (tempStr != STR_DASH)
+            if (tempStr != "-")
                 info.turretHeading = Integer.parseInt(tempStr);			// also corresponds to rottorso
     
             if (st.hasMoreTokens())
@@ -441,7 +406,7 @@ public class MUParse implements Runnable {
          */
          /* #HUD:bajl:SGI:R# i,ObservationVTO,ObservationVTOL,0.000,0.000,-0.000,0.000,-,10, */
 
-        StringTokenizer st = new StringTokenizer(l, STR_COMMA);
+        StringTokenizer st = new StringTokenizer(l, ",");
         MUMyInfo		info = data.myUnit;
         String			tempStr;
 
@@ -458,7 +423,7 @@ public class MUParse implements Runnable {
         info.verticalSpeed = Float.parseFloat(st.nextToken());
 
         tempStr = st.nextToken().intern();
-        if (tempStr != STR_DASH)
+        if (tempStr != "-")
             info.fuel = Integer.parseInt(tempStr);
 
         info.heatSinks = Integer.parseInt(st.nextToken());
@@ -474,13 +439,13 @@ public class MUParse implements Runnable {
       */
     public void parseHudInfoC(String l)
     {
-        if (l == STR_DONE)
+        if (l == "Done")
             return;
 
         try
         {
             
-            StringTokenizer st = new StringTokenizer(l, STR_COMMA);
+            StringTokenizer st = new StringTokenizer(l, ",");
             MUUnitInfo		con = new MUUnitInfo();
             String			tempStr;
     
@@ -493,17 +458,17 @@ public class MUParse implements Runnable {
     
             con.arc = st.nextToken();
             tempStr = st.nextToken().intern();
-            if (tempStr == STR_PS)
+            if (tempStr == "PS")
             {
                 con.primarySensor = true;
                 con.secondarySensor = true;
             }
-            else if (tempStr == STR_P)
+            else if (tempStr == "P")
             {
                 con.primarySensor = true;
                 con.secondarySensor = false;
             }
-            else if (tempStr == STR_S)
+            else if (tempStr == "S")
             {
                 con.primarySensor = false;
                 con.secondarySensor = true;
@@ -521,7 +486,7 @@ public class MUParse implements Runnable {
                 con.type = st.nextToken();
 
             con.name = st.nextToken().intern();
-            if (con.name == STR_DASH)
+            if (con.name == "-")
                 con.name = "Unknown";
             // need to split name up into name, team
             
@@ -536,7 +501,7 @@ public class MUParse implements Runnable {
             con.heading = Integer.parseInt(st.nextToken());
     
             tempStr = st.nextToken().intern();
-            if (tempStr != STR_DASH)
+            if (tempStr != "-")
             {
                 con.jumpHeading = Integer.parseInt(tempStr);
                 con.jumping = true;
@@ -576,7 +541,7 @@ public class MUParse implements Runnable {
      */    
     public void parseHudInfoTS(String l)
     {
-        StringTokenizer st = new StringTokenizer(l, STR_COMMA);
+        StringTokenizer st = new StringTokenizer(l, ",");
         
         tacSX = Integer.parseInt(st.nextToken());
         tacSY = Integer.parseInt(st.nextToken());
@@ -599,7 +564,7 @@ public class MUParse implements Runnable {
      */
     public void parseHudInfoAS(String l)
     {
-        StringTokenizer st = new StringTokenizer(l, STR_COMMA);
+        StringTokenizer st = new StringTokenizer(l, ",");
         MUMyInfo		info = data.myUnit;
 
         if (info == null)
@@ -608,20 +573,20 @@ public class MUParse implements Runnable {
         String			location = st.nextToken().intern();
         String			f, i, r;
         
-        if (location == STR_DONE)
+        if (location == "Done")
             return;
 
         // Get the values
         f = st.nextToken().intern(); r = st.nextToken().intern(); i = st.nextToken().intern();
 
         // Then stick them into the section
-        if (f != STR_DASH)
+        if (f != "-")
             info.armor[info.indexForSection(location)].f = Integer.parseInt(f);
 
-        if (r != STR_DASH)
+        if (r != "-")
             info.armor[info.indexForSection(location)].r = Integer.parseInt(r);
 
-        if (i != STR_DASH)
+        if (i != "-")
             info.armor[info.indexForSection(location)].i = Integer.parseInt(i);
     }
 
@@ -632,7 +597,7 @@ public class MUParse implements Runnable {
      */
     public void parseHudInfoOAS(String l)
     {
-        StringTokenizer st = new StringTokenizer(l, STR_COMMA);
+        StringTokenizer st = new StringTokenizer(l, ",");
         MUMyInfo		info = data.myUnit;
 
         if (info == null)
@@ -641,24 +606,24 @@ public class MUParse implements Runnable {
         String			location = st.nextToken().intern();
         String			f, i, r;
 
-        if (location == STR_DONE)
+        if (location == "Done")
             return;
 
         // Get the values
         f = st.nextToken().intern(); r = st.nextToken().intern();  i = st.nextToken().intern();
 
         // Then stick them into the section
-        if (f != STR_DASH)
+        if (f != "-")
             info.armor[info.indexForSection(location)].of = Integer.parseInt(f);
         else
             info.armor[info.indexForSection(location)].of = 0;
 
-        if (r != STR_DASH)
+        if (r != "-")
             info.armor[info.indexForSection(location)].or = Integer.parseInt(r);
         else
             info.armor[info.indexForSection(location)].or = 0;
 
-        if (i != STR_DASH)
+        if (i != "-")
             info.armor[info.indexForSection(location)].oi = Integer.parseInt(i);
         else
             info.armor[info.indexForSection(location)].oi = 0;
@@ -674,7 +639,7 @@ public class MUParse implements Runnable {
         // See hudinfospec.txt for complete format explanation
 
         // Ok it must be a data line
-        StringTokenizer st = new StringTokenizer(l, STR_COMMA);
+        StringTokenizer st = new StringTokenizer(l, ",");
         int				thisY = Integer.parseInt(st.nextToken());
         String			tacData = st.nextToken();
 
@@ -704,10 +669,10 @@ public class MUParse implements Runnable {
      */
     public void parseHudInfoWE(String l)
     {
-        if (l == STR_DONE)
+        if (l == "Done")
             return;
 
-        StringTokenizer st = new StringTokenizer(l, STR_COMMA);
+        StringTokenizer st = new StringTokenizer(l, ",");
         MUUnitWeapon	w = new MUUnitWeapon();
 
         w.number = Integer.parseInt(st.nextToken());
@@ -727,10 +692,10 @@ public class MUParse implements Runnable {
     {
         // See hudinfospec.txt for complete format explanation
         
-        if (l == STR_DONE)
+        if (l == "Done")
             return;
         
-        StringTokenizer	st = new StringTokenizer(l, STR_COMMA);
+        StringTokenizer	st = new StringTokenizer(l, ",");
         MUWeapon		w = new MUWeapon();
 
         // I'm not sure if the HUD will return -1 or - for invalid (ie underwater LRMs). It looks as if -1 at the moment, but the spec says -

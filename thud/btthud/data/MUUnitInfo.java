@@ -234,21 +234,6 @@ public class MUUnitInfo extends Object implements Comparable {
     /**
       * Make a human-readable contact string, similar to standard .c for display
       */
-
-    // Storing some strings for efficiency here
-    static final String		STR_P = "P";
-    static final String		STR_S = "S";
-    static final String		STR_SPACE = " ";
-    static final String		STR_L_BRACKET = "[";
-    static final String		STR_R_BRACKET = "]";
-    static final String		STR_X = "x:";
-    static final String		STR_Y = "y:";
-    static final String		STR_Z = "z:";
-    static final String		STR_R = "r:";
-    static final String		STR_B = "b:";
-    static final String		STR_LOW_S = "s:";
-    static final String		STR_H = "h:";
-    static final String		STR_STATUS_S = "S:";
     
     public String makeContactString()
     {
@@ -257,42 +242,42 @@ public class MUUnitInfo extends Object implements Comparable {
         */
         StringBuffer	sb = new StringBuffer();
 
-        sb.append(primarySensor ? STR_P : STR_SPACE);
-        sb.append(secondarySensor ? STR_S : STR_SPACE);
+        sb.append(primarySensor ? "P" : " ");
+        sb.append(secondarySensor ? "S" : " ");
         sb.append(arc);
-        sb.append(STR_L_BRACKET);
+        sb.append("[");
         sb.append(id);
-        sb.append(STR_R_BRACKET);
+        sb.append("]");
         sb.append(type);
-        sb.append(STR_SPACE);
+        sb.append(" ");
 
         sb.append(leftJust(name, 12, true));
-        sb.append(STR_SPACE);
+        sb.append(" ");
 
-        sb.append(STR_X);
+        sb.append("x:");
         sb.append(rightJust(String.valueOf(x), 3, false));
-        sb.append(STR_SPACE);
-        sb.append(STR_Y);
+        sb.append(" ");
+        sb.append("y:");
         sb.append(rightJust(String.valueOf(y), 3, false));
-        sb.append(STR_SPACE);
-        sb.append(STR_Z);
+        sb.append(" ");
+        sb.append("z:");
         sb.append(rightJust(String.valueOf(z), 3, false));
-        sb.append(STR_SPACE);
+        sb.append(" ");
 
-        sb.append(STR_R);
+        sb.append("r:");
         sb.append(rightJust(String.valueOf(range), 4, true));
-        sb.append(STR_SPACE);
-        sb.append(STR_B);
+        sb.append(" ");
+        sb.append("b:");
         sb.append(rightJust(String.valueOf(bearing), 3, false));
-        sb.append(STR_SPACE);
+        sb.append(" ");
 
-        sb.append(STR_LOW_S);
+        sb.append("s:");
         sb.append(rightJust(String.valueOf(speed), 5, true));
-        sb.append(STR_SPACE);
-        sb.append(STR_H);
+        sb.append(" ");
+        sb.append("h:");
         sb.append(rightJust(String.valueOf(heading), 3, false));
-        sb.append(STR_SPACE);
-        sb.append(STR_STATUS_S);
+        sb.append(" ");
+        sb.append("S:");
         sb.append(status);
 
         return sb.toString();
@@ -306,7 +291,7 @@ public class MUUnitInfo extends Object implements Comparable {
             StringBuffer sb = new StringBuffer(l);
 
             for (int i = 0; i < w - l.length(); i++)
-                sb.append(STR_SPACE);
+                sb.append(" ");
 
             return sb.toString();
         }
@@ -337,7 +322,7 @@ public class MUUnitInfo extends Object implements Comparable {
             StringBuffer sb = new StringBuffer(l);
 
             for (int i = 0; i < w - l.length(); i++)
-                sb.insert(0, STR_SPACE);
+                sb.insert(0, " ");
 
             return sb.toString();
         }
