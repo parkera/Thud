@@ -23,7 +23,7 @@ import java.io.*;
  * @version 1.0, 11.16.01
  */
 
-public class MUConnection implements Runnable {
+public class MUConnection extends Thread {
 
     
     /**
@@ -108,17 +108,12 @@ public class MUConnection implements Runnable {
      * Checks to see if there is new input that we should store here. If so, it puts it in the StringBuffer.
      */
     public void run()
-    {
-        String	line;
-        boolean	done = false;
-        byte	readChar;
-        
+    {        
         while (go)
         {
             try
             {
-                line = rd.readLine();
-                handler.parseLine(line);
+                handler.queueLine(rd.readLine());
             }
             catch (IOException ioe)
             {

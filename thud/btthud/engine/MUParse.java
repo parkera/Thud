@@ -23,7 +23,7 @@ import java.util.*;
 
 import btthud.util.*;
 
-public class MUParse {
+public class MUParse implements Runnable {
 
     // Variables
     JTextPane				textPane = null;
@@ -36,6 +36,11 @@ public class MUParse {
     int						hudInfoMinorVersion = 0;
 
     String					sessionKey;
+
+    LinkedList				queue;
+
+    boolean					go;
+    private Thread			parseThread = null;
     
     // Constructor
     public MUParse(JTextPane textPane, MUData data, BulkStyledDocument doc, MUPrefs prefs)
@@ -45,6 +50,14 @@ public class MUParse {
         this.data = data;
         this.doc = doc;
         this.prefs = prefs;
+
+        // Setup our queue of strings
+        queue = new LinkedList();
+
+        go = true;
+        
+        // Start the thread
+        start();
     }
     
     // Methods
@@ -88,12 +101,21 @@ public class MUParse {
     }
 
     // -------------------------------------------------------
+
+    /**
+      * Add a line to the list of Strings that we need to parse.
+      */
+    public void queueLine(String l)
+    {
+        // Add it to the end of the list, so strings come in order
+        queue.addLast(l);
+    }
     
     /**
      * Check to see if a line needs to be matched, then insert it into the document.
      * @param l The line we are parsing
      */
-    public void parseLine(String l)
+    protected void parseLine(String l)
     {
         // Don't output if we get a match
         boolean							matched = false;
@@ -718,5 +740,37 @@ public class MUParse {
         //w.damageType = st.nextToken();
 
         MUUnitInfo.newWeapon(w);
+    }
+
+    // --------------------------------------------
+
+    public void run()
+    {
+        while (go)
+        {
+            if (queue.size() != 0)
+            {
+                // Parse our line, then remove it from the queue
+                parseLine((String) queue.getFirst());
+                queue.removeFirst();
+            }
+        }
+    }
+
+    /**
+     * Start the MUParse thread
+     */
+    public void start()
+    {
+        if (parseThread == null)
+        {
+            parseThread = new Thread(this, "MUParse");
+            parseThread.start();
+        }
+    }
+    
+    public void pleaseStop()
+    {
+        go = false;
     }
 }
