@@ -704,98 +704,100 @@ public class MUUnitInfo extends Object implements Comparable {
       * Return the index in an array for a specific section.
       * @param s A string representation of the section we're looking for.
       */
-    static public int indexForSection(String s)
+    static public int indexForSection(String sec)
     {
-        // TODO: Rearrange so most commonly used are at top
-        if (s.equals("A"))
+        // I could have assumed the incoming string is intern()ed but I thought it was poor style... so I'll do it here
+        String			s = sec.intern();
+        
+        if (s == "A")
             return A;
-        if (s.equals("AS"))
+        if (s == "AS")
             return AS;
-        if (s.equals("C"))
+        if (s == "C")
             return C;
-        if (s.equals("CT"))
+        if (s == "CT")
             return CT;
-        if (s.equals("CTr"))
+        if (s == "CTr")
             return CTr;
-        if (s.equals("E"))
+        if (s == "E")
             return E;
-        if (s.equals("F"))
+        if (s == "F")
             return F;
-        if (s.equals("FLLr"))
+        if (s == "FLLr")
             return FLLr;
-        if (s.equals("FLS"))
+        if (s == "FLS")
             return FLS;
-        if (s.equals("FRLr"))
+        if (s == "FRLr")
             return FRLr;
-        if (s.equals("FRS"))
+        if (s == "FRS")
             return FRS;
-        if (s.equals("FS"))
+        if (s == "FS")
             return FS;
-        if (s.equals("H"))
+        if (s == "H")
             return H;
-        if (s.equals("Hr"))
+        if (s == "Hr")
             return Hr;
-        if (s.equals("LA"))
+        if (s == "LA")
             return LA;
-        if (s.equals("LAr"))
+        if (s == "LAr")
             return LAr;
-        if (s.equals("LL"))
+        if (s == "LL")
             return LL;
-        if (s.equals("LLr"))
+        if (s == "LLr")
             return LLr;
-        if (s.equals("LRW"))
+        if (s == "LRW")
             return LRW;
-        if (s.equals("LS"))
+        if (s == "LS")
             return LS;
-        if (s.equals("LT"))
+        if (s == "LT")
             return LT;
-        if (s.equals("LTr"))
+        if (s == "LTr")
             return LTr;
-        if (s.equals("LW"))
+        if (s == "LW")
             return LW;
-        if (s.equals("N"))
+        if (s == "N")
             return N;
-        if (s.equals("R"))
+        if (s == "R")
             return R;
-        if (s.equals("RA"))
+        if (s == "RA")
             return RA;
-        if (s.equals("RAr"))
+        if (s == "RAr")
             return RAr;
-        if (s.equals("RL"))
+        if (s == "RL")
             return RL;
-        if (s.equals("RLr"))
+        if (s == "RLr")
             return RLr;
-        if (s.equals("RLS"))
+        if (s == "RLS")
             return RLS;
-        if (s.equals("RRS"))
+        if (s == "RRS")
             return RRS;
-        if (s.equals("RRW"))
+        if (s == "RRW")
             return RRW;
-        if (s.equals("RS"))
+        if (s == "RS")
             return RS;
-        if (s.equals("RT"))
+        if (s == "RT")
             return RT;
-        if (s.equals("RTr"))
+        if (s == "RTr")
             return RTr;
-        if (s.equals("RW"))
+        if (s == "RW")
             return RW;
-        if (s.equals("S1"))
+        if (s == "S1")
             return S1;
-        if (s.equals("S2"))
+        if (s == "S2")
             return S2;
-        if (s.equals("S3"))
+        if (s == "S3")
             return S3;
-        if (s.equals("S4"))
+        if (s == "S4")
             return S4;
-        if (s.equals("S5"))
+        if (s == "S5")
             return S5;
-        if (s.equals("S6"))
+        if (s == "S6")
             return S6;
-        if (s.equals("S7"))
+        if (s == "S7")
             return S7;
-        if (s.equals("S8"))
+        if (s == "S8")
             return S8;
-        if (s.equals("T"))
+        if (s == "T")
             return T;
 
         // Default
