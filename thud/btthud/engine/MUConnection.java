@@ -10,6 +10,7 @@
 package btthud.engine;
 
 import btthud.ui.Thud;
+import btthud.util.LineHolder;
 
 import java.util.*;
 import java.net.*;
@@ -31,7 +32,7 @@ public class MUConnection extends Thread {
      */
     Socket			conn = null;
     String			host = null;
-    MUParse			handler = null;
+    //MUParse			handler = null;
     Thud			errorHandler = null;
     int				port;
     BufferedReader	rd;
@@ -41,6 +42,8 @@ public class MUConnection extends Thread {
     boolean			go = true;
     
     private Thread	connThread = null;
+
+    LineHolder		lh = null;
 
     // ---------------------------------------------------------
     
@@ -52,11 +55,12 @@ public class MUConnection extends Thread {
      * @see check
      * @see endConnection
      */
-    public MUConnection(String host, int port, MUParse handler, Thud errorHandler) throws java.net.UnknownHostException, java.io.IOException
+    public MUConnection(LineHolder lh, String host, int port, Thud errorHandler) throws java.net.UnknownHostException, java.io.IOException
     {
+        this.lh = lh;
         this.host = host;
         this.port = port;
-        this.handler = handler;
+        //this.handler = handler;
         this.errorHandler = errorHandler;
         
         try
@@ -113,7 +117,8 @@ public class MUConnection extends Thread {
         {
             try
             {
-                handler.queueLine(rd.readLine());
+                //handler.queueLine(rd.readLine());
+                lh.put(rd.readLine());
             }
             catch (IOException ioe)
             {

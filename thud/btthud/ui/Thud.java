@@ -86,8 +86,11 @@ public class Thud extends JFrame implements  ActionListener
     BulkStyledDocument		bsd;
 
     boolean					connected = false;
+
+    LineHolder				lh = null;
     MUConnection 			conn = null;
     MUParse					parse = null;
+    
     MUData					data = null;
     MUContactList			conList = null;
     MUTacticalMap			tacMap = null;
@@ -574,12 +577,13 @@ public class Thud extends JFrame implements  ActionListener
         {
             // Setup some of the helper classes
             data = new MUData();
-            parse = new MUParse(textPane, data, bsd, prefs);
 
+            lh = new LineHolder();
+            parse = new MUParse(lh, textPane, data, bsd, prefs);
             parse.messageLine("*** Connecting... ***");
             
             // Setup the connection
-            conn = new MUConnection(host, port, parse, this);
+            conn = new MUConnection(lh, host, port, this);
 
             // Setup the rest of the helper classes
             conList = new MUContactList(conn, data, prefs);

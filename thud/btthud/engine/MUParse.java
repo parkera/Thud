@@ -37,22 +37,20 @@ public class MUParse implements Runnable {
 
     String					sessionKey;
 
-    LinkedList				queue;
-
     boolean					go;
     private Thread			parseThread = null;
+
+    LineHolder				lh = null;
     
     // Constructor
-    public MUParse(JTextPane textPane, MUData data, BulkStyledDocument doc, MUPrefs prefs)
+    public MUParse(LineHolder lh, JTextPane textPane, MUData data, BulkStyledDocument doc, MUPrefs prefs)
     {
         // Init here
+        this.lh = lh;
         this.textPane = textPane;
         this.data = data;
         this.doc = doc;
         this.prefs = prefs;
-
-        // Setup our queue of strings
-        queue = new LinkedList();
 
         go = true;
         
@@ -101,17 +99,6 @@ public class MUParse implements Runnable {
     }
 
     // -------------------------------------------------------
-
-    /**
-      * Add a line to the list of Strings that we need to parse.
-      */
-    public void queueLine(String l)
-    {
-        // Add it to the end of the list, so strings come in order
-        synchronized (queue) {
-            queue.addLast(l);
-        }
-    }
     
     /**
      * Check to see if a line needs to be matched, then insert it into the document.
@@ -731,17 +718,9 @@ public class MUParse implements Runnable {
         while (go)
         {
             String			l = null;
-            
-            synchronized (queue)
-            {
-                if (queue.size() != 0)
-                {
-                    // Parse our line, then remove it from the queue
-                    l = (String) queue.getFirst();
-                    queue.removeFirst();
-                }
-            }
 
+            l = lh.get();
+            
             if (l != null)
                 parseLine(l);
         }
