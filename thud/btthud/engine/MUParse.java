@@ -551,8 +551,7 @@ public class MUParse {
      */
     public void parseHudInfoTD(String l)
     {
-        // Just need to notify our data object that some map data has changed
-        data.setMapChanged(true);
+        // Not much to do here
     }
     
     /**
