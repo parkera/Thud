@@ -1273,13 +1273,14 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         int						nextStartsAt = 10;
         int						spacingDiff = 15;
 
+        g.setFont(smallFont);
+        
         g.setColor(Color.black);
         g.fill(barRect);
         g.setColor(Color.lightGray);
         g.drawLine(barRect.x, barRect.y, barRect.width, barRect.y);
 
         // Zoom buttons
-        g.setFont(smallFont);
         g.setColor(Color.white);
         g.drawString("-", nextStartsAt, barRect.y + 12);
         nextStartsAt += spacingDiff;
@@ -1321,7 +1322,6 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         tempString = "[" + data.myUnit.id + "] " + data.myUnit.name + " (" + data.myUnit.ref + ")" + " S:" + data.myUnit.status;
         tempRect = smallFont.getStringBounds(tempString, frc);
 
-        g.setFont(smallFont);
         g.setColor(Color.white);
         g.drawString(tempString, nextStartsAt, barRect.y + 11);
         nextStartsAt += tempRect.getWidth() + spacingDiff;
@@ -1337,7 +1337,6 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         g.setColor(data.myUnit.colorForPercent(armorLeft));
         tempString = armorLeft + "% / ";
         tempRect = smallFont.getStringBounds(tempString, frc);
-        g.setFont(smallFont);
         g.drawString(tempString, nextStartsAt, barRect.y + 11);
         nextStartsAt += tempRect.getWidth();	// Don't put in spacing here, the space is there in the string
 
@@ -1346,9 +1345,21 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         g.setColor(data.myUnit.colorForPercent(internalLeft));
         tempString = internalLeft + "%";
         tempRect = smallFont.getStringBounds(tempString, frc);
-        g.setFont(smallFont);
         g.drawString(tempString, nextStartsAt, barRect.y + 11);
         nextStartsAt += tempRect.getWidth() + spacingDiff;
+
+        // Sep
+        g.setColor(Color.darkGray);
+        g.drawLine(nextStartsAt, barRect.y + 1, nextStartsAt, barRect.y + barHeight);
+        g.setColor(Color.black);
+        nextStartsAt += spacingDiff;
+
+        // Location information
+        tempString = "Loc: " + data.myUnit.x + ", " + data.myUnit.y + ", " + data.myUnit.z;
+        tempRect = smallFont.getStringBounds(tempString, frc);
+        g.setColor(Color.white);
+        g.drawString(tempString, nextStartsAt, barRect.y + 11);
+        nextStartsAt += tempRect.getWidth();	// Don't put in spacing here, the space is there in the string
         
         // Reset transform
         g.setTransform(oldTrans);
