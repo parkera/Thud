@@ -158,8 +158,8 @@ public class HexShape implements Shape {
     {
         float		xoffset, yoffset;
 
-        xoffset = l + (x * (w + l));			// initial offset of l, then add (w + l) * desired_x_coord...
-        yoffset = (y * h);
+        xoffset = l + ((float)x * (w + l));			// initial offset of l, then add (w + l) * desired_x_coord...
+        yoffset = ((float)y * h);
 
         if (x % 2 == 0)
             yoffset += (h / 2.0f);

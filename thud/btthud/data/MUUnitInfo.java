@@ -44,7 +44,8 @@ public class MUUnitInfo extends Object implements Comparable {
     public String		status = " ";
     public float		range, speed, verticalSpeed;
     public int			x, y, z;
-    public int			heading, bearing, jumpHeading;
+    public int			heading, desiredHeading, bearing, jumpHeading;
+    public int			turretHeading;
     public float		rangeToCenter;
     public int			bearingToCenter;
 
@@ -151,6 +152,15 @@ public class MUUnitInfo extends Object implements Comparable {
                 " Friend:" + String.valueOf(friend));
     }
 
+    public boolean isTank()
+    {
+        if (type.equals("H") || type.equals("T") || type.equals("W") ||
+            type.equals("N") || type.equals("Y") || type.equals("U"))
+            return true;
+        else
+            return false;
+    }
+    
     public boolean isMech()
     {
         if (type.equals("B") || type.equals("Q"))
@@ -199,6 +209,11 @@ public class MUUnitInfo extends Object implements Comparable {
     public boolean isTarget()
     {
         return target;
+    }
+
+    public boolean isJumping()
+    {
+        return jumping;
     }
     
     public void expireMore()

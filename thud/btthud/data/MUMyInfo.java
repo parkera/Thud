@@ -13,12 +13,10 @@ import java.util.*;
 
 public class MUMyInfo extends MUUnitInfo {
 
-    public int			desiredHeading;
     public float		desiredSpeed, desiredVerticalSpeed;
 
     public int			heat, heatDissipation, heatSinks;
 
-    public int			turretHeading;
     public int			fuel;
 
     public float		walkSpeed, runSpeed, backSpeed, verticalSpeed;

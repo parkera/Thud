@@ -74,6 +74,11 @@ public class MUMapComponent extends JComponent implements MouseListener
 
     static final int		TOTAL_TERRAIN = 14;
 
+    static final int		HEADING_NORMAL = 0;
+    static final int		HEADING_DESIRED = 1;
+    static final int		HEADING_JUMP = 2;
+    static final int		HEADING_TURRET = 3;
+    
     // There should be the same number of items in this array as TOTAL_TERRAIN
     private	char			terrainTypes[] = {'?', '.', '~', '`', '"', '^', '%', '@', '#', '&', '=', ':', '-', '+'};
     private BufferedImage	hexImages[][] = new BufferedImage[TOTAL_TERRAIN][10];			// One for each hex type and elevation
@@ -388,9 +393,16 @@ public class MUMapComponent extends JComponent implements MouseListener
         unitPt.setLocation((float) bounds.width / 2.0f - unitXOffset, (float) bounds.height / 2.0f - unitYOffset);
 
         // Draw our own unit...
-        drawHeading(g, unitPt, data.myUnit.heading, data.myUnit.speed, false, false);
+
+        drawHeading(g, unitPt, data.myUnit, HEADING_NORMAL);
         if (data.myUnit.heading != data.myUnit.desiredHeading)
-            drawHeading(g, unitPt, data.myUnit.desiredHeading, data.myUnit.speed, true, false);
+            drawHeading(g, unitPt, data.myUnit, HEADING_DESIRED);
+        if (data.myUnit.isTank())
+            drawHeading(g, unitPt, data.myUnit, HEADING_TURRET);
+        // Limitations in hudinfo mean we don't know our own jump heading... when hudinfo is updated and MUParse is updated we can draw this
+        //if (data.myUnit.isJumping())
+        //    drawHeading(g, unitPt, data.myUnit, HEADING_JUMP);
+        
         drawIDBox(g, data.myUnit, unitPt, true, false, null);
     }
     
@@ -462,7 +474,11 @@ public class MUMapComponent extends JComponent implements MouseListener
             conPoint.setLocation(realHex.getX() + ufcOffsetX,
                                  realHex.getY() + ufcOffsetY);
         
-            drawHeading(g, conPoint, unit.heading, unit.speed, false, unit.isDestroyed());
+            drawHeading(g, conPoint, unit, HEADING_NORMAL);
+            if (unit.isJumping())
+                drawHeading(g, conPoint, unit, HEADING_JUMP);
+            // Limitations in hudinfo keep us from knowing the turret heading of enemy contacts, or we could draw that as well
+            
             // Draw box for contact ID
             // last 3 bools: friend, expired, target -- should get from contact data
             drawIDBox(g, unit, conPoint, false, false, null);
@@ -1093,20 +1109,49 @@ public class MUMapComponent extends JComponent implements MouseListener
      * along the side and top.
      * @param g The graphics context into which we are drawing
      * @param pt The point at which we are drawing
-     * @param head The heading in degrees
-     * @param speed The speed in kph
-     * @param h The height of the hex (for scaling purposes)
-     * @param desired True if this line represents a desired heading
-     * @param destroyed True if this unit is destroyed
+     * @param u The unit we're dealing with
+     * @param type Which type of heading to draw
      */
     
-    public void drawHeading(Graphics2D g, Point2D pt, int heading, double speed, boolean desired, boolean destroyed)
+    public void drawHeading(Graphics2D g, Point2D pt, MUUnitInfo u, int type)
     {
         AffineTransform		trans = new AffineTransform();
         AffineTransform		oldTrans = g.getTransform();
-        double				speedDivisor = 32.25;			// 32.25 = 3 MP, 10.75 = 1 MP
-        int					lineLength = (int) (h * ((speed == 0 ? speedDivisor : speed) / speedDivisor));
-        double				headingRad = ((float) heading / 180) * PI + PI;
+
+        float				speedDivisor = 32.25f;			// 32.25 = 3 MP, 10.75 = 1 MP
+        int					lineLength = h / (int) speedDivisor;
+
+        int					whichHeading;
+        double				headingRad;
+
+        if (type == HEADING_NORMAL)
+        {
+            whichHeading = u.heading;
+            if (u.isDestroyed())
+                g.setColor(Color.lightGray);
+            else
+                g.setColor(Color.black);
+        }
+        else if (type == HEADING_DESIRED)
+        {
+            whichHeading = u.desiredHeading;
+            g.setColor(Color.blue);
+        }
+        else if (type == HEADING_JUMP)
+        {
+            whichHeading = u.jumpHeading;
+            g.setColor(Color.green);
+        }
+        else if (type == HEADING_TURRET)
+        {
+            whichHeading = (u.heading + u.turretHeading) + 180;
+            g.setColor(Color.red);
+        }
+        else
+            return;			// No heading, or done, or something
+            
+        headingRad = ((float) whichHeading / 180) * PI + PI;
+        lineLength = (int) (h * ((u.speed == 0 ? speedDivisor : u.speed) / speedDivisor));
         
         // Set up our transformation
         trans.concatenate(g.getTransform());
@@ -1117,18 +1162,12 @@ public class MUMapComponent extends JComponent implements MouseListener
         g.setTransform(trans);
         
         // And finally, draw it
-        if (destroyed)
-            g.setColor(Color.lightGray);
-        else if (desired)
-            g.setColor(Color.blue);
-        else
-            g.setColor(Color.black);
 
         g.drawLine(0, 0, 0, lineLength);
         g.setColor(Color.white);
         g.drawLine(1, 0, 1, lineLength);
         g.drawLine(-1, 0, -1, lineLength);
-        
+
         // Reset the transformation
         g.setTransform(oldTrans);
     }
