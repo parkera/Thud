@@ -50,36 +50,36 @@ public class MUParse implements Runnable {
     // Hopefully it will also reduce the number of temporary Strings we have floating around as well
 
     // Hudinfo commands/subcommands
-    static final String		STR_GS = new String("GS").intern();
-    static final String		STR_C = new String("C").intern();
-    static final String		STR_T = new String("T").intern();
-    static final String		STR_TS = new String("S#").intern();
-    static final String		STR_TL = new String("L#").intern();
-    static final String		STR_TD = new String("D#").intern();
-    static final String		STR_SGI = new String("SGI").intern();
-    static final String		STR_AS = new String("AS").intern();
-    static final String		STR_OAS = new String("OAS").intern();
-    static final String		STR_KEY = new String("KEY").intern();
-    static final String		STR_WL = new String("WL").intern();
-    static final String		STR_WE = new String("WE").intern();
+    static final String		STR_GS = "GS";
+    static final String		STR_C = "C";
+    static final String		STR_T = "T";
+    static final String		STR_TS = "S#";
+    static final String		STR_TL = "L#";
+    static final String		STR_TD = "D#";
+    static final String		STR_SGI = "SGI";
+    static final String		STR_AS = "AS";
+    static final String		STR_OAS = "OAS";
+    static final String		STR_KEY = "KEY";
+    static final String		STR_WL = "WL";
+    static final String		STR_WE = "WE";
 
     // Contact sensors
-    static final String		STR_PS = new String("PS").intern();
-    static final String		STR_P = new String("P").intern();
-    static final String		STR_S = new String("S").intern();
+    static final String		STR_PS = "PS";
+    static final String		STR_P = "P";
+    static final String		STR_S = "S";
     
     // Misc
-    static final String		STR_DASH = new String("-").intern();
-    static final String		STR_COLON = new String(":").intern();
-    static final String		STR_SPACE = new String(" ").intern();
-    static final String		STR_COMMA = new String(",").intern();
-    static final String		STR_PERIOD = new String(".").intern();
-    
-    static final String		STR_DONE = new String("Done").intern();
-    static final String		STR_UNKNOWN = new String("???").intern();
-    static final String		STR_SHUTDOWN = new String("Reactor is not online").intern();
-    static final String		STR_DESTROYED = new String("You are destroyed!").intern();
-    static final String		STR_NOT_BT_UNIT = new String("Not in a BattleTech unit").intern();
+    static final String		STR_DASH = "-";
+    static final String		STR_COLON = ":";
+    static final String		STR_SPACE = " ";
+    static final String		STR_COMMA = ",";
+    static final String		STR_PERIOD = ".";
+
+    static final String		STR_DONE = "Done";
+    static final String		STR_UNKNOWN = "???";
+    static final String		STR_SHUTDOWN = "Reactor is not online";
+    static final String		STR_DESTROYED = "You are destroyed!";
+    static final String		STR_NOT_BT_UNIT = "Not in a BattleTech unit";
 
     // ---------------------
     
@@ -271,6 +271,7 @@ public class MUParse implements Runnable {
 
         return false;
     }
+    
     public boolean matchHudInfoCommand(String l)
     {
         if (l.startsWith(hudInfoStart))

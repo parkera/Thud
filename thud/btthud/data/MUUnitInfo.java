@@ -115,6 +115,13 @@ public class MUUnitInfo extends Object implements Comparable {
     static final int	S8 = 44;
     static final int	T = 45;
 
+    static final String	sectionNames[] = {
+        "NO", "A", "AS", "C", "CT", "CTr", "E", "F", "FLLr", "FLS", "FLRr",
+        "FRS", "FS", "H", "Hr", "LA", "LAr", "LL", "LLr", "LRW", "LS",
+        "LT", "LTr", "LW", "N", "R", "RA", "RAr", "RL", "RLr", "RLS",
+        "RRS", "RRW", "RS", "RT", "RTr", "RW", "S1", "S2", "S3", "S4",
+        "S5", "S6", "S7", "S8", "T"};
+
     static final int	TOTAL_SECTIONS = 46;
 
     static final int	TYPE_UNKNOWN = 0;
@@ -142,7 +149,7 @@ public class MUUnitInfo extends Object implements Comparable {
         turretHeading = 180;
     }
 
-    // For debugging purposes only (pretty inefficient)
+    // For debugging purposes only
     public String toString()
     {
         String	out = new String("\nMUUnitInfo: ");
@@ -229,19 +236,19 @@ public class MUUnitInfo extends Object implements Comparable {
       */
 
     // Storing some strings for efficiency here
-    static final String		STR_P = new String("P").intern();
-    static final String		STR_S = new String("S").intern();
-    static final String		STR_SPACE = new String(" ").intern();
-    static final String		STR_L_BRACKET = new String("[").intern();
-    static final String		STR_R_BRACKET = new String("]").intern();
-    static final String		STR_X = new String("x:").intern();
-    static final String		STR_Y = new String("y:").intern();
-    static final String		STR_Z = new String("z:").intern();
-    static final String		STR_R = new String("r:").intern();
-    static final String		STR_B = new String("b:").intern();
-    static final String		STR_LOW_S = new String("s:").intern();
-    static final String		STR_H = new String("h:").intern();
-    static final String		STR_STATUS_S = new String("S:").intern();
+    static final String		STR_P = "P";
+    static final String		STR_S = "S";
+    static final String		STR_SPACE = " ";
+    static final String		STR_L_BRACKET = "[";
+    static final String		STR_R_BRACKET = "]";
+    static final String		STR_X = "x:";
+    static final String		STR_Y = "y:";
+    static final String		STR_Z = "z:";
+    static final String		STR_R = "r:";
+    static final String		STR_B = "b:";
+    static final String		STR_LOW_S = "s:";
+    static final String		STR_H = "h:";
+    static final String		STR_STATUS_S = "S:";
     
     public String makeContactString()
     {
@@ -299,7 +306,7 @@ public class MUUnitInfo extends Object implements Comparable {
             StringBuffer sb = new StringBuffer(l);
 
             for (int i = 0; i < w - l.length(); i++)
-                sb.append(" ");
+                sb.append(STR_SPACE);
 
             return sb.toString();
         }
@@ -330,7 +337,7 @@ public class MUUnitInfo extends Object implements Comparable {
             StringBuffer sb = new StringBuffer(l);
 
             for (int i = 0; i < w - l.length(); i++)
-                sb.insert(0, " ");
+                sb.insert(0, STR_SPACE);
 
             return sb.toString();
         }
@@ -412,7 +419,6 @@ public class MUUnitInfo extends Object implements Comparable {
     public int hashCode()
     {
         // Use the hash code for the id
-        // This uses exponents and is probably grossly inefficient, but it'll do for now
         return id.hashCode();
     }
 
@@ -620,7 +626,7 @@ public class MUUnitInfo extends Object implements Comparable {
     }
 
     /**
-        * Returns true if this unit has the possibility of having a turret (note: doesnt' check to see if it actually does have one)
+        * Returns true if this unit has the possibility of having a turret (note: doesn't check to see if it actually does have one)
      */
     public boolean canHaveTurret()
     {
