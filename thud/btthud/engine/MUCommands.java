@@ -71,6 +71,7 @@ public class MUCommands
 
     public void endTimers()
     {
-        timer.cancel();
+        if (timer != null)
+            timer.cancel();
     }
 }
