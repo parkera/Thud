@@ -61,6 +61,10 @@ public class MUXHex
     public int terrain() {
         return terrain;
     }
+    
+    public char terrainChar() {
+        return MUXHex.terrainForId(terrain);
+    }
 
     public int elevation() {
         return elevation;

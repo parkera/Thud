@@ -779,7 +779,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         
         // Update the inspector
         if (map.validHex(hex))
-            mapper.updateInspector(hex);
+            mapper.updateInspector(hex, map.getHex(hex));
 
     }
     
@@ -792,7 +792,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
     public void mouseExited(MouseEvent e)
     {
         // Clear the inspector
-        mapper.updateInspector(null);
+        mapper.updateInspector(null, null);
     }
 
     public void mousePressed(MouseEvent e) {}

@@ -49,7 +49,7 @@ public class InspectorPalette extends JInternalFrame {
         lHexLabel = new JLabel("Hex: ");
         contentPane.add(lHexLabel, BorderLayout.WEST);
         
-        lHex = new JLabel("                ");
+        lHex = new JLabel("                    ");
         contentPane.add(lHex, BorderLayout.CENTER);
 
         pack();
@@ -60,11 +60,11 @@ public class InspectorPalette extends JInternalFrame {
 
     // ----------------------------
 
-    public void updateLocation(Point p)
+    public void updateLocation(Point p, MUXHex h)
     {
-        if (p == null)
-            lHex.setText("             ");
+        if (h == null || p == null)
+            lHex.setText("                    ");
         else
-            lHex.setText("(" + (int) p.getX() + "," + (int) p.getY() + ")");
+            lHex.setText("(" + (int) p.getX() + "," + (int) p.getY() + ") " + h.terrainChar() + " " + h.elevation());
     }
 }

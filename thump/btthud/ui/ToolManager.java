@@ -193,9 +193,9 @@ public class ToolManager {
 
     // ---------------------
 
-    public void updateInspector(Point h)
+    public void updateInspector(Point p, MUXHex h)
     {
-        inspector.updateLocation(h);
+        inspector.updateLocation(p, h);
     }
     
     // ---------------------

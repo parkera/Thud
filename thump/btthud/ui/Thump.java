@@ -526,9 +526,9 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
     /**
       * Reset the inspector palette
       */
-    public void updateInspector(Point h)
+    public void updateInspector(Point p, MUXHex h)
     {
-        tools.updateInspector(h);
+        tools.updateInspector(p, h);
     }
 
     // -----------------------------------------
