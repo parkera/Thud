@@ -151,8 +151,8 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         terrainColors[MUHex.SMOKE_OVER_WATER] = Color.lightGray;
         terrainColors[MUHex.UNKNOWN] = Color.black;
         
-        mainFontSize = 10;
-        contactFontSize = 10;
+        mainFontSize = 12;
+        contactFontSize = 12;
         smallFontSize = 9;
         hexNumberFontSize = 9;
         infoFontSize = 10;
