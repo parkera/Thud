@@ -1,4 +1,4 @@
-1.0b2
+1.0b2 May 31, 2003
 New Features:
 - Added 'Inspector' palette which shows various information about whatever hex is currently under the mouse
 

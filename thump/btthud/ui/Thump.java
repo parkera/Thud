@@ -119,12 +119,12 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         miPageSetup = new JMenuItem("Page Setup...");
         miPageSetup.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P,
                                                           java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        fileMenu.add(miPageSetup).setEnabled(true);
+        fileMenu.add(miPageSetup).setEnabled(false);	// broken right now
         miPageSetup.addActionListener(this);
 
         miPrint = new JMenuItem("Print...");
         miPrint.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        fileMenu.add(miPrint).setEnabled(true);
+        fileMenu.add(miPrint).setEnabled(false);		// broken right now
         miPrint.addActionListener(this);
         
         fileMenu.addSeparator();
@@ -312,8 +312,8 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
             miSaveAs.setEnabled(true);
             miClose.setEnabled(true);
 
-            miPageSetup.setEnabled(true);
-            miPrint.setEnabled(true);
+            //miPageSetup.setEnabled(true);
+            //miPrint.setEnabled(true);
 
             miZoomIn.setEnabled(true);
             miZoomOut.setEnabled(true);
@@ -330,8 +330,8 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
             miSaveAs.setEnabled(false);
             miClose.setEnabled(false);
 
-            miPageSetup.setEnabled(false);
-            miPrint.setEnabled(false);
+            //miPageSetup.setEnabled(false);
+            //miPrint.setEnabled(false);
 
             miZoomIn.setEnabled(false);
             miZoomOut.setEnabled(false);
