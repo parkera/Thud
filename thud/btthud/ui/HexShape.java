@@ -20,18 +20,21 @@ public class HexShape implements Shape {
     float		x[] = {0f, 0f, 0f, 0f, 0f, 0f};
     float		y[] = {0f, 0f, 0f, 0f, 0f, 0f};
 
-    float		h;
-    float		tan30 = (float) Math.tan(MUMapComponent.toRadians(30.0f));
-    float		w;
-    float		l;
+    static final float		tan60 = (float) Math.tan(MUMapComponent.toRadians(60.0f));
+    static final float		sin60 = (float) Math.sin(MUMapComponent.toRadians(60.0f));
 
+    float					h = 40;
+    float					w;
+    float					l;
+    
     GeneralPath	gp;
 
     public HexShape(float h)
     {
         this.h = h;
-        w = h / 2f;
-        l = h / 2f * tan30;
+
+        w = -h / (2 * sin60);
+        l = h / (2 * tan60);
 
         gp = new GeneralPath(GeneralPath.WIND_NON_ZERO, 6);
 
@@ -119,13 +122,11 @@ public class HexShape implements Shape {
     public Rectangle getBounds()
     {
         return (gp.getBounds());
-        //return (new Rectangle(0, 0, (int) (x[4] + 1), (int) (y[3] + 1)));
     }
 
     public Rectangle2D getBounds2D()
     {
         return (gp.getBounds2D());
-        //return (new Rectangle2D.Float(0f, 0f, x[4], y[3]));
     }
 
     /**

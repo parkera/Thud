@@ -67,10 +67,12 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     GeneralPath				gp = new GeneralPath();
     HexShape				hexPoly;
 
+    static final float		tan60 = (float) Math.tan(toRadians(60.0f));
+    static final float		sin60 = (float) Math.sin(toRadians(60.0f));
+
     int						h = 40;
-    float					w = h / 2f;
-    static final float		tan30 = (float) Math.tan(toRadians(30.0f)); //0.5773502692;
-    float					l = h / 2f * tan30;
+    float					w = h / (2 * sin60);
+    float					l = h / (2 * tan60);
 
     int						myLocX, myLocY;
 
@@ -256,13 +258,13 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     private void changeHeight(int newHeight)
     {
         // Set some variables
-        if (newHeight < 5)
-            h = 5;
+        if (newHeight < 6)
+            h = 6;
         else
             h = newHeight;
-        
-        w = h / 2f;
-        l = h / 2f * tan30;
+
+        w = -h / (2 * sin60);
+        l = h / (2 * tan60);
 
         terrainFont = new Font("Monospaced", Font.PLAIN, h/2 - 2);
 
@@ -277,9 +279,6 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
                 // Get the graphics context for this BufferedImage
                 Graphics2D		g = (Graphics2D) newImage.getGraphics();
-
-                //g.setColor(new Color((float) 1.0, (float) 1.0, (float) 1.0, (float) 0.0));
-                //g.fill(hexPoly.getBounds());
 
                 // Setup the color
                 if (prefs.tacDarkenElev)
