@@ -18,25 +18,16 @@ import javax.swing.event.*;
 import java.lang.*;
 import java.util.*;
 
-// This class handles all of the ANSI-related hacks to make Thud support color and such
-
 public class BulkStyledDocument extends DefaultStyledDocument
 {
 
-    int				mainFontSize = 10;
-    
-    // Inner class for handling parsed strings
-    public class ParsedString
-    {
-        public String		l;
-        public ArrayList	styles;
+    int						fontSize = 10;
+    MutableAttributeSet		attrBase = new SimpleAttributeSet();
+    MutableAttributeSet		thisAttrSet;
 
-        public ParsedString(String l, ArrayList styles)
-        {
-            this.l = l;
-            this.styles = styles;
-        }
-    }
+    MutableAttributeSet		attrPlain;
+    MutableAttributeSet		attrCommand;
+    MutableAttributeSet		attrHudMessage;
 
     // ---------------
     
@@ -44,133 +35,38 @@ public class BulkStyledDocument extends DefaultStyledDocument
     {
         super();
 
-        mainFontSize = fontSize;
-        initStyles();
+        this.fontSize = fontSize;
+
+        newFontSize(fontSize);
     }
 
-    protected void initStyles()
+    public void newFontSize(int fontSize)
     {
-        /*
-        MUX uses these colors:
+        this.fontSize = fontSize;
 
-         f - flash                       i - inverse
-         h - hilite                      n - normal
-
-         x - black foreground            X - black background
-         r - red foreground              R - red background
-         g - green foreground            G - green background
-         y - yellow foreground           Y - yellow background
-         b - blue foreground             B - blue background
-         m - magenta foreground          M - magenta background
-         c - cyan foreground             C - cyan background
-         w - white foreground            W - white background
-         
-         */
-
-        //Initialize some styles.
-        Style def = StyleContext.getDefaultStyleContext().
-        getStyle(StyleContext.DEFAULT_STYLE);
-
-        StyleConstants.setFontSize(def, mainFontSize);
-        StyleConstants.setForeground(def, Color.white);
-        Style regular = addStyle("regular", def);
-
-        // ---------
-        // We don't support colored backgrounds yet
+        // If I want to change the font size of all the text previous to this, I may have
+        // to create a new MutableAttributeSet and setCharacterAttributes for the whole document
+        // For now, I just reset the foreground font size
         
-        Style s = addStyle("black", regular);
-        StyleConstants.setForeground(s, Color.white);
-
-        s = addStyle("red", regular);
-        StyleConstants.setForeground(s, Color.red);
-
-        s = addStyle("green", regular);
-        StyleConstants.setForeground(s, Color.green);
-
-        s = addStyle("yellow", regular);
-        StyleConstants.setForeground(s, Color.yellow);
-
-        s = addStyle("blue", regular);
-        StyleConstants.setForeground(s, Color.blue);
-
-        s = addStyle("magenta", regular);
-        StyleConstants.setForeground(s, Color.magenta);
-
-        s = addStyle("cyan", regular);
-        StyleConstants.setForeground(s, Color.cyan);
-
-        s = addStyle("white", regular);
-        StyleConstants.setForeground(s, Color.white);
-
-        s = addStyle("regularbold", regular);	// aka highlight
-        StyleConstants.setForeground(s, Color.white);
-        StyleConstants.setBold(s, true);
-
-        s = addStyle("bold", regular);
-        StyleConstants.setForeground(s, Color.white);
-        StyleConstants.setBold(s, true);
-
-        s = addStyle("blackbold", regular);
-        StyleConstants.setForeground(s, Color.black);
-        //StyleConstants.setForeground(s, Color.white);
-        StyleConstants.setBold(s, true);
-
-        s = addStyle("redbold", regular);
-        StyleConstants.setForeground(s, Color.red);
-        StyleConstants.setBold(s, true);
-
-        s = addStyle("greenbold", regular);
-        StyleConstants.setForeground(s, Color.green);
-        StyleConstants.setBold(s, true);
-
-        s = addStyle("yellowbold", regular);
-        StyleConstants.setForeground(s, Color.yellow);
-        StyleConstants.setBold(s, true);
-
-        s = addStyle("bluebold", regular);
-        StyleConstants.setForeground(s, Color.blue);
-        StyleConstants.setBold(s, true);
-
-        s = addStyle("magentabold", regular);
-        StyleConstants.setForeground(s, Color.magenta);
-        StyleConstants.setBold(s, true);
-
-        s = addStyle("cyanbold", regular);
-        StyleConstants.setForeground(s, Color.cyan);
-        StyleConstants.setBold(s, true);
-
-        s = addStyle("whitebold", regular);
-        StyleConstants.setForeground(s, Color.white);
-        StyleConstants.setBold(s, true);
-
-        s = addStyle("invert", regular);
-        StyleConstants.setBackground(s, Color.white);
-        StyleConstants.setForeground(s, Color.black);
-
-        s = addStyle("invertbold", regular);
-        StyleConstants.setBackground(s, Color.white);
-        StyleConstants.setForeground(s, Color.black);
-        StyleConstants.setBold(s, true);
+        StyleConstants.setFontSize(attrBase, fontSize);				// Default font size...
+        StyleConstants.setForeground(attrBase, Color.white);		// ... and color
         
-        // For HUD messages
-        
-        s = addStyle("hudmessage", regular);
-        StyleConstants.setForeground(s, Color.black);
-        StyleConstants.setBackground(s, Color.white);
+        thisAttrSet = new SimpleAttributeSet(attrBase);
+        attrPlain = new SimpleAttributeSet(attrBase);
+        attrCommand = new SimpleAttributeSet(attrBase);
+        attrHudMessage = new SimpleAttributeSet(attrBase);
 
-        s = addStyle("hudcommand", regular);
-        StyleConstants.setForeground(s, Color.blue);
-        StyleConstants.setBackground(s, Color.black);
+        StyleConstants.setForeground(attrCommand, Color.blue);
+        StyleConstants.setForeground(attrHudMessage, Color.black);
+        StyleConstants.setBackground(attrHudMessage, Color.white);
     }
-
 
     /**
-    * Converts color codes into strings, then inserts them in document
-     * with proper formatting. Then it returns the uncolored string for parsing.
-     * @param l The raw string we want to convert
-     */
+      * Converts color codes into strings, then returns the uncolored string for parsing.
+      * @param l The raw string we want to convert
+      */
 
-    String			style = "regular";
+    // -----------------------
 
     public ParsedString parseString(String l)
     {
@@ -182,22 +78,19 @@ public class BulkStyledDocument extends DefaultStyledDocument
         boolean						done;
 
         ArrayList					styles = new ArrayList();	// we could specify an initial capacity here
-
+        
         try
         {
-            // Debugging - don't covert color codes if we just paste it into the doc
-            //doc.insertString(doc.getLength(), l + "\n", textPane.getStyle("regular"));
-
             while (i < numChars)
             {
-                if (l.charAt(i) == 0x1B)
+                if (l.charAt(i) == 0x1B)	// 0x1B is the ANSI escape code (\033)
                 {
                     // Let's add a string to our document now
                     // (it should have the characteristics of the previous string)
-                    //if (thisStr.length() > 0)	// don't bother adding an empty string
+                    // Don't bother adding an empty string
                     if (i - start > 0)
                     {
-                        styles.add(new StyleRunHolder(style, start, thisStr.length() - start));
+                        styles.add(new StyleRunHolder(new SimpleAttributeSet(thisAttrSet), start, thisStr.length() - start));
                         start += thisStr.length() - start;
                     }
 
@@ -207,38 +100,20 @@ public class BulkStyledDocument extends DefaultStyledDocument
                     // which should start with a sequence of escape codes to tell us what style it's in
                     // We can skip the escape code and the [ to get to the first digit of the first code
 
-                    // some more esoteric styles:
-                    // #define ANSI_INVERSE  "\033[7m"
-                    // #define ANSI_BLINK    "\033[5m"
-                    // #define ANSI_UNDER    "\033[4m"
-
                     parsePos = 2;
                     done = false;
 
                     while (!done)
                     {
-                        int		charCode1 = Character.digit(l.charAt(i + parsePos), 10);
-                        int		charCode2 = (charCode1 == 1 ? -1 : Character.digit(l.charAt(i + parsePos + 1), 10));
-                        if (boldEscapeCode(charCode1))
-                        {
-                            if (!style.endsWith("bold"))
-                                style = style + "bold";
-                        }
-                        else if (normalEscapeCode(charCode1))
-                        {
-                            style = "regular";
-                        }
-                        else if (style.endsWith("bold"))
-                        {
-                            // keep the bold
-                            style = parseEscapeCode(charCode1, charCode2);
-                            style = style + "bold";
-                        }
-                        else
-                        {
-                            // drop the bold
-                            style = parseEscapeCode(charCode1, charCode2);
-                        }
+                        int		charCode1 = Character.digit(l.charAt(i + parsePos), 10);		// (i + parsePos) character, base 10
+                        int		charCode2 = (charCode1 == 1 ? -1 : Character.digit(l.charAt(i + parsePos + 1), 10));  // Next character, base 10, or -1
+
+                        if (ANSIParser.boldEscapeCode(charCode1))			// set ourselves bold
+                            StyleConstants.setBold(thisAttrSet, true);
+                        else if (ANSIParser.normalEscapeCode(charCode1))	// go back to our base attribute set
+                            thisAttrSet = new SimpleAttributeSet(attrBase);
+                        else												// merge our current attributes with what these escape codes say
+                            thisAttrSet.addAttributes(ANSIParser.parseEscapeCode(charCode1, charCode2));
 
                         parsePos++;				// move on to next character... (see below)
                         if (charCode2 != -1)
@@ -268,8 +143,8 @@ public class BulkStyledDocument extends DefaultStyledDocument
 
             // Put the final section of the string into our holder
             if (i - start != 0)
-                styles.add(new StyleRunHolder(style, start, thisStr.length() - start));
-
+                styles.add(new StyleRunHolder(new SimpleAttributeSet(thisAttrSet), start, thisStr.length() - start));
+            
         }
         catch (Exception e)
         {
@@ -278,7 +153,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
 
         return (new ParsedString(thisStr.toString(), styles));
     }
-
+    
     /**
      * Insert a parsed string
      * @param ps The parsed string object
@@ -289,7 +164,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
         {
             // Insert the string into the document
             int 		docLength = getLength();
-            insertString(docLength, ps.l + "\n", getStyle("regular"));
+            insertString(docLength, ps.l + "\n", attrBase);
 
             // Format the string we just inserted
             getWriteLock();
@@ -298,7 +173,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
                 StyleRunHolder		srh = (StyleRunHolder) ps.styles.get(i);
                 setCharacterAttributes(docLength + srh.start,
                                        srh.length,
-                                       getStyle(srh.style),
+                                       srh.attr,
                                        true);
             }
             releaseWriteLock();
@@ -307,124 +182,41 @@ public class BulkStyledDocument extends DefaultStyledDocument
         {
             System.out.println("Error: insertParsedString: " + e);
         }
+        finally
+        {
+            releaseWriteLock();
+        }
     }
 
-    /**
-     * Insert a plain string -- usually a message from the HUD.
-     */
+    // Various methods for inserting pre-styled messages into the main window
+    
     public void insertPlainString(String l)
     {
-        try
-        {
-            insertString(getLength(), l + "\n", getStyle("regular"));
-        }
-        catch (Exception e)
-        {
+        try {
+            insertString(getLength(), l + "\n", attrPlain);
+        } catch (Exception e) {
             System.out.println("Error: insertPlainString: " + e);            
         }
     }
 
     public void insertMessageString(String l)
     {
-        try
-        {
-            insertString(getLength(), l + "\n", getStyle("hudmessage"));
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error: insertPlainString: " + e);
+        try {
+            insertString(getLength(), l + "\n", attrHudMessage);
+        } catch (Exception e) {
+            System.out.println("Error: insertMessageString: " + e);
         }
     }
 
     public void insertCommandString(String l)
     {
-        try
-        {
-            insertString(getLength(), l + "\n", getStyle("hudcommand"));
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error: insertPlainString: " + e);
+        try {
+            insertString(getLength(), l + "\n", attrCommand);
+        } catch (Exception e) {
+            System.out.println("Error: insertCommandString: " + e);
         }
     }
     
-    /**
-     * Check to see if an escape code refers to a bold code
-     */
-    public boolean boldEscapeCode(int charCode1)
-    {
-        if (charCode1 == 1)
-            return true;
-        else
-            return false;
-    }
-
-    /**
-        * Check to see if this is a 'normal' code
-     */
-    public boolean normalEscapeCode(int charCode1)
-    {
-        if (charCode1 == 0)
-            return true;
-        else
-            return false;
-    }
-
-    /**
-        * Parse 2 integers into a style
-     */
-    public String parseEscapeCode(int charCode1, int charCode2)
-    {
-        String style;
-
-        if (charCode1 == 0)				// normal
-        {
-            style = "regular";
-        }
-        else if (charCode1 == 1)		// highlight
-        {
-            style = "bold";
-        }
-        else if (charCode1 == 3)
-        {
-            switch (charCode2)
-            {
-                case 0:
-                    style = "black";
-                    break;
-                case 1:
-                    style = "red";
-                    break;
-                case 2:
-                    style = "green";
-                    break;
-                case 3:
-                    style = "yellow";
-                    break;
-                case 4:
-                    style = "blue";
-                    break;
-                case 5:
-                    style = "magenta";
-                    break;
-                case 6:
-                    style = "cyan";
-                    break;
-                case 7:
-                    style = "white";
-                    break;
-                default:					// dunno what this is....
-                    style = "regular";
-                    break;
-            }
-        }
-        else
-        {
-            style = "regular";
-        } // end of charcode check
-
-        return style;
-    }
     
     /**
      * Get a write lock. Use before calling setCharacterAttributes

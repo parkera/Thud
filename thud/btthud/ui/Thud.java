@@ -395,14 +395,13 @@ public class Thud extends JFrame implements  ActionListener
         aboutBox = new AboutBox();
         textField = new JTextField(80);
         textField.addActionListener(this);
-        //textField.setForeground(Color.white);
-        //textField.setBackground(Color.black);
         textField.setFont(mFont);
         textField.setEnabled(true);
-        //textField.grabFocus();
 
         bsd = new BulkStyledDocument(prefs.mainFontSize);
         textPane = new JTextPane(bsd);
+
+        textPane.setDocument(bsd);
         textPane.setBackground(Color.black);
         textPane.setEditable(false);
         textPane.setFont(mFont);
@@ -432,7 +431,7 @@ public class Thud extends JFrame implements  ActionListener
         // Initilization strings
         bsd.insertPlainString(" *** Thud, (c) 2001-2002 Anthony Parker <asp@mac.com> ***");
         bsd.insertPlainString(" *** bt-thud.sourceforge.net                          ***");
-        bsd.insertPlainString(" *** Version: 1.0b5 (Beta)                            ***");
+        bsd.insertPlainString(" *** Version: 1.0b6 (Beta)                            ***");
         bsd.insertPlainString(" *** Contact Tony @ 3030MUX with questions/comments   ***\n");
         setVisible(true);
     }

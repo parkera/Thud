@@ -103,7 +103,7 @@ public class MUParse {
         
         try
         {
-            BulkStyledDocument.ParsedString	ps = doc.parseString(l);
+            ParsedString	ps = doc.parseString(l);
 
             matched = matchHudInfoCommand(ps.l);
             matchForCommandSending(ps.l);

@@ -8,22 +8,24 @@
 //
 package btthud.util;
 
+import javax.swing.text.*;
+
 public class StyleRunHolder {
 
-    public String		style;
-    public int			start;
-    public int			length;
+    public MutableAttributeSet		attr;
+    public int						start;
+    public int						length;
     
     public StyleRunHolder()
     {
-        style = "regular";
+        attr = new SimpleAttributeSet();
         start = 0;
         length = 0;
     }
 
-    public StyleRunHolder(String style, int start, int length)
+    public StyleRunHolder(MutableAttributeSet attr, int start, int length)
     {
-        this.style = style;
+        this.attr = attr;
         this.start = start;
         this.length = length;
     }
