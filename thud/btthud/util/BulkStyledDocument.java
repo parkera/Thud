@@ -30,8 +30,6 @@ public class BulkStyledDocument extends DefaultStyledDocument
     MutableAttributeSet		attrCommand;
     MutableAttributeSet		attrHudMessage;
 
-    char[]					newlineCharArray = new char[1];
-
     // ---------------
     
     public BulkStyledDocument(int fontSize)
@@ -41,8 +39,6 @@ public class BulkStyledDocument extends DefaultStyledDocument
         this.fontSize = fontSize;
 
         newFontSize(fontSize);
-
-        newlineCharArray[0] = '\n';
     }
 
     public void newFontSize(int fontSize)
