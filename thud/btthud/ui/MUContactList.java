@@ -108,10 +108,12 @@ public class MUContactList extends JFrame
         conExpired.setResolveParent(conRegular);
         StyleConstants.setForeground(conExpired, Color.gray);
 
+        /*
         conDestroyed = new SimpleAttributeSet();
         conDestroyed.setResolveParent(conRegular);
-        StyleConstants.setForeground(conDestroyed, Color.gray);
+        StyleConstants.setForeground(conDestroyed, Color.white);
         StyleConstants.setStrikeThrough(conDestroyed, true);
+        */
         
     }
     
@@ -159,10 +161,9 @@ public class MUContactList extends JFrame
                             elements.add(new DefaultStyledDocument.ElementSpec(conRegular, DefaultStyledDocument.ElementSpec.EndTagType));
                             elements.add(new DefaultStyledDocument.ElementSpec(conRegular, DefaultStyledDocument.ElementSpec.StartTagType));
 
-                            AttributeSet		whichAttrs;
-                            if (unit.isDestroyed())
-                                whichAttrs = conDestroyed;
-                            else if (unit.isOld())
+                            MutableAttributeSet		whichAttrs;
+
+                            if (unit.isOld())
                                 whichAttrs = conExpired;
                             else if (unit.isFriend())
                                 whichAttrs = conFriend;
@@ -173,6 +174,12 @@ public class MUContactList extends JFrame
                             else
                                 whichAttrs = conRegular;
 
+                            if (unit.isDestroyed())
+                            {
+                                StyleConstants.setStrikeThrough(whichAttrs, true);
+                                StyleConstants.setBold(whichAttrs, false);
+                            }
+                            
                             elements.add(new DefaultStyledDocument.ElementSpec(whichAttrs,
                                                                                DefaultStyledDocument.ElementSpec.ContentType,
                                                                                unit.makeContactString().toCharArray(),

@@ -56,10 +56,10 @@ public class MUUnitInfo extends Object implements Comparable {
     
     public boolean		primarySensor = false, secondarySensor = false;
 
-    // After 'expired - oldThreshold' cycles they will turn grey
-    // After 'expired' cycles, they will disappear from the contacts screen
-    int					expired = 10;
-    static final int	oldThreshold = 7;
+    // After 'cyclesLeft - isOldAt' cycles they will turn grey
+    // After 'cyclesLeft' cycles, they will disappear from the contacts screen
+    int					cyclesLeft = 30;
+    static final int	isOldAt = 27;
 
     static public MUWeapon		weapons[] = new MUWeapon[200];		// data that stores info on /all/ weapons ... assume 200 of them for now
     
@@ -145,7 +145,7 @@ public class MUUnitInfo extends Object implements Comparable {
     static final int	TOTAL_MOVETYPES = 15;
 
     // --------------------------
-    
+
     public MUUnitInfo()
     {
         turretHeading = 180;
@@ -199,7 +199,7 @@ public class MUUnitInfo extends Object implements Comparable {
 
     public boolean isExpired()
     {
-        if (expired <= 0)
+        if (cyclesLeft <= 0)
             return true;
         else
             return false;
@@ -207,7 +207,7 @@ public class MUUnitInfo extends Object implements Comparable {
 
     public boolean isOld()
     {
-        if (expired <= oldThreshold)
+        if (cyclesLeft <= isOldAt)
             return true;
         else
             return false;
@@ -230,7 +230,7 @@ public class MUUnitInfo extends Object implements Comparable {
     
     public void expireMore()
     {
-        expired--;
+        cyclesLeft--;
     }
     
     /**

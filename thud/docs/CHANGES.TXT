@@ -7,12 +7,14 @@ Version History:
  
  Note: Due to changes in the preferences file format, your preferences will be reset on starting this version. Sorry. Again.
  
- New Features:
+ New Features / Other Changes:
  
   * A preference to adjust the length of heading/speed indicator lines on contacts on the map. The lower the number, the longer the line.
   * A preference to limit the amount of lines in the scrollback. Keeping this number lower reduces memory usage and speeds up Thud.
   * A new menu with 3 menu items to control the speed of updates that Thud sends. Keep it on Slow to reduce bandwidth usage, crank it to Fast when bad guys show up.
   * Thud now has an option to keep 'old' data instead of overwriting it with 'unknown.' If it 'Erase Unknown Terrain' is set, Thud will overwrite any old terrain and turn it to a black hex if it gets a '?' for it now. This mostly happens underground. If you want to keep a 'backlog' of terrain underground, uncheck this option.
+  * Thud keeps 'expired' contacts around 3 times longer now. 
+  * Thud no longer colors destroyed contacts grey, leaving that color soley for expired contacts. In addition, enemy destroyed contacts will not be displayed in bold any longer. Destroyed contacts are still styled strike-through however.
   
  Bug fixes:
  

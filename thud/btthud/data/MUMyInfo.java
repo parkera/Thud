@@ -36,7 +36,6 @@ public class MUMyInfo extends MUUnitInfo {
     public MUMyInfo()
     {
         friend = true;
-        expired = 5;
         id = "**";
         type = "U";
         ref = " ";
