@@ -30,6 +30,8 @@ public class BulkStyledDocument extends DefaultStyledDocument
     MutableAttributeSet		attrCommand;
     MutableAttributeSet		attrHudMessage;
 
+    char[]					newlineCharArray = new char[1];
+
     // ---------------
     
     public BulkStyledDocument(int fontSize)
@@ -39,6 +41,8 @@ public class BulkStyledDocument extends DefaultStyledDocument
         this.fontSize = fontSize;
 
         newFontSize(fontSize);
+
+        newlineCharArray[0] = '\n';
     }
 
     public void newFontSize(int fontSize)
@@ -47,23 +51,19 @@ public class BulkStyledDocument extends DefaultStyledDocument
 
         StyleConstants.setFontSize(attrBase, fontSize);				// Default font size...
         StyleConstants.setForeground(attrBase, Color.white);		// ... and color
-        
-        thisAttrSet = new SimpleAttributeSet(attrBase);
-        attrPlain = new SimpleAttributeSet(attrBase);
-        attrCommand = new SimpleAttributeSet(attrBase);
-        attrHudMessage = new SimpleAttributeSet(attrBase);
+
+        thisAttrSet = new SimpleAttributeSet();
+        thisAttrSet.setResolveParent(attrBase);
+        attrPlain = new SimpleAttributeSet();
+        attrPlain.setResolveParent(attrBase);
+        attrCommand = new SimpleAttributeSet();
+        attrCommand.setResolveParent(attrBase);
+        attrHudMessage = new SimpleAttributeSet();
+        attrHudMessage.setResolveParent(attrBase);
 
         StyleConstants.setForeground(attrCommand, Color.blue);
         StyleConstants.setForeground(attrHudMessage, Color.black);
         StyleConstants.setBackground(attrHudMessage, Color.white);
-
-        /*
-         // This is an attempt at resetting the font size for the document when the prefs say to change the size... not working
-        setCharacterAttributes(0,
-                               getLength(),
-                               attrBase,
-                               false);
-         */
     }
 
     // -----------------------
@@ -83,6 +83,16 @@ public class BulkStyledDocument extends DefaultStyledDocument
         boolean						done;
 
         ArrayList					elements = new ArrayList();	// we could specify an initial capacity here
+
+        // The document is structured like a tree. There is a root element, which has as its branches
+        // each line of the document. Each line of the document has leaf nodes which represent each of the types
+        // that are in that lines text.
+        // The EndTagType indicates that this next line we are making should be a child of the root element.
+        // The StartTagType creates a new branch element on the root to indicate this new line.
+        // The ContentTypes below create each branch element which represents the text and style.
+        
+        elements.add(new ElementSpec(new SimpleAttributeSet(thisAttrSet), ElementSpec.EndTagType));
+        elements.add(new ElementSpec(new SimpleAttributeSet(thisAttrSet), ElementSpec.StartTagType));
         
         try
         {
@@ -100,6 +110,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
                                                      l.substring(i - thisStr.length(), i).toCharArray(),
                                                      start,
                                                      thisStr.length() - start));
+                        
                         start += thisStr.length() - start;
                     }
 
@@ -118,9 +129,17 @@ public class BulkStyledDocument extends DefaultStyledDocument
                         int		charCode2 = (charCode1 == 1 ? -1 : Character.digit(l.charAt(i + parsePos + 1), 10));  // Next character, base 10, or -1
 
                         if (ANSIParser.normalEscapeCode(charCode1))	// go back to our base attribute set
-                            thisAttrSet = new SimpleAttributeSet(attrBase);
+                        {
+                            thisAttrSet = new SimpleAttributeSet();
+                            thisAttrSet.setResolveParent(attrBase);
+
+                            localAttrSet = new SimpleAttributeSet(thisAttrSet);
+                            localAttrSet.setResolveParent(attrBase);
+                        }
                         else										// merge our current attributes with what these escape codes say
-                            ANSIParser.parseEscapeCode(charCode1, charCode2, thisAttrSet);
+                        {
+                            ANSIParser.parseEscapeCode(charCode1, charCode2, thisAttrSet);   
+                        }
 
                         parsePos++;				// move on to next character... (see below)
                         if (charCode2 != -1)
@@ -174,6 +193,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
     {
         try
         {
+            Content				c = getContent();
             ElementSpec[]		list = (ElementSpec[]) es.toArray(new ElementSpec[0]);
             
             insert(getLength(), list);
@@ -189,7 +209,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
     public void insertPlainString(String l)
     {
         try {
-            insertString(getLength(), l + "\n", attrPlain);
+            insertString(getLength(),"\n" + l, attrPlain);
         } catch (Exception e) {
             System.out.println("Error: insertPlainString: " + e);            
         }
@@ -198,7 +218,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
     public void insertMessageString(String l)
     {
         try {
-            insertString(getLength(), l + "\n\n", attrHudMessage);
+            insertString(getLength(),"\n" + l + "\n", attrHudMessage);
         } catch (Exception e) {
             System.out.println("Error: insertMessageString: " + e);
         }
@@ -207,7 +227,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
     public void insertCommandString(String l)
     {
         try {
-            insertString(getLength(), l + "\n\n", attrCommand);
+            insertString(getLength(), "\n" + l + "\n", attrCommand);
         } catch (Exception e) {
             System.out.println("Error: insertCommandString: " + e);
         }
