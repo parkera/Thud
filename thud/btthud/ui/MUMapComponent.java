@@ -536,6 +536,17 @@ public class MUMapComponent extends JComponent implements MouseListener
                             g.setTransform(beforeNumberRot);
                         }
 
+                        if (prefs.highlightMyHex && (hexX + j == myLocX) && (hexY + i == myLocY))
+                        {
+                            Stroke		saveStroke = g.getStroke();
+                            g.setStroke(new BasicStroke(2.0f));
+                            g.setColor(Color.black);
+
+                            g.draw(hexPoly);
+
+                            g.setStroke(saveStroke);
+                        }
+                        
                         if (prefs.tacShowCliffs)
                         {
                             Stroke		saveStroke = g.getStroke();

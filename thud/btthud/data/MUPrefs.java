@@ -36,6 +36,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     // For the tactical map display
     public boolean				tacShowHexNumbers, tacShowTerrainChar, tacShowTerrainElev, tacShowUnitNames, tacDarkenElev;
     public boolean				makeArcsWeaponRange;
+    public boolean				highlightMyHex;
     public int					hexHeight;
     public float				elevationColorMultiplier;
     
@@ -109,6 +110,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         tacShowUnitNames = true;
         tacDarkenElev = true;
         tacShowCliffs = false;
+        highlightMyHex = false;
         cliffDiff = 2;
 
         makeArcsWeaponRange = false;

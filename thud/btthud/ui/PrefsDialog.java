@@ -49,7 +49,6 @@ public class PrefsDialog extends javax.swing.JDialog {
         TabbedPane = new javax.swing.JTabbedPane();
         
         GeneralOptionsTab = new javax.swing.JPanel();
-        nullLabel = new javax.swing.JLabel();
         cliffDistanceLabel = new javax.swing.JLabel();
         cliffDistanceBox = new javax.swing.JComboBox();
 
@@ -103,15 +102,20 @@ public class PrefsDialog extends javax.swing.JDialog {
         GeneralOptionsTab.setLayout(new java.awt.GridLayout(2, 2));
         
         echoCheckBox = new javax.swing.JCheckBox("Echo Commands", null, prefs.echoCommands);
-        //echoCheckBox.setText("Echo Commands");
         echoCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 echoCheckBoxActionPerformed(evt);
             }
         });
         GeneralOptionsTab.add(echoCheckBox);
-        nullLabel.setText(" ");
-        GeneralOptionsTab.add(nullLabel);
+
+        highlightMyHexCheckBox = new javax.swing.JCheckBox("Highlight My Hex", null, prefs.echoCommands);
+        highlightMyHexCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                highlightMyHexCheckBoxActionPerformed(evt);
+            }
+        });
+        GeneralOptionsTab.add(highlightMyHexCheckBox);
         
         cliffDistanceLabel.setText("Cliff Detection Threshold");
         GeneralOptionsTab.add(cliffDistanceLabel);
@@ -470,6 +474,10 @@ public class PrefsDialog extends javax.swing.JDialog {
         prefs.echoCommands = echoCheckBox.isSelected();
     }
 
+    private void highlightMyHexCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {
+        prefs.highlightMyHex = highlightMyHexCheckBox.isSelected();
+    }
+
     // Closes the dialog
     private void closeDialog(java.awt.event.WindowEvent evt) {
         setVisible(false);
@@ -511,11 +519,10 @@ public class PrefsDialog extends javax.swing.JDialog {
     // ------------------
     
     private javax.swing.JTabbedPane TabbedPane;
-
-    private javax.swing.JLabel nullLabel;
-    
+  
     private javax.swing.JPanel GeneralOptionsTab;
     private javax.swing.JCheckBox echoCheckBox;
+    private javax.swing.JCheckBox highlightMyHexCheckBox;
     private javax.swing.JLabel cliffDistanceLabel;
     private javax.swing.JComboBox cliffDistanceBox;
     
