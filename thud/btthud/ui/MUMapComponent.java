@@ -927,9 +927,6 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         if (startY < 0)
             startY = 0;
         
-        //if (data.myUnit.x % 2 == 0)
-        //    offset.setLocation(offset.getX(), offset.getY() + h/2);
-        
         // Set the proper font
         g.setFont(hexNumberFont);
         
@@ -954,7 +951,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                 g.setColor(Color.lightGray);
 
             trans.setTransform(winTrans);
-            realHex = hexPoly.hexToReal(0, i, false);
+            realHex = hexPoly.hexToReal(0, i - prefs.yOffset, false);
             trans.translate(4, realHex.getY());
             trans.rotate(PI / 2);
             g.setTransform(trans);
@@ -982,16 +979,15 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             trans.setTransform(winTrans);
             
             if (i % 2 == 0)
-            {
                 g.setColor(Color.white);
-                trans.translate(0, h/2);			// Need to adjust for funky hex arrangement (ie, even hexes higher than odds)
-            }
             else
-            {
-                g.setColor(Color.lightGray);   
-            }
+                g.setColor(Color.lightGray);
 
-            realHex = hexPoly.hexToReal(i, 0, false);
+            // Need to adjust for funky hex arrangement (ie, even hexes higher than odds)
+            if ((i - prefs.xOffset) % 2 == 0)
+                trans.translate(0, h/2);
+            
+            realHex = hexPoly.hexToReal(i - prefs.xOffset, 0, false);
             trans.translate(realHex.getX(), -realHex.getY() + stringRectY.getHeight() - 2);
             g.setTransform(trans);
             g.drawString(Integer.toString(i), 0, 0);

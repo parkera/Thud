@@ -670,10 +670,10 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miDarkenElevations.getActionCommand())) doDarkenElevations();
         else if (newEvent.getActionCommand().equals(miShowCliffs.getActionCommand())) doShowCliffs();
         else if (newEvent.getActionCommand().equals(miShowIndicators.getActionCommand())) doShowIndicators();
-        else if (newEvent.getActionCommand().equals(miMoveLeft.getActionCommand())) doChangeXOffset(-1f);
-        else if (newEvent.getActionCommand().equals(miMoveRight.getActionCommand())) doChangeXOffset(1f);
-        else if (newEvent.getActionCommand().equals(miMoveUp.getActionCommand())) doChangeYOffset(-1f);
-        else if (newEvent.getActionCommand().equals(miMoveDown.getActionCommand())) doChangeYOffset(1f);
+        else if (newEvent.getActionCommand().equals(miMoveLeft.getActionCommand())) doChangeXOffset(-1);
+        else if (newEvent.getActionCommand().equals(miMoveRight.getActionCommand())) doChangeXOffset(1);
+        else if (newEvent.getActionCommand().equals(miMoveUp.getActionCommand())) doChangeYOffset(-1);
+        else if (newEvent.getActionCommand().equals(miMoveDown.getActionCommand())) doChangeYOffset(1);
         else if (newEvent.getActionCommand().equals(miCenterMap.getActionCommand())) doCenterMap();
         else if (newEvent.getActionCommand().equals(miPreferences.getActionCommand())) doPreferences();
         else if (matchesConnectionMenu(newEvent.getActionCommand())) doNewConnection(newEvent.getActionCommand());
@@ -862,7 +862,7 @@ public class Thud extends JFrame implements  ActionListener
 
     // -----------------------
     // Change the offset of the map in x
-    public void doChangeXOffset(float mod)
+    public void doChangeXOffset(int mod)
     {
         prefs.xOffset += mod;
         tacMap.newPreferences(prefs);
@@ -880,8 +880,8 @@ public class Thud extends JFrame implements  ActionListener
     // Recenter the map
     public void doCenterMap()
     {
-        prefs.xOffset = 0f;
-        prefs.yOffset = 0f;
+        prefs.xOffset = 0;
+        prefs.yOffset = 0;
         tacMap.newPreferences(prefs);
     }
 

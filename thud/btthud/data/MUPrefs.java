@@ -49,7 +49,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public Color				backgroundColor;
     public Color				foregroundColor;
 
-    public float				yOffset, xOffset;
+    public int					yOffset, xOffset;
 
     public Properties			theSystem;
 
@@ -119,8 +119,8 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         tacShowArcs = false;
         arcIndicatorRange = 2;
 
-        yOffset = 0f;
-        xOffset = 0f;
+        yOffset = 0;
+        xOffset = 0;
 
         backgroundColor = Color.black;
         foregroundColor = Color.white;
