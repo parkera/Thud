@@ -128,9 +128,6 @@ public class BulkStyledDocument extends DefaultStyledDocument
                         {
                             thisAttrSet = new SimpleAttributeSet();
                             thisAttrSet.setResolveParent(attrBase);
-
-                            localAttrSet = new SimpleAttributeSet(thisAttrSet);
-                            localAttrSet.setResolveParent(attrBase);
                         }
                         else										// merge our current attributes with what these escape codes say
                         {
