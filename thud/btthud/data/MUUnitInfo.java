@@ -152,7 +152,7 @@ public class MUUnitInfo extends Object implements Comparable {
     // For debugging purposes only
     public String toString()
     {
-        String	out = new String("\nMUUnitInfo: ");
+        String	out = "\nMUUnitInfo: ";
         
         return (out + "ID:" + id + " Team:" + team + " Type:" + type + " Name:" + name +
                 " Range:" + String.valueOf(range) + " Speed:" + String.valueOf(speed) +
