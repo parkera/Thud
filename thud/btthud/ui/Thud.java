@@ -820,6 +820,9 @@ public class Thud extends JFrame implements  ActionListener
             conList.newPreferences(prefs);
         
         mainFontChanged();
+
+        // Why not write the prefs to disk right now? Save ourselves some grief
+        writePrefs();
     }
 
     // -----------------------
