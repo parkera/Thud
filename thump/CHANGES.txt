@@ -1,6 +1,9 @@
 1.2
-
+New Features/Changes:
+ - Added terrain and elevation to the inspector palette
+ 
 Bug Fixes:
+ - Fixed a mixup that caused rough level 1 terrain to not paint properly, among other things
  - Made the hex inspector window slightly larger, and put it in a different location by default
  
 1.1 January 11, 2004
