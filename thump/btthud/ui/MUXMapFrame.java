@@ -333,10 +333,10 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
     // ----------------------------------------------------------------------------
     // ****************************************************************************
 
-    protected boolean terrainToolClicked(LinkedList hexes)
+    protected boolean terrainToolClicked(ListIterator it)
     {
-        ListIterator			it = hexes.listIterator(0);
-        Point					h = null;
+        Point		h = null;
+        boolean         hadHexes = it.hasNext();
         
         // Go through the list and get rid of hexes we don't want to change
         // Also, set the data in the map object
@@ -354,25 +354,16 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
                 it.remove();
         }
 
-        // Paint it!
-        if (hexes.size() > 0)
-        {
-            //mapComponent.repaint();
-            return true;		// We changed something
-        }
-        else
-        {
-            return false;		// Didn't change anything
-        }
+        return hadHexes;
     }
 
     // ----
     
-    protected boolean elevationToolClicked(LinkedList hexes)
+    protected boolean elevationToolClicked(ListIterator it)
     {
-        ListIterator			it = hexes.listIterator(0);
-        Point					h;
-
+        Point           h;
+        boolean         hadHexes = it.hasNext();
+        
         // Go through the list and get rid of hexes we don't want to change
         // Also, set the data in the map object
         while (it.hasNext())
@@ -389,16 +380,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
                 it.remove();
         }
 
-        // Paint it!
-        if (hexes.size() > 0)
-        {
-            // mapComponent.repaint();
-            return true;		// We changed something
-        }
-        else
-        {
-            return false;		// Didn't change anything
-        }
+        return hadHexes;
     }
 
     // ----
@@ -421,19 +403,17 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
             }
         }
 
-        //if (changedHex)
-        //    mapComponent.repaint();
         return changedHex;
     }
 
     // --------------------------
                                                  
-    protected boolean bothToolClicked(LinkedList hexes, boolean erase)
+    protected boolean bothToolClicked(ListIterator it, boolean erase)
     {
-        ListIterator			it = hexes.listIterator();
-        Point					h;
-        int						selectedTerrain = tools.selectedTerrain();
-        int						selectedElevation = tools.selectedElevation();
+        Point           h;
+        int		selectedTerrain = tools.selectedTerrain();
+        int		selectedElevation = tools.selectedElevation();
+        boolean         hadHexes = it.hasNext();
 
         if (erase)
         {
@@ -458,73 +438,48 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
                 it.remove();
         }
 
-        // Paint it!
-        if (hexes.size() > 0)
-        {
-            //mapComponent.repaint();
-            return true;		// We changed something
-        }
-        else
-        {
-            return false;		// Didn't change anything
-        }
+        return hadHexes;
     }
 
     // ----
     
-    protected boolean selectToolClicked(LinkedList hexes, MouseEvent e)
+    protected boolean selectToolClicked(ListIterator it, MouseEvent e)
     {
-        ListIterator            it = hexes.listIterator(0);
         Point                   h;
-        LinkedList              selectedHexes;
         ListIterator		selectedIt;
 
-        if (!e.isShiftDown())
-        {   
-            // Must hold shift to select multiple hexes
-            
-            // Repaint previously selected hexes
-            selectedHexes = map.selectedHexes();
-            
-            if (!selectedHexes.isEmpty())
+        // If control is down, then a control-click removes the selection
+        if (e.isControlDown())
+        {
+            map.deselectAll();
+            mapComponent.repaint();
+        }
+        else
+        {
+            while (it.hasNext())
             {
-                selectedIt = selectedHexes.listIterator();
+                h = (Point) it.next();
+                if (!map.getHexSelected(h))
+                {
+                    map.setHexSelected(h, true);
+                    mapComponent.repaint(mapComponent.rectForHex(h));
+                }
+                else
+                    it.remove();
+            }
+            
+            // Now repaint all the selected hexes        
+            if (map.anyHexesSelected())
+            {
+                selectedIt = map.selectedHexesIterator();
                 
                 while (selectedIt.hasNext())
                 {
                     // Get the next hex
                     h = (Point) selectedIt.next();
-                    selectedIt.remove();            // Deselect this hex (have to do it here so it is drawn properly)
                     mapComponent.repaint(mapComponent.expandedRectForHex(h));
                 }                
-            }
-        }
-        
-        while (it.hasNext())
-        {
-            h = (Point) it.next();
-            if (!map.getHexSelected(h))
-            {
-                map.setHexSelected(h, true);
-                mapComponent.repaint(mapComponent.rectForHex(h));
-            }
-            else
-                it.remove();
-        }
-        
-        // Now repaint all the selected hexes
-        selectedHexes = map.selectedHexes();
-        
-        if (!selectedHexes.isEmpty())
-        {
-            selectedIt = selectedHexes.listIterator();
-            
-            while (selectedIt.hasNext())
-            {
-                // Get the next hex
-                h = (Point) selectedIt.next();
-                mapComponent.repaint(mapComponent.expandedRectForHex(h));
-            }                
+            }            
         }
 
         mapper.resetMenus();
@@ -541,7 +496,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
       */
     protected boolean hexClicked(Point hex, MouseEvent e)
     {
-        int				whichTool = tools.selectedTool();
+        int                     whichTool = tools.selectedTool();
         LinkedList		hexes = new LinkedList();
         Point			thisHex;
         
@@ -568,19 +523,19 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         else if (tools.selectedTool() == ToolPalette.PAINT_TOOL)
         {
             if (prefs.paintType == ToolManager.TERRAIN_ONLY)
-                return terrainToolClicked(hexes);
+                return terrainToolClicked(hexes.listIterator(0));
             else if (prefs.paintType == ToolManager.ELEVATION_ONLY)
-                return elevationToolClicked(hexes);
+                return elevationToolClicked(hexes.listIterator(0));
             else
-                return bothToolClicked(hexes, false);
+                return bothToolClicked(hexes.listIterator(0), false);
         }
         else if (tools.selectedTool() == ToolPalette.SELECT_TOOL)
         {
-            return selectToolClicked(hexes, e);            
+            return selectToolClicked(hexes.listIterator(0), e);            
         }
         else if (tools.selectedTool() == ToolPalette.ERASE_TOOL)
         {
-            return bothToolClicked(hexes, true);		// Erase
+            return bothToolClicked(hexes.listIterator(0), true);		// Erase
         }
 
         return false;
@@ -874,10 +829,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
 
     public boolean canCopy()
     {
-        if (map.selectedHexes() == null || map.selectedHexes().size() > 0)
-            return true;
-        else
-            return false;
+        return map.anyHexesSelected();
     }
 
     // -----------------------------
@@ -918,7 +870,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
       */
     public void doCut()
     {
-        bothToolClicked(map.selectedHexes(), true);
+        bothToolClicked(map.selectedHexesIterator(), true);
     }
 
     /**
@@ -943,14 +895,13 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
       */
     public LinkedList copyableHexes()
     {
-        LinkedList			selectedHexes = map.selectedHexes();
-        LinkedList			copyableHexes = new LinkedList();
-        ListIterator		it = selectedHexes.listIterator();
-        int					x = 0;
-        int					y = 0;
-        Point				h;
+        LinkedList		copyableHexes = new LinkedList();
+        ListIterator		it = map.selectedHexesIterator();
+        int			x = 0;
+        int			y = 0;
+        Point                   h;
         
-        if (selectedHexes.isEmpty())
+        if (!map.anyHexesSelected())
             return null;
 
         // Create our new list of copyable hexes

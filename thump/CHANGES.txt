@@ -1,6 +1,7 @@
 1.1  ---
-New Features:
-
+New Features/Changes:
+ - Selection now uses an easier-to-spot red-black dash instead of just a thick black line
+ - Selection now selects multiple hexes by default (you don't need to hold shift down). Control-clicking will deselect all when using the select tool.
 Bug Fixes:
  - Cancel button on 'New Map' dialog box now works
  

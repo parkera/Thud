@@ -22,7 +22,7 @@ public class MUXMap implements Serializable {
 
     boolean		hasChanged;
 
-    LinkedList		selectedHexes;
+    ArrayList		selectedHexes;
 
     // -------------------------------------------------
     // Constructors
@@ -37,7 +37,7 @@ public class MUXMap implements Serializable {
         
         hasChanged = false;
 
-        selectedHexes = new LinkedList();
+        selectedHexes = new ArrayList();
         
         createHexCache();
     }
@@ -270,21 +270,25 @@ public class MUXMap implements Serializable {
       */
     public void deselectAll()
     {
-        selectedHexes = new LinkedList();
+        selectedHexes = new ArrayList();
     }
 
     /**
-      * Get a list of selected hexes
+      * Get an iterator of the selected hexes
       */
-    public LinkedList selectedHexes()
-    {
-        return selectedHexes;
-    }
-    
     public ListIterator selectedHexesIterator()
     {
-        return selectedHexes.listIterator();
+        return selectedHexes.listIterator(0);
     }
+    
+    /**
+      * Returns true if there are any hexes selected
+      */
+    public boolean anyHexesSelected()
+    {
+        return !selectedHexes.isEmpty();
+    }
+    
     /**
       * Set the details of a specific hex using internal int type for terrain
       */
