@@ -27,10 +27,14 @@ public class MUMyInfo extends MUUnitInfo {
     public String		advTech;
 
     public static final int		MAX_UNIT_WEAPONS = 50;
-    public MUUnitWeapon[]	unitWeapons = new MUUnitWeapon[MAX_UNIT_WEAPONS];		// List of our own weapons.. asssume 50 for now (bad)
+    public MUUnitWeapon[]		unitWeapons = new MUUnitWeapon[MAX_UNIT_WEAPONS];		// List of our own weapons.. asssume 50 for now (bad)
 
-    public float			longRangeFront, longRangeLeft, longRangeRight, longRangeRear, longRangeTurret;
+    public float				longRangeFront, longRangeLeft, longRangeRight, longRangeRear, longRangeTurret;
 
+    // This armor info could be generalized to MUUnitInfo, since it could be used for scanning results
+    // However, since we only use it on ourselves now, we'll leave it here to avoid creating thousands of unneeded objects
+    public MUSection			armor[] = new MUSection[TOTAL_SECTIONS];
+    
     public MUMyInfo()
     {
         friend = true;
@@ -49,6 +53,9 @@ public class MUMyInfo extends MUUnitInfo {
         longRangeRight = 1.0f;
         longRangeRear = 1.0f;
         longRangeTurret = 1.0f;
+
+        for (int i = 0; i < TOTAL_SECTIONS; i++)
+            armor[i] = new MUSection();
         
     }
     
@@ -126,5 +133,47 @@ public class MUMyInfo extends MUUnitInfo {
     public float maxTurretRange()
     {
         return longRangeTurret;
+    }
+
+    /**
+      * Return a float corresponding to percentage armor left on the whole unit.
+      */
+    public float percentArmorLeft()
+    {
+        int			totalAvailArmor = 0;
+        int			totalLeftArmor = 0;
+
+        for (int i = 0; i < TOTAL_SECTIONS; i++)
+        {
+            totalAvailArmor += armor[i].of;
+            totalAvailArmor += armor[i].or;
+            totalLeftArmor += armor[i].f;
+            totalLeftArmor += armor[i].r;
+        }
+
+        if (totalAvailArmor != 0)
+            return(float) ((int) (100.0 * ((float) totalLeftArmor / (float) totalAvailArmor)));
+        else
+            return (float) 100;
+    }
+
+    /**
+      * Return a float corresponding to percentage internal structure left on the whole unit.
+      */
+    public float percentInternalLeft()
+    {
+        int			totalAvailInternal = 0;
+        int			totalLeftInternal = 0;
+
+        for (int i = 0; i < TOTAL_SECTIONS; i++)
+        {
+            totalAvailInternal += armor[i].oi;
+            totalLeftInternal += armor[i].i;
+        }
+
+        if (totalAvailInternal != 0)
+            return (float) ((int) (100.0 * ((float) totalLeftInternal / (float) totalAvailInternal)));
+        else
+            return (float) 100;
     }
 }

@@ -158,17 +158,15 @@ public class MUData {
 
     public MUHex getHex(int x, int y)
     {
-        MUHex		newHex = null;
-
         if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y)
         {
             if (map[x][y] != null)
-                newHex = map[x][y];
+                return map[x][y];
             else
-                newHex = new MUHex();
+                return new MUHex();
         }
 
-        return newHex;
+        return new MUHex();
     }
 
     /**

@@ -58,7 +58,6 @@ public class MUUnitInfo extends Object implements Comparable {
     int					expired = 5;
     static final int	oldThreshold = 3;
 
-    public MUSection			armor[] = new MUSection[TOTAL_SECTIONS];
     static public MUWeapon		weapons[] = new MUWeapon[200];		// data that stores info on /all/ weapons ... assume 200 of them for now
     
     Font				font = new Font("Monospaced", Font.BOLD, 10);	// used for drawing armor
@@ -137,10 +136,7 @@ public class MUUnitInfo extends Object implements Comparable {
     
     public MUUnitInfo()
     {
-        for (int i = 0; i < TOTAL_SECTIONS; i++)
-            armor[i] = new MUSection();
-
-        //initIcons();
+        
     }
     
     public String toString()
@@ -550,48 +546,6 @@ public class MUUnitInfo extends Object implements Comparable {
 
         return unitOutline;
         
-    }
-
-    /**
-      * Return a float corresponding to percentage armor left on the whole unit.
-      */
-    public float percentArmorLeft()
-    {
-        int			totalAvailArmor = 0;
-        int			totalLeftArmor = 0;
-        
-        for (int i = 0; i < TOTAL_SECTIONS; i++)
-        {
-            totalAvailArmor += armor[i].of;
-            totalAvailArmor += armor[i].or;
-            totalLeftArmor += armor[i].f;
-            totalLeftArmor += armor[i].r;
-        }
-
-        if (totalAvailArmor != 0)
-            return(float) ((int) (100.0 * ((float) totalLeftArmor / (float) totalAvailArmor)));
-        else
-            return (float) 100;            
-    }
-
-    /**
-        * Return a float corresponding to percentage internal structure left on the whole unit.
-     */
-    public float percentInternalLeft()
-    {
-        int			totalAvailInternal = 0;
-        int			totalLeftInternal = 0;
-
-        for (int i = 0; i < TOTAL_SECTIONS; i++)
-        {
-            totalAvailInternal += armor[i].oi;
-            totalLeftInternal += armor[i].i;
-        }
-
-        if (totalAvailInternal != 0)
-            return (float) ((int) (100.0 * ((float) totalLeftInternal / (float) totalAvailInternal)));
-        else
-            return (float) 100;
     }
 
     /**
