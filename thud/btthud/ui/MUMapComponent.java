@@ -1175,6 +1175,10 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                     AffineTransform			arcXform = new AffineTransform(g.getTransform());
                     double					headingDeg = -data.myUnit.heading - 180.0;
 
+                    // Accomodate for rotate torso
+                    if (!data.myUnit.canHaveTurret())
+                        headingDeg -= data.myUnit.turretHeading;
+                    
                     arcXform.translate(h / 4, h / 4);
                     g.setTransform(arcXform);
 
