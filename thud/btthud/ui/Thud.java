@@ -559,7 +559,7 @@ public class Thud extends JFrame implements  ActionListener
         // Initilization strings
         bsd.insertPlainString(" *** Thud, (c) 2001-2002 Anthony Parker <asp@mac.com> ***");
         bsd.insertPlainString(" *** bt-thud.sourceforge.net                          ***");
-        bsd.insertPlainString(" *** Version: 1.0b6 (Beta)                            ***");
+        bsd.insertPlainString(" *** Version: 1.0, September 16, 2002                 ***");
         bsd.insertPlainString(" *** Contact Tony @ 3030MUX with questions/comments   ***\n");
 
         // And finally, show ourselves

@@ -3,10 +3,10 @@ Thud, by Anthony Parker <asp@mac.com>, Tony at 3030MUX
 
 Version History:
 
-1.0b6
+1.0
 
- The focus of the 1.0b6 release is enhancements in speed and bug fixes. There are also a few minor new releases.
- All users are encouraged to use this new release.
+ The focus of the final 1.0 release has been enhancements in speed and bug fixes. There are also a few minor new features.
+ All users are encouraged to use this new release and upgrade from any older version.
  Note: Due to changes in the preferences file format, your preferences will be reset on starting this version. Sorry.
  
  New Features:
