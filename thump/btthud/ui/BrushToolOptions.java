@@ -33,9 +33,6 @@ public class BrushToolOptions extends JInternalFrame {
     static final int			MIN_BRUSH_SIZE = 1;
     static final int			MAX_BRUSH_SIZE = 5;
 
-    static final char			KEY_INCREASE_BRUSH_SIZE = '>';
-    static final char			KEY_DECREASE_BRUSH_SIZE = '<';
-
     // Data for the shape of the brushes
     // Note: if you click on an odd X hex, every other y must be decremented by 1 (thus the triple array for brushY 0 = even, 1 = odd)
     public static final int		brushHexSizes[] = {1, 6, 12, 18, 24};
@@ -106,12 +103,8 @@ public class BrushToolOptions extends JInternalFrame {
 
     // ----------------------------
 
-    public void keyTyped(KeyEvent e)
+    public void selectBrushSize(int size)
     {
-        if (e.getKeyChar() == KEY_INCREASE_BRUSH_SIZE && bBrush.getValue() != MAX_BRUSH_SIZE)
-            bBrush.setValue(bBrush.getValue() + 1);
-        else if (e.getKeyChar() == KEY_DECREASE_BRUSH_SIZE && bBrush.getValue() != MIN_BRUSH_SIZE)
-            bBrush.setValue(bBrush.getValue() - 1);
-    }
-    
+        bBrush.setValue(size);
+    }    
 }

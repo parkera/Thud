@@ -66,6 +66,22 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
     protected JCheckBoxMenuItem miBrushToolPalette;
     protected JCheckBoxMenuItem miInspectorPalette;
 
+    protected JMenu toolMenu;
+    protected ButtonGroup toolGroup;
+    protected JRadioButtonMenuItem miPaintTool;
+    protected JRadioButtonMenuItem miSelectTool;
+    protected JRadioButtonMenuItem miUndoTool;
+    protected JRadioButtonMenuItem miEraseTool;
+    protected JMenu elevationSubMenu;
+    protected ButtonGroup elevationGroup;
+    protected JRadioButtonMenuItem miElevations[];
+    protected JMenu terrainSubMenu;
+    protected ButtonGroup terrainGroup;
+    protected JRadioButtonMenuItem miTerrains[];
+    protected JMenu brushSizeSubMenu;
+    protected ButtonGroup brushSizeGroup;
+    protected JRadioButtonMenuItem miBrushSizes[];
+
     protected JMenu helpMenu;
     protected JMenuItem miAbout;
     protected JMenuItem miHelp;
@@ -255,6 +271,145 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         
     }
 
+    public void addToolMenuItems() {
+        
+        toolGroup = new ButtonGroup();
+        
+        miPaintTool = new JRadioButtonMenuItem("Paint Tool");
+        miPaintTool.setAccelerator(KeyStroke.getKeyStroke(ToolPalette.PAINT_CHAR));
+        miPaintTool.setSelected(true);          // brush tool initially
+        toolGroup.add(miPaintTool);
+        toolMenu.add(miPaintTool);
+        miPaintTool.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                tools.doSelectTool(ToolPalette.PAINT_TOOL);
+                resetToolMenu();
+            }
+        });
+        
+        miSelectTool = new JRadioButtonMenuItem("Select Tool");
+        miSelectTool.setAccelerator(KeyStroke.getKeyStroke(ToolPalette.SELECT_CHAR));
+        toolGroup.add(miSelectTool);
+        toolMenu.add(miSelectTool);
+        miSelectTool.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                tools.doSelectTool(ToolPalette.SELECT_TOOL);
+                resetToolMenu();
+            }
+        });
+        
+        miUndoTool = new JRadioButtonMenuItem("Undo Tool");
+        miUndoTool.setAccelerator(KeyStroke.getKeyStroke(ToolPalette.SELECTIVE_UNDO_CHAR));
+        toolGroup.add(miUndoTool);
+        toolMenu.add(miUndoTool);
+        miUndoTool.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                tools.doSelectTool(ToolPalette.SELECTIVE_UNDO_TOOL);
+                resetToolMenu();
+            }
+        });
+        
+        miEraseTool = new JRadioButtonMenuItem("Erase Tool");
+        miEraseTool.setAccelerator(KeyStroke.getKeyStroke(ToolPalette.ERASE_CHAR));
+        toolGroup.add(miEraseTool);
+        toolMenu.add(miEraseTool);
+        miEraseTool.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                tools.doSelectTool(ToolPalette.ERASE_TOOL);
+                resetToolMenu();
+            }
+        });
+        
+        toolMenu.addSeparator();
+        
+        elevationSubMenu = new JMenu("Elevation");
+        elevationGroup = new ButtonGroup();
+        
+        miElevations = new JRadioButtonMenuItem[10];
+        
+        for (int i = 0; i < 10; i++)
+        {
+            miElevations[i] = new JRadioButtonMenuItem("Elevation " + i);
+            miElevations[i].setAccelerator(KeyStroke.getKeyStroke(String.valueOf(i).charAt(0)));
+            miElevations[i].setSelected(false);
+            elevationGroup.add(miElevations[i]);
+            elevationSubMenu.add(miElevations[i]);
+            miElevations[i].addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent event) {
+                    JRadioButtonMenuItem    m = (JRadioButtonMenuItem) event.getSource();
+                    tools.doSelectElevation(Character.getNumericValue(m.getAccelerator().getKeyChar()));
+                    resetToolMenu();
+                }
+            });
+        }
+        
+        miElevations[0].setSelected(true);      // elevation 0 initially
+        toolMenu.add(elevationSubMenu);
+        
+        toolMenu.addSeparator();
+        
+        terrainSubMenu = new JMenu("Terrain");
+        terrainGroup = new ButtonGroup();
+        
+        miTerrains = new JRadioButtonMenuItem[MUXHex.TOTAL_PAINTABLE_TERRAIN];
+        
+        for (int i = 0; i < MUXHex.TOTAL_PAINTABLE_TERRAIN; i++)
+        {
+            miTerrains[i] = new JRadioButtonMenuItem(MUXHex.nameForId(i));
+            miTerrains[i].setAccelerator(KeyStroke.getKeyStroke(MUXHex.terrainForId(i)));
+            miTerrains[i].setSelected(false);
+            terrainGroup.add(miTerrains[i]);
+            terrainSubMenu.add(miTerrains[i]);
+            miTerrains[i].addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent event) {
+                    JRadioButtonMenuItem    m = (JRadioButtonMenuItem) event.getSource();
+                    // Grab the accelerator key and pass that to our tools
+                    tools.doSelectTerrain(m.getAccelerator().getKeyChar());
+                    resetToolMenu();
+                }
+            });
+            
+        }
+        
+        miTerrains[MUXHex.idForTerrain('.')].setSelected(true);      // plains initially
+
+        toolMenu.add(terrainSubMenu);
+        toolMenu.addSeparator();
+        
+        brushSizeSubMenu = new JMenu("Brush Size");
+        brushSizeGroup = new ButtonGroup();
+        
+        miBrushSizes = new JRadioButtonMenuItem[5];
+        
+        for (int i = 0; i < 5; i++)
+        {
+            miBrushSizes[i] = new JRadioButtonMenuItem("Brush Size " + (i + 1));
+            miBrushSizes[i].setAccelerator(KeyStroke.getKeyStroke(String.valueOf(i + 1).charAt(0), 
+                                                                  Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+            miBrushSizes[i].setSelected(false);
+            brushSizeGroup.add(miBrushSizes[i]);
+            brushSizeSubMenu.add(miBrushSizes[i]);
+            miBrushSizes[i].addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent event) {
+                    JRadioButtonMenuItem    m = (JRadioButtonMenuItem) event.getSource();
+                    String                  title = m.getText();
+                    // Can't get the proper character here from the accelerator, so we just grab the last character of the title
+                    tools.doSelectBrushSize(Character.getNumericValue(title.charAt(title.length() - 1)));
+                    resetToolMenu();
+                }
+            });
+            
+        }
+        
+        miBrushSizes[0].setSelected(true);      // brush size 1 initially
+        toolMenu.add(brushSizeSubMenu);
+        
+        
+        // ---
+        
+        mainMenuBar.add(toolMenu);
+    }
+    
     public void addHelpMenuItems() {
 
         miAbout = new JMenuItem("About Thump...");
@@ -281,6 +436,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         mapMenu = new JMenu("Map");
         paintMenu = new JMenu("Paint");
         paletteMenu = new JMenu("Palette");
+        toolMenu = new JMenu("Tool");
         helpMenu = new JMenu("Help");
         
         addFileMenuItems();
@@ -288,6 +444,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         addMapMenuItems();
         addPaintMenuItems();
         addPaletteMenuItems();
+        addToolMenuItems();
         addHelpMenuItems();
 
         setJMenuBar(mainMenuBar);
@@ -336,6 +493,27 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
             miZoomIn.setEnabled(false);
             miZoomOut.setEnabled(false);
         }
+        
+        resetToolMenu();
+    }
+    
+    public void resetToolMenu()
+    {
+        if (tools.selectedTool() == ToolPalette.PAINT_TOOL)
+            miPaintTool.setEnabled(true);
+        else if (tools.selectedTool() == ToolPalette.SELECT_TOOL)
+            miSelectTool.setEnabled(true);
+        else if (tools.selectedTool() == ToolPalette.SELECTIVE_UNDO_TOOL)
+            miUndoTool.setEnabled(true);
+        else if (tools.selectedTool() == ToolPalette.ERASE_TOOL)
+            miEraseTool.setEnabled(true);
+        
+        miElevations[tools.selectedElevation()].setEnabled(true);
+        miTerrains[tools.selectedTerrain()].setEnabled(true);
+        miBrushSizes[tools.selectedBrushSize() + 1].setEnabled(true);
+
+        if (tools != null && topFrame() != null)
+            topFrame().resetCursor();
     }
 
     /**
@@ -397,8 +575,6 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         } catch (Exception e) {
             ErrorHandler.displayError("Error: makeNewMapperFrame: " + e);
         }
-
-        tools.registerKeyActions(newMap.getInputMap(), newMap.getActionMap());
 
         newMap.addInternalFrameListener(this);
     }
@@ -879,16 +1055,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
 
     public void keyReleased(KeyEvent e) {}
 
-    public void keyTyped(KeyEvent e)
-    {
-        // System.out.println("thump.java: key typed: " + e.getKeyChar() + "\n" + e);
-        
-        if (tools != null && topFrame() != null)
-        {
-            tools.keyTyped(e);
-            topFrame().resetCursor();
-        }
-    }
+    public void keyTyped(KeyEvent e) {}
     
     // ----------------------------------------------------------------------------
     // ****************************************************************************
@@ -968,6 +1135,8 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         // The ResourceBundle below contains all of the strings used in this application.  ResourceBundles
         // are useful for localizing applications - new localities can be added by adding additional
         // properties files.
+        Toolkit.getDefaultToolkit();
+        CustomCursors.createCustomCursors();
         resbundle = ResourceBundle.getBundle("Thumpstrings", Locale.getDefault());
         setTitle("Thump");
 
@@ -978,15 +1147,14 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         setContentPane(desktop);
         setSize(prefs.desktopSize);
         setLocation(prefs.desktopLoc);
+        
         addMenus();
         addWindowListener(this);
         addKeyListener(this);
 
-        aboutBox = new AboutBox();
-        Toolkit.getDefaultToolkit();
-
-        CustomCursors.createCustomCursors();
         tools = new ToolManager(desktop, prefs);
+        
+        aboutBox = new AboutBox();
 
         // Reset our menus
         resetMenus();

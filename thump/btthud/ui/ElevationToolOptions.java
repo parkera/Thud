@@ -71,17 +71,6 @@ public class ElevationToolOptions extends JInternalFrame {
         // Show the window now
         this.show();
     }
-
-    // ----------------------------
-
-    public void registerKeyActions(InputMap imap, ActionMap amap)
-    {
-        for (int i = 0; i < 10; i++)
-        {
-            imap.put(KeyStroke.getKeyStroke(ELEVATION_KEYS[i]), "elevation-" + Character.toString(ELEVATION_KEYS[i]));
-            amap.put("elevation-" + Character.toString(ELEVATION_KEYS[i]), new SetElevationAction(ELEVATION_KEYS[i]));
-        }
-    }
     
     // ----------------------------
 
@@ -106,27 +95,5 @@ public class ElevationToolOptions extends JInternalFrame {
         }
 
         return -1;
-    }
-
-    public void keyTyped(KeyEvent e)
-    {
-        if (toolForChar(e.getKeyChar()) != -1)
-        {
-            // They've typed an elevation char
-            bElevation.setValue(Character.getNumericValue(e.getKeyChar()));
-        }
-    }
-
-    public class SetElevationAction extends AbstractAction {
-
-        int							e;
-
-        public SetElevationAction(char c) {
-            e = toolForChar(c);
-        }
-
-        public void actionPerformed(ActionEvent event) {
-            setElevation(e);
-        }
     }
 }

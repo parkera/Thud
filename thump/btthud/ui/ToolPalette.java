@@ -25,27 +25,27 @@ import btthud.data.*;
 
 public class ToolPalette extends JInternalFrame {
 
-    public static final int			TOOL_BUTTON_HEIGHT = 48;
-    public static final int			TOOL_BUTTON_WIDTH = 48;
+    public static final int		TOOL_BUTTON_HEIGHT = 48;
+    public static final int		TOOL_BUTTON_WIDTH = 48;
     public static final Dimension	TOOL_BUTTON_SIZE = new Dimension(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT);
 
     public static final int		PAINT_TOOL = -10;
-    public static final char	PAINT_CHAR = 'p';
+    public static final char            PAINT_CHAR = 'p';
     public static final int		SELECT_TOOL = -11;
-    public static final char	SELECT_CHAR = 's';
+    public static final char            SELECT_CHAR = 's';
     public static final int		SELECTIVE_UNDO_TOOL = -12;
-    public static final char	SELECTIVE_UNDO_CHAR = 'u';
+    public static final char            SELECTIVE_UNDO_CHAR = 'u';
     public static final int		ERASE_TOOL = -13;
-    public static final char	ERASE_CHAR = 'e';
+    public static final char            ERASE_CHAR = 'e';
 
-    int							selectedTool;
+    int                                 selectedTool;
 
-    JToggleButton				bPaint;
-    JToggleButton				bSelect;
-    JToggleButton				bSelectiveUndo;
-    JToggleButton				bErase;
+    JToggleButton			bPaint;
+    JToggleButton			bSelect;
+    JToggleButton			bSelectiveUndo;
+    JToggleButton			bErase;
 
-    MPrefs						prefs;
+    MPrefs				prefs;
     
     // ----------------------------
     
@@ -147,20 +147,5 @@ public class ToolPalette extends JInternalFrame {
         }
 
         return null;
-    }
-
-    // ---------------------------
-
-    public void keyTyped(KeyEvent e)
-    {        
-        // If it's one of our tools, switch the tool
-        if (e.getKeyChar() == PAINT_CHAR)
-            newToolSelected(PAINT_TOOL);
-        else if (e.getKeyChar() == SELECT_CHAR)
-            newToolSelected(SELECT_TOOL);
-        else if (e.getKeyChar() == SELECTIVE_UNDO_CHAR)
-            newToolSelected(SELECTIVE_UNDO_TOOL);
-        else if (e.getKeyChar() == ERASE_CHAR)
-            newToolSelected(ERASE_TOOL);
     }
 }

@@ -503,7 +503,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         Point			thisHex;
         
         // Add all the affected hexes to our LinkedList
-        for (int i = 0; i <= tools.selectedBrush(); i++)
+        for (int i = 0; i <= tools.selectedBrushSize(); i++)
         {
             for (int j = 0; j < BrushToolOptions.brushHexSizes[i]; j++)
             {

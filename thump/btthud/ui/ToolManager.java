@@ -25,25 +25,25 @@ import btthud.data.*;
 
 public class ToolManager {
 
-    ToolPalette				mainTools;
+    ToolPalette			mainTools;
     TerrainToolOptions		terrTools;
     ElevationToolOptions	elevTools;
     BrushToolOptions		brushTools;
     InspectorPalette		inspector;
 
-    MPrefs					prefs;
+    MPrefs			prefs;
 
-    boolean					changeElevation = true;
-    boolean					changeTerrain = true;
+    boolean			changeElevation = true;
+    boolean			changeTerrain = true;
 
     public static final int	TERRAIN_AND_ELEVATION = -1;
-    public static final int TERRAIN_ONLY = -2;
-    public static final int ELEVATION_ONLY = -3;
+    public static final int     TERRAIN_ONLY = -2;
+    public static final int     ELEVATION_ONLY = -3;
 
-    public static final int TOOL_PALETTE = 1;
-    public static final int TERRAIN_PALETTE = 2;
-    public static final int ELEVATION_PALETTE = 3;
-    public static final int BRUSH_PALETTE = 4;
+    public static final int     TOOL_PALETTE = 1;
+    public static final int     TERRAIN_PALETTE = 2;
+    public static final int     ELEVATION_PALETTE = 3;
+    public static final int     BRUSH_PALETTE = 4;
     public static final int	INSPECTOR_PALETTE = 5;
     
     public ToolManager(JDesktopPane desktop, MPrefs prefs)
@@ -82,20 +82,40 @@ public class ToolManager {
     {
         return mainTools.selectedTool();
     }
+    
+    public void doSelectTool(int tool)
+    {
+        mainTools.newToolSelected(tool);
+    }
 
     public int selectedTerrain()
     {
         return terrTools.selectedTerrain();
     }
 
+    public void doSelectTerrain(char terr)
+    {
+        terrTools.selectToolForTerrain(terr);
+    }
+    
     public int selectedElevation()
     {
         return elevTools.selectedElevation();
     }
+    
+    public void doSelectElevation(int e)
+    {
+        elevTools.setElevation(e);
+    }
 
-    public int selectedBrush()
+    public int selectedBrushSize()
     {
         return brushTools.selectedBrush();
+    }
+    
+    public void doSelectBrushSize(int size)
+    {
+        brushTools.selectBrushSize(size);
     }
 
     // ----------------------
@@ -155,6 +175,7 @@ public class ToolManager {
 
     // ----------------------
 
+    /*
     public void keyTyped(KeyEvent e)
     {
         // Pass on the love
@@ -168,6 +189,7 @@ public class ToolManager {
     {
         elevTools.registerKeyActions(i, a);
     }
+          */
 
     // ---------------------
 

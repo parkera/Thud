@@ -109,16 +109,9 @@ public class TerrainToolOptions extends JInternalFrame {
 
         return -1;
     }
-
-    public void keyTyped(KeyEvent e)
+    
+    public void selectToolForTerrain(char t)
     {
-        // System.out.println("terrain: key typed: " + e.getKeyChar() + "\n" + e);
-        
-        if (toolForChar(e.getKeyChar()) != -1)
-        {
-            // They've typed a terrain char
-            terrTypeSelected(bTerrain[MUXHex.idForTerrain(e.getKeyChar())]);
-        }
+        terrTypeSelected(bTerrain[MUXHex.idForTerrain(t)]);
     }
-
 }
