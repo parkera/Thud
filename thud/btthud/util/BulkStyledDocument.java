@@ -64,7 +64,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
         StyleConstants.setForeground(attrBase, Color.white);		// ... and color
         StyleConstants.setBackground(attrBase, Color.black);
 
-        FontRenderContext		frc = new FontRenderContext(new AffineTransform(), true, false);
+        FontRenderContext		frc = new FontRenderContext(new AffineTransform(), false, false);
 
         Rectangle2D		maxCharSize = font.getMaxCharBounds(frc);
         int				maxWidth = (int) (maxCharSize.getWidth());

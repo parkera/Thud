@@ -25,8 +25,8 @@ public class OptionTextPane extends JTextPane {
     public void paintComponent(Graphics g)
     {
         Graphics2D g2 = (Graphics2D) getGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                            this.antiAliased ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                            this.antiAliased ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         
         super.paintComponent(g2);
     }
