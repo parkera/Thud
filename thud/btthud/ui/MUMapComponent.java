@@ -1178,7 +1178,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         AffineTransform		trans = new AffineTransform();
         AffineTransform		oldTrans = g.getTransform();
 
-        float				speedDivisor = 32.25f;			// 32.25 = 3 MP, 10.75 = 1 MP
+        float				speedDivisor = 10.75f * prefs.speedIndicatorLength;			// 32.25 = 3 MP, 10.75 = 1 MP
         int					lineLength = h / (int) speedDivisor;
 
         int					whichHeading;

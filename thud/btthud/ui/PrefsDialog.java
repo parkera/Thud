@@ -19,6 +19,34 @@ public class PrefsDialog extends javax.swing.JDialog {
     
     private MUPrefs     prefs = null;
     private Thud		thudClass = null;
+
+    private javax.swing.JTabbedPane 	TabbedPane;
+
+    private javax.swing.JPanel 			GeneralOptionsTab;
+    private javax.swing.JCheckBox 		echoCheckBox;
+    private javax.swing.JCheckBox 		highlightMyHexCheckBox;
+    private javax.swing.JLabel 			cliffDistanceLabel;
+    private javax.swing.JComboBox 		cliffDistanceBox;
+    private javax.swing.JLabel 			speedLengthLabel;
+    private javax.swing.JComboBox 		speedLengthBox;
+
+    private javax.swing.JPanel 			MapColorsTab;
+    private javax.swing.JButton 		bTerrainColors[] = new javax.swing.JButton[MUHex.TOTAL_TERRAIN];
+
+    private javax.swing.JPanel 			FontTab;
+    private javax.swing.JLabel 			mainLabel;
+    private javax.swing.JComboBox 		mainSizeBox;
+    private javax.swing.JLabel 			contactsLabel;
+    private javax.swing.JComboBox 		contactsSizeBox;
+    private javax.swing.JLabel 			contactsOnMapLabel;
+    private javax.swing.JComboBox 		contactsOnMapSizeBox;
+    private javax.swing.JLabel 			elevationsLabel;
+    private javax.swing.JComboBox 		elevationsSizeBox;
+    private javax.swing.JLabel 			hexNumbersLabel;
+    private javax.swing.JComboBox 		hexNumberSizeBox;
+
+    private javax.swing.JButton 		CancelButton;
+    private javax.swing.JButton 		SaveButton;
     
     /** Creates new form PrefsDialog */
     public PrefsDialog(java.awt.Frame parent, boolean modal) {
@@ -45,6 +73,8 @@ public class PrefsDialog extends javax.swing.JDialog {
         GeneralOptionsTab = new javax.swing.JPanel();
         cliffDistanceLabel = new javax.swing.JLabel();
         cliffDistanceBox = new javax.swing.JComboBox();
+        speedLengthLabel = new javax.swing.JLabel();
+        speedLengthBox = new javax.swing.JComboBox();
 
         MapColorsTab = new javax.swing.JPanel();
         for (int i = 0; i < MUHex.TOTAL_TERRAIN; i++)
@@ -81,7 +111,7 @@ public class PrefsDialog extends javax.swing.JDialog {
         });
         
         // --- GENERAL OPTIONS ---
-        GeneralOptionsTab.setLayout(new java.awt.GridLayout(2, 2));
+        GeneralOptionsTab.setLayout(new java.awt.GridLayout(3, 2));
         
         echoCheckBox = new javax.swing.JCheckBox("Echo Commands", null, prefs.echoCommands);
         echoCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -105,6 +135,18 @@ public class PrefsDialog extends javax.swing.JDialog {
         cliffDistanceBox.addItem(new Integer(2));
         cliffDistanceBox.setSelectedItem(new Integer(prefs.cliffDiff));
         GeneralOptionsTab.add(cliffDistanceBox);
+
+        speedLengthLabel.setText("Speed Indicator Divisor");
+        GeneralOptionsTab.add(speedLengthLabel);
+        speedLengthBox.addItem(new Float(1.0));
+        speedLengthBox.addItem(new Float(1.5));
+        speedLengthBox.addItem(new Float(2.0));
+        speedLengthBox.addItem(new Float(2.5));
+        speedLengthBox.addItem(new Float(3.0));
+        speedLengthBox.addItem(new Float(3.5));
+        speedLengthBox.addItem(new Float(4.0));
+        speedLengthBox.setSelectedItem(new Float(prefs.speedIndicatorLength));
+        GeneralOptionsTab.add(speedLengthBox);
         
         TabbedPane.addTab("General", GeneralOptionsTab);
 
@@ -194,6 +236,7 @@ public class PrefsDialog extends javax.swing.JDialog {
         prefs.hexNumberFontSize = ((Integer) hexNumberSizeBox.getSelectedItem()).intValue();
 
         prefs.cliffDiff = ((Integer) cliffDistanceBox.getSelectedItem()).intValue();
+        prefs.speedIndicatorLength = ((Float) speedLengthBox.getSelectedItem()).floatValue();
 
         thudClass.prefs = prefs;
         
@@ -259,33 +302,4 @@ public class PrefsDialog extends javax.swing.JDialog {
         theBox.addItem(new Integer(24));
         theBox.addItem(new Integer(32));
     }
-
-    // ------------------
-    
-    private javax.swing.JTabbedPane TabbedPane;
-  
-    private javax.swing.JPanel GeneralOptionsTab;
-    private javax.swing.JCheckBox echoCheckBox;
-    private javax.swing.JCheckBox highlightMyHexCheckBox;
-    private javax.swing.JLabel cliffDistanceLabel;
-    private javax.swing.JComboBox cliffDistanceBox;
-    
-    private javax.swing.JPanel MapColorsTab;
-    private javax.swing.JButton bTerrainColors[] = new javax.swing.JButton[MUHex.TOTAL_TERRAIN];
-    
-    private javax.swing.JPanel FontTab;
-    private javax.swing.JLabel mainLabel;
-    private javax.swing.JComboBox mainSizeBox;
-    private javax.swing.JLabel contactsLabel;
-    private javax.swing.JComboBox contactsSizeBox;
-    private javax.swing.JLabel contactsOnMapLabel;
-    private javax.swing.JComboBox contactsOnMapSizeBox;
-    private javax.swing.JLabel elevationsLabel;
-    private javax.swing.JComboBox elevationsSizeBox;
-    private javax.swing.JLabel hexNumbersLabel;
-    private javax.swing.JComboBox hexNumberSizeBox;
-    
-    private javax.swing.JButton CancelButton;
-    private javax.swing.JButton SaveButton;
-
 }

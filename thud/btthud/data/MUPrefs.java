@@ -45,6 +45,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public boolean				tacShowCliffs;
     public boolean 				tacShowIndicators;
     public int					cliffDiff;
+    public float				speedIndicatorLength;
     
     public Color				backgroundColor;
     public Color				foregroundColor;
@@ -112,6 +113,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         tacShowIndicators = false;      // Floating Heat/Armor/Internal bar on tactical map
         highlightMyHex = false;
         cliffDiff = 2;
+        speedIndicatorLength = 3.0f;
 
         makeArcsWeaponRange = false;
         tacShowArcs = false;
@@ -138,23 +140,6 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         terrainColors[MUHex.SMOKE] = Color.lightGray;
         terrainColors[MUHex.SMOKE_OVER_WATER] = Color.lightGray;
         terrainColors[MUHex.UNKNOWN] = Color.black;
-        
-        /*
-        cPlains = Color.white;
-        cWater = Color.blue;
-        cLightForest = Color.green;
-        cHeavyForest = Color.green;
-        cMountain = Color.yellow;
-        cRough = Color.yellow;
-        cBuilding = Color.magenta;
-        cRoad = Color.lightGray;
-        cFire = Color.red;
-        cWall = Color.orange;
-        cSmoke = Color.darkGray;
-        cIce = Color.white;
-        cSmokeOnWater = Color.lightGray;
-        cUnknown = Color.black;
-         */
         
         mainFontSize = 10;
         contactFontSize = 10;
