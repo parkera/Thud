@@ -150,7 +150,7 @@ public class MUContactList extends JFrame
                     
                     synchronized (data)
                     {
-                        Iterator		contacts = data.getContactsIterator();
+                        Iterator		contacts = data.getContactsIterator(true);		// Sorted list
                         
                         while (contacts.hasNext())
                         {

@@ -38,9 +38,7 @@ public class MUData {
     protected MUHex				map[][] = null;
 
     // We store the contact data in a ArrayList, because we need to iterate over it efficiently
-    // The hashtable allows us to associate units with a specific string ID, so we don't get multiples of the same unit
     protected ArrayList			contacts = null;
-    protected Hashtable			contactIndex = null;
     
     public MUData()
     {
@@ -57,16 +55,12 @@ public class MUData {
       */
     public void newContact(MUUnitInfo con)
     {
-        if (haveId(con.id))
-        {
-            contacts.set(indexForId(con.id), con);
-        }
+        int			index = indexForId(con.id);
+
+        if (index != -1)
+            contacts.set(index, con);
         else
-        {
-            // Add the contact to our list, and make sure it's in the hash table
             contacts.add(con);
-            contactIndex.put(con.id, new Integer(contacts.indexOf(con)));
-        }            
     }
 
     /**
@@ -84,16 +78,9 @@ public class MUData {
                 MUUnitInfo		unit = (MUUnitInfo) it.next();
 
                 if (unit.isExpired())
-                {
-                    // Remove this contact from our contacts list as well as our hashtable
-                    it.remove();
-                    contactIndex.remove(unit.id); 
-                }
+                    it.remove();					// Remove this contact		
                 else
-                {
-                    // Increase the age of the contact
-                    unit.expireMore();                    
-                }
+                    unit.expireMore();				// Increase the age of this contact
             }
         }
         catch (Exception e)
@@ -108,23 +95,32 @@ public class MUData {
       */
     protected int indexForId(String id)
     {
-        return ((Integer) contactIndex.get(id)).intValue();
-    }
+        ListIterator		it = contacts.listIterator();
+        int					index;
+        
+        while (it.hasNext())
+        {
+            index = it.nextIndex();
 
-    /**
-      * Returns true if we have an index matching this id
-      */
-    protected boolean haveId(String id)
-    {
-        return contactIndex.containsKey(id);
+            // See if the next unit's upper-case id matches the id sent in
+            if (((MUUnitInfo) it.next()).id.toUpperCase().equals(id.toUpperCase()))
+                return index;            
+        }
+
+        // Must not have found it
+        return -1;
     }
 
     /**
       * Returns an Iterator for the contact list. Used for looping on contacts when drawing the map, for example
+      * @param sorted True if we want a sorted list
       */
-    public Iterator getContactsIterator()
+    public Iterator getContactsIterator(boolean sorted)
     {
-        return contacts.iterator();
+        if (!sorted)
+            return contacts.iterator();
+        else
+            return ((new TreeSet(contacts)).iterator());
     }
     
     // ----------------------------------
@@ -227,7 +223,6 @@ public class MUData {
     {
         // Clear contacts and our unit, but leave the map alone
         contacts = new ArrayList(20);			// data for our contact list
-        contactIndex = new Hashtable();
         myUnit = new MUMyInfo();			// data that represents our own unit
     }
 }

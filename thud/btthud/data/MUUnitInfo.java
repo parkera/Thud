@@ -332,9 +332,9 @@ public class MUUnitInfo extends Object implements Comparable {
         //    return -1;
         
         if (range < ((MUUnitInfo) o2).range)
-            return 1;
-        else if (range > ((MUUnitInfo) o2).range)
             return -1;
+        else if (range > ((MUUnitInfo) o2).range)
+            return 1;
         else
         {
             // We don't want to return 0 unless they are exactly the same unit. Otherwise, it doesn't matter which is first

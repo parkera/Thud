@@ -434,7 +434,7 @@ public class MUMapComponent extends JComponent implements MouseListener
         int						hexX = myLocX - (numAcross / 2);
         int						hexY = myLocY - (numDown / 2);
 
-        Iterator				contacts = data.getContactsIterator();
+        Iterator				contacts = data.getContactsIterator(false);		// we don't care if it's sorted here
         
         // We could sort these by range, so closer units always stay on top... or something
         // But really, who cares
@@ -616,7 +616,7 @@ public class MUMapComponent extends JComponent implements MouseListener
       * Setup the transformation that recenters tactical, contacts, and our own unit in the main window.
       * @param base The current transform that we want to modify
       */
-    public AffineTransform setupStandardTransform(AffineTransform base)
+    protected AffineTransform setupStandardTransform(AffineTransform base)
     {
         AffineTransform			newTrans = new AffineTransform(base);
         
