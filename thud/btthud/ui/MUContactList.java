@@ -32,7 +32,7 @@ public class MUContactList extends JFrame
 
     Font				mFont;
     
-    JTextPane			contactPane;
+    OptionTextPane		contactPane;
     Thread				thread = null;
     
     boolean				go = true;
@@ -54,7 +54,7 @@ public class MUContactList extends JFrame
 
         // Setup our new contact list pane
         BulkStyledDocument	bsd = new BulkStyledDocument(prefs.contactFontSize, 1000);        // Yes, max of 1000 contacts. So sue me.
-        contactPane = new JTextPane(bsd);
+        contactPane = new OptionTextPane(bsd, prefs.antiAliasText);
         contactPane.setBackground(Color.black);
         contactPane.setEditable(false);
         contactPane.setDoubleBuffered(true);

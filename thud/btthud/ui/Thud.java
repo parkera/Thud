@@ -82,7 +82,7 @@ public class Thud extends JFrame implements  ActionListener
     // ------------------
     
     JTextField 				textField;
-    JTextPane				textPane;
+    OptionTextPane			textPane;
     BulkStyledDocument		bsd;
 
     boolean					connected = false;
@@ -541,12 +541,12 @@ public class Thud extends JFrame implements  ActionListener
         textField.setFont(mFont);
         textField.setEnabled(true);
         
-        textPane = new JTextPane(bsd);
+        textPane = new OptionTextPane(bsd, prefs.antiAliasText);
         textPane.setDocument(bsd);
         textPane.setBackground(Color.black);
         textPane.setEditable(false);
         textPane.setFont(mFont);
-
+            
         JScrollPane scrollPane = new JScrollPane(textPane,
                                                  JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                                                  JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);

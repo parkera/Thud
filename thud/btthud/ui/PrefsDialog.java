@@ -24,6 +24,7 @@ public class PrefsDialog extends javax.swing.JDialog {
 
     private javax.swing.JPanel 			GeneralOptionsTab;
     private javax.swing.JCheckBox 		echoCheckBox;
+    private javax.swing.JCheckBox		antiAliasTextCheckBox;
     private javax.swing.JCheckBox 		highlightMyHexCheckBox;
     private javax.swing.JCheckBox		overwriteWithUnknownCheckBox;
     private javax.swing.JLabel 			cliffDistanceLabel;
@@ -130,6 +131,15 @@ public class PrefsDialog extends javax.swing.JDialog {
         });
         GeneralOptionsTab.add(echoCheckBox);
 
+        // Does this work? No idea...
+        antiAliasTextCheckBox = new javax.swing.JCheckBox("Antialias Text", null, prefs.antiAliasText);
+        antiAliasTextCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                antiAliasTextCheckBoxActionPerformed(evt);
+            }
+        });
+        GeneralOptionsTab.add(antiAliasTextCheckBox);
+        
         highlightMyHexCheckBox = new javax.swing.JCheckBox("Highlight My Hex", null, prefs.highlightMyHex);
         highlightMyHexCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -146,7 +156,6 @@ public class PrefsDialog extends javax.swing.JDialog {
         });
         GeneralOptionsTab.add(overwriteWithUnknownCheckBox);
 
-        GeneralOptionsTab.add(nullLabel);
         
         cliffDistanceLabel.setText("Cliff Detection Threshold");
         GeneralOptionsTab.add(cliffDistanceLabel);
@@ -307,6 +316,10 @@ public class PrefsDialog extends javax.swing.JDialog {
 
     private void highlightMyHexCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {
         prefs.highlightMyHex = highlightMyHexCheckBox.isSelected();
+    }
+
+    private void antiAliasTextCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {
+        prefs.antiAliasText = antiAliasTextCheckBox.isSelected();
     }
 
     private void overwriteWithUnknownCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {

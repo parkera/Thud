@@ -27,6 +27,8 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public int					commandHistory;
     public boolean				echoCommands;
 
+    public boolean				antiAliasText;
+
     // These are delays for sending commands, in seconds
     public double				fastCommandUpdate, mediumCommandUpdate, slowCommandUpdate, slugCommandUpdate;
 
@@ -80,6 +82,8 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         showTacMap = true;
         showContacts = true;
 
+        antiAliasText = false;
+        
         mainSizeX = 560;
         mainSizeY = 580;
 
