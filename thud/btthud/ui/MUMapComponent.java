@@ -442,9 +442,11 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             Stroke				saveStroke = g.getStroke();
             AffineTransform		saveTrans = g.getTransform();
             AffineTransform		newTrans = new AffineTransform(saveTrans);
+            Point2D				hexPt = hexPoly.hexToReal(data.myUnit.x, data.myUnit.y, false);
+            Point2D				offsets = offsetsForCentering(data.myUnit.bearingToCenter, data.myUnit.rangeToCenter);
             
             g.setStroke(new BasicStroke(2.0f));
-            newTrans.translate(unitPt.getX(), unitPt.getY());
+            newTrans.translate(hexPt.getX() - l, hexPt.getY());
             g.setTransform(newTrans);
             g.setColor(Color.black);
             g.draw(hexPoly);
