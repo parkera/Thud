@@ -3,12 +3,52 @@ Thud, by Anthony Parker <asp@mac.com>, Tony at 3030MUX
 
 Version History:
 
--1.0d November 16, 2001
+1.0b6
 
- * First version.
+ The focus of the 1.0b6 release is enhancements in speed and bug fixes. There are also a few minor new releases.
+ All users are encouraged to use this new release.
+ Note: Due to changes in the preferences file format, your preferences will be reset on starting this version. Sorry.
+ 
+ New Features:
+ 
+  * Better ANSI support: background colors and underline mode now supported
+  * If you are in a tank, it will show a red line indicating turret facing
+  * Other jumping mechs show a green line indicating jump heading
+  * Hex numbers along side and top now have a black bar behind them to make them much easier to read
+  * Hex numbers display at any zoom level - they skip numbers at far out zoom to make them readable
+  * New option to display your heat level in the tactical display underneath your unit
+  
+ Bug Fixes:
+ 
+  * Much much quicker connect-to-MUX time
+  * Much quicker text handling
+  * More efficient and usable map scrolling
+  * Contact window listing is quicker and flickers less
+  * Elevation numbers now show when 'Darken Elevations' is turned off
+  * If the connection is dropped for some reason, Thud should now behave better. Choose your connection from the menu to reconnect
+  * Menu items properly disabled/enabled depending on connection status
+  * Choosing a new connection while still connected should disconnect properly first, then reconnect
+  * No more duplicate contacts on unknowns (seismic or BAP contacts)
+  * More misc. bug fixes than you can shake a stick at
 
-< Many versions in here I did not bother to keep track of >
+1.0b5
 
+ I've decided to move to a more traditional version numbering system as we approach a final 1.0 release. :)
+ 
+ New Features:
+
+  * There is now a preferences window which allows for changing of colors on the map display, font sizes, and more.
+  * Your own unit is now drawn in a bold line on the tactical map to help differentiate it in large battles.
+  * You can now show cliffs, which will highlight edges in red which will cause a fall or halt.
+  * Changes to internal way that maps are stored.
+  * Thud will now exit when the main window is closed.
+  
+ Bug Fixes:
+  
+  * Thud now handles underground maps properly (unknown hexes show up black on the tactical display).
+  * Some work on map correctness done, but there's still more to do.
+  * A lot of small bug fixes
+  
 -0.6b April 7, 2002
 
  New Features:
@@ -33,50 +73,9 @@ Version History:
   * Moving some of the currently available preferences to a Preferences dialog box, plus adding some of the advanced ones.
   * More intuitive controls for scrolling the map are needed.
   * A better armor display of some kind, instead of just an overall percentage.
+  
+-1.0d November 16, 2001
 
-1.0b5
+ * First version.
 
- I've decided to move to a more traditional version numbering system as we approach a final 1.0 release. :)
- 
- New Features:
-
-  * There is now a preferences window which allows for changing of colors on the map display, font sizes, and more.
-  * Your own unit is now drawn in a bold line on the tactical map to help differentiate it in large battles.
-  * You can now show cliffs, which will highlight edges in red which will cause a fall or halt.
-  * Changes to internal way that maps are stored.
-  * Thud will now exit when the main window is closed.
-  
- Bug Fixes:
-  
-  * Thud now handles underground maps properly (unknown hexes show up black on the tactical display).
-  * Some work on map correctness done, but there's still more to do.
-  * A lot of small bug fixes
-  
-1.0b6
-
- The focus of this release is efficiency of speed and, to a lesser extent, memory. 
- The vast majority of the work was put into bug fixes and not new features, but the result is a much more stable and useful Thud.
- 
- New Features:
- 
-  * Better ANSI support: background colors and underline mode now supported
-  * If you are in a tank, it will show a red line indicating turret facing
-  * Other jumping mechs show a green line indicating jump heading
-  * Hex numbers along side and top now have a black bar behind them to make them much easier to read
-  * Hex numbers display at any zoom level - they skip numbers at far out zoom to make them readable
-  * New option to display your heat level in the tactical display underneath your unit
-  
- Bug Fixes:
- 
-  * Much much quicker connect-to-MUX time
-  * Much quicker text handling
-  * More efficient and usable map scrolling
-  * Contact window listing is quicker and flickers less
-  * Elevation numbers now show when 'Darken Elevations' is turned off
-  * If the connection is dropped for some reason, Thud should now behave better -- choose your connection from the menu to reconnect
-  * Menu items properly disabled/enabled depending on connection status
-  * Choosing a new connection while still connected should disconnect properly first, then reconnect
-  * No more duplicate contacts on unknowns (seismic or BAP contacts)
-  * More misc. bug fixes than you can shake a stick at
-  
-  
+< Many versions in here I did not bother to keep track of >
