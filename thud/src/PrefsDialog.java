@@ -7,14 +7,13 @@
 //  Please see LICENSE.TXT for more information.
 //
 //
+package com.btthud.thud;
 
 /* Note: The "GEN" comments are in here since the file was first automagically generated, but I've modified it manually since then. -asp */
 
 import java.awt.*;
 import javax.swing.*;
 
-import ObjectCloner;
-import ColorWellIcon;
 
 public class PrefsDialog extends javax.swing.JDialog {
     

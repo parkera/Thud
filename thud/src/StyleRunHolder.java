@@ -6,7 +6,7 @@
 //  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
 //  Please see LICENSE.TXT for more information.
 //
-
+package com.btthud.thud;
 
 public class StyleRunHolder {
 

@@ -6,6 +6,7 @@
 //  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
 //  Please see LICENSE.TXT for more information.
 //
+package com.btthud.thud;
 
 // This class is for drawing the buttons with colored icons inside of them, indicating a currently selected color
 

@@ -7,6 +7,7 @@
 //  Please see LICENSE.TXT for more information.
 //
 //
+package com.btthud.thud;
 
 import java.awt.*;
 import java.awt.event.*;

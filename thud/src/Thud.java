@@ -6,6 +6,7 @@
 //  Please see LICENSE.TXT for more information.
 //
 //
+package com.btthud.thud;
 
 import java.io.*;
 
@@ -18,8 +19,6 @@ import javax.swing.text.*;
 import java.lang.*;
 import java.util.*;
 
-import AboutBox;
-import BulkStyledDocument;
 
 public class Thud extends JFrame implements  ActionListener
 {
