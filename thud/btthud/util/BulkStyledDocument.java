@@ -202,8 +202,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
     public void insertPlainString(String l)
     {
         try {
-            insertNewLine();
-            insertString(getLength(), l, attrPlain);
+            insertString(getLength(), l + "\n", attrPlain);
         } catch (Exception e) {
             System.out.println("Error: insertPlainString: " + e);            
         }
