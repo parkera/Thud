@@ -9,6 +9,8 @@
 //
 package btthud.engine;
 
+import btthud.ui.Thud;
+
 import java.util.*;
 import java.net.*;
 import java.io.*;
@@ -30,6 +32,7 @@ public class MUConnection implements Runnable {
     Socket			conn = null;
     String			host = null;
     MUParse			handler = null;
+    Thud			errorHandler = null;
     int				port;
     BufferedReader	rd;
     InputStream		is;
@@ -49,9 +52,12 @@ public class MUConnection implements Runnable {
      * @see check
      * @see endConnection
      */
-    public MUConnection(String host, int port, MUParse handler) throws java.net.UnknownHostException, java.io.IOException
+    public MUConnection(String host, int port, MUParse handler, Thud errorHandler) throws java.net.UnknownHostException, java.io.IOException
     {
-        this.host = host; this.port = port; this.handler = handler;
+        this.host = host;
+        this.port = port;
+        this.handler = handler;
+        this.errorHandler = errorHandler;
         
         try
         {
@@ -100,7 +106,6 @@ public class MUConnection implements Runnable {
     
     /**
      * Checks to see if there is new input that we should store here. If so, it puts it in the StringBuffer.
-     * @see endConnection
      */
     public void run()
     {
@@ -112,22 +117,12 @@ public class MUConnection implements Runnable {
         {
             try
             {
-                /*
-                if (!rd.ready())
-                {
-                    //Thread.yield();				// Give up the CPU
-                    Thread.sleep(10);
-                }
-                else
-                {
-                    // read some bytes until we hit a newline
-                    line = rd.readLine();
-                    if (line != null)
-                        handler.parseLine(line);   
-                }
-                 */
                 line = rd.readLine();
                 handler.parseLine(line);
+            }
+            catch (IOException ioe)
+            {
+                errorHandler.stopConnection();
             }
             catch (Exception e)
             {

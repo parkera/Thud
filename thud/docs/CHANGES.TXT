@@ -64,5 +64,8 @@ Version History:
   * Much much quicker connect-to-MUX time
   * Much quicker text handling
   * Elevation numbers now show when 'Darken Elevations' is turned off
+  * If the connetion is dropped for some reason, Thud should now behave better
+  * Menu items properly disabled/enabled depending on connection status
+  * Choosing a new connection while still connected should disconnect properly
   
   
