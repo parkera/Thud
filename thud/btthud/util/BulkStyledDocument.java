@@ -44,10 +44,6 @@ public class BulkStyledDocument extends DefaultStyledDocument
     {
         this.fontSize = fontSize;
 
-        // If I want to change the font size of all the text previous to this, I may have
-        // to create a new MutableAttributeSet and setCharacterAttributes for the whole document
-        // For now, I just reset the foreground font size
-        
         StyleConstants.setFontSize(attrBase, fontSize);				// Default font size...
         StyleConstants.setForeground(attrBase, Color.white);		// ... and color
         
@@ -59,6 +55,14 @@ public class BulkStyledDocument extends DefaultStyledDocument
         StyleConstants.setForeground(attrCommand, Color.blue);
         StyleConstants.setForeground(attrHudMessage, Color.black);
         StyleConstants.setBackground(attrHudMessage, Color.white);
+
+        /*
+         // This is an attempt at resetting the font size for the document when the prefs say to change the size... not working
+        setCharacterAttributes(0,
+                               getLength(),
+                               attrBase,
+                               false);
+         */
     }
 
     /**
@@ -78,7 +82,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
         boolean						done;
 
         ArrayList					styles = new ArrayList();	// we could specify an initial capacity here
-        
+
         try
         {
             while (i < numChars)

@@ -26,12 +26,12 @@ public class MUContactList extends JFrame
                            implements Runnable,
                                       ActionListener
 {
-
     MUConnection	conn;
     MUData			data;
     MUPrefs			prefs;
 
     Font			mFont;
+    int				fontSize;
     
     JTextPane		contactPane;
     Thread			thread = null;
@@ -51,7 +51,8 @@ public class MUContactList extends JFrame
         contactPane.setBackground(Color.black);
         contactPane.setEditable(false);
         contactPane.setDoubleBuffered(true);
-        mFont = new Font("Monospaced", Font.PLAIN, prefs.contactFontSize);
+        fontSize = prefs.contactFontSize;
+        mFont = new Font("Monospaced", Font.PLAIN, fontSize);
         contactPane.setFont(mFont);
         initStylesForTextPane(contactPane);
 
@@ -79,7 +80,6 @@ public class MUContactList extends JFrame
 
     protected void initStylesForTextPane(JTextPane textPane)
     {
-
         //Initialize some styles.
         Style def = StyleContext.getDefaultStyleContext().
         getStyle(StyleContext.DEFAULT_STYLE);
@@ -107,6 +107,14 @@ public class MUContactList extends JFrame
         StyleConstants.setStrikeThrough(s, true);
     }
 
+    public void newFontSize(int fontSize)
+    {
+        this.fontSize = fontSize;
+        mFont = new Font("Monospaced", Font.PLAIN, fontSize);
+        contactPane.setFont(mFont);
+    }
+    
+    // --------------------
     public void start()
     {
         if (thread == null)
@@ -133,16 +141,11 @@ public class MUContactList extends JFrame
                         doc.remove(0, doc.getLength());		// clear the buffer
 
                     TreeSet				contactsTree = null;
-                    int					docL;
+                    int					docL = doc.getLength();
                     
                     synchronized (data.contacts)
                     {
-
                         contactsTree = new TreeSet((data.contacts).values());
-            
-                        docL = doc.getLength();
-                        if (docL < 0)
-                            System.out.println("*** -> docLength: " + docL);
                         
                         for (Iterator it = contactsTree.iterator(); it.hasNext(); )
                         {

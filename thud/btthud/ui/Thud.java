@@ -636,6 +636,8 @@ public class Thud extends JFrame implements  ActionListener
         // Send messages around in case something changed
         if (tacMap != null)
             tacMap.newPreferences(prefs);
+        if (conList != null)
+            conList.newFontSize(prefs.contactFontSize);
         
         mainFontChanged();
     }
@@ -848,10 +850,11 @@ public class Thud extends JFrame implements  ActionListener
     {
         
         mFont = new Font("Monospaced", Font.PLAIN, prefs.mainFontSize);
-        /*
+
+        if (bsd != null)
+            bsd.newFontSize(prefs.mainFontSize);
         if (textField != null)
             textField.setFont(mFont);
-         */
     }
     
     // -----------------------
