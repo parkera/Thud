@@ -152,6 +152,9 @@ public class MUPrefs extends Object implements Serializable, Cloneable
 
         hosts[0] = "btech.dhs.org";
         hostPorts[0] = 3030;
+
+        hosts[1] = "btech.no-ip.com";
+        hostPorts[1] = 3049;
         
     }
 }

@@ -435,13 +435,17 @@ public class Thud extends JFrame implements  ActionListener
     // Initialize the connection items for the HUD menu
     public void initConnectionMenus()
     {
-        numHosts = 1;
+        // Busted: Should use the preferences, not create the menu again
+        numHosts = 2;
         hosts = new String[numHosts];
         ports = new int[numHosts];
         miConnections = new JMenuItem[numHosts];
 
         hosts[0] = "btech.dhs.org";
         ports[0] = 3030;
+
+        hosts[1] = "btech.no-ip.com";
+        ports[1] = 3049;
 
     }
     
