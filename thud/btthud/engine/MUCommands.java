@@ -49,6 +49,7 @@ public class MUCommands
         // Send some initial commands
         try
         {
+            conn.sendCommand("hudinfo");		// Get the version
             conn.sendCommand("hudinfo sgi");
             conn.sendCommand("hudinfo oas");
             conn.sendCommand("hudinfo wl");

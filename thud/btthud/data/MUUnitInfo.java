@@ -353,8 +353,10 @@ public class MUUnitInfo extends Object implements Comparable {
       */
     public int compareTo(Object o2)
     {
-        //if (isDestroyed())
-        //    return -1;
+        if (type.equals("i"))
+            return 1;
+        if (isDestroyed())
+            return 1;
         
         if (range < ((MUUnitInfo) o2).range)
             return -1;

@@ -457,7 +457,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         //if (data.myUnit.isJumping())
         //    drawHeading(g, unitPt, data.myUnit, HEADING_JUMP);
         
-        drawIDBox(g, data.myUnit, unitPt, true, false, null);
+        drawIDBox(g, data.myUnit, unitPt, true);
     }
     
     /**
@@ -504,8 +504,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             // Limitations in hudinfo keep us from knowing the turret heading of enemy contacts, or we could draw that as well
 
             // Draw box for contact ID
-            // last 3 bools: friend, expired, target -- should get from contact data
-            drawIDBox(g, unit, conPoint, false, false, null);
+            drawIDBox(g, unit, conPoint, false);
         }
         
         // Reset the transformation
@@ -954,10 +953,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
      * @param g The graphics context into which we are drawing.
      * @param unit The unit we're drawing
      * @param self If true, we're drawing our own unit
-     * @param debug If true, draw some debug info specified in next arg
-     * @param debugString If debug is true, draw this string in the id box
      */
-    public void drawIDBox(Graphics2D g, MUUnitInfo unit, Point2D pt, boolean self, boolean debug, String debugString)
+    public void drawIDBox(Graphics2D g, MUUnitInfo unit, Point2D pt, boolean self)
     {
 
         try
@@ -993,21 +990,26 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             if (self)
                 g.setStroke(oldStroke);
             
-            if (!self || (self && debug))		// note, turning on debug output for own unit disables weapon arcs
+            if (!self)
             {
                 // Draw text box
                 Rectangle2D			backingBox;
-                String				textString;
-                
+                StringBuffer		nameString = new StringBuffer();
+
+                if (unit.id.length() <= 2)
+                {
+                    nameString.append('[');
+                    nameString.append(unit.id);
+                    nameString.append(']');
+                }
+
                 if (prefs.tacShowUnitNames)
-                    textString = "[" + unit.id + "] " + unit.name;
-                else
-                    textString = "[" + unit.id + "]";
+                {
+                    nameString.append(' ');
+                    nameString.append(unit.name);
+                }
 
-                if (debug)
-                    textString = textString + " / " + debugString;
-
-                Rectangle2D 		stringRect = infoFont.getStringBounds(textString, frc);
+                Rectangle2D 		stringRect = infoFont.getStringBounds(nameString.toString(), frc);
     
                 backingBox = new Rectangle2D.Float((float) (iconBounds.getWidth() / 2 + spacing + borderWidth / 2),
                                                    (float) (-stringRect.getHeight() / 2 - borderHeight / 2),
@@ -1056,9 +1058,9 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                     g.setColor(Color.yellow);
                 
                 g.setFont(infoFont);
-                g.drawString(textString,
+                g.drawString(nameString.toString(),
                             (float) (iconBounds.getWidth() / 2 + spacing + borderWidth),
-                            (float) (stringRect.getHeight() / 2 + (infoFont.getLineMetrics(textString, frc)).getDescent()) - borderHeight);
+                            (float) (stringRect.getHeight() / 2 + (infoFont.getLineMetrics(nameString.toString(), frc)).getDescent()) - borderHeight);
             }
             else
             {
@@ -1201,6 +1203,10 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         int					whichHeading;
         float				headingRad;
 
+        // If we're drawing an installation, don't draw a heading
+        if (u.type.equals("i"))
+            return;
+        
         if (type == HEADING_NORMAL)
         {
             whichHeading = u.heading;

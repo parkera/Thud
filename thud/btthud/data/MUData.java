@@ -301,4 +301,12 @@ public class MUData {
         else
             return false;
     }
+
+    public boolean hiSupportsAllArgumentHudinfo()
+    {
+        if (hudInfoMinorVersion > 6)
+            return true;
+        else
+            return false;
+    }
 }

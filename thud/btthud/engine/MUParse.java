@@ -293,6 +293,7 @@ public class MUParse implements Runnable {
         else if (l.startsWith("#HUD hudinfo"))
         {
             parseHudInfoVersion(l);
+            return true;
         }
         else if (l.startsWith("#HUD:"))
         {
@@ -452,6 +453,7 @@ public class MUParse implements Runnable {
             String			tempStr;
     
             // See hudinfospec.txt for detailed formatting information
+            // #HUD:asdfk:C:L# DH,v,-,B,CG Ostroc,182,105,1,120.031,358,86.000,0.000,240,-,0.040,60,60,0,-
             
             con.id = st.nextToken();
 
@@ -481,11 +483,20 @@ public class MUParse implements Runnable {
                 con.secondarySensor = false;
             }
 
-            // If both primary and secondary sensor are false, then the token we were just looking at is actually the type
-            if (!con.primarySensor && !con.secondarySensor)
-                con.type = tempStr;
-            else
+            // Version 0.7 and above doesn't let us return a nil argument
+            if (data.hiSupportsAllArgumentHudinfo())
                 con.type = st.nextToken();
+            else
+            {
+                if (!con.primarySensor && !con.secondarySensor)
+                {
+                    // If both primary and secondary sensor are false, then the token we were just looking at is actually the type
+                    if (!con.primarySensor && !con.secondarySensor)
+                        con.type = tempStr;
+                    else
+                        con.type = st.nextToken();
+                }
+            }
 
             con.name = st.nextToken().intern();
             if (con.name == "-")
@@ -520,11 +531,22 @@ public class MUParse implements Runnable {
             con.weight = Integer.parseInt(st.nextToken());
     
             con.apparentHeat = Integer.parseInt(st.nextToken());
-    
-            if (st.hasMoreTokens())
-                con.status = st.nextToken();
+
+            if (data.hiSupportsAllArgumentHudinfo())
+            {
+                tempStr = st.nextToken();
+                if (tempStr.equals("-"))
+                    con.status = "";
+                else
+                    con.status = new String(tempStr);
+            }
             else
-                con.status = "";
+            {
+                if (st.hasMoreTokens())
+                    con.status = st.nextToken();
+                else
+                    con.status = "";                
+            }
             
             // Give our new contact info to the data object
             data.newContact(con);
@@ -571,6 +593,9 @@ public class MUParse implements Runnable {
             MUBuildingInfo	building = new MUBuildingInfo();
             String			tempStr;
 
+            building.type = "i";			// installation type
+            building.friend = true;			// All buildings are friendly and inviting. :)
+            
             building.arc = st.nextToken();
             building.name = st.nextToken();
 
@@ -587,6 +612,9 @@ public class MUParse implements Runnable {
             if (st.hasMoreTokens())
                 building.status = st.nextToken();
 
+            // We don't have any way to uniquely id a building, so we'll just stick with the name and coords for now
+            building.id = building.name + building.x + building.y;
+            
             data.newContact(building);
             
         }

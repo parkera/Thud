@@ -24,11 +24,10 @@ public class MUBuildingInfo extends MUUnitInfo {
         */
         StringBuffer	sb = new StringBuffer();
 
+        sb.append(' '); sb.append(' ');
         sb.append(arc);
         sb.append(' ');
-        sb.append(name);
-        sb.append(' ');
-        sb.append(type);
+        sb.append(leftJust(name, 23, true));
         sb.append(' ');
 
         sb.append('x'); sb.append(':');

@@ -172,7 +172,8 @@ public class MUContactList extends JFrame
 
                     doc.clearAndInsertParsedString(elements);
                     
-                    contactPane.setCaretPosition(doc.getLength());
+                    // Don't scroll
+                    // contactPane.setCaretPosition(doc.getLength());
                 }
 
                 // This should probably sleep until notified or something
