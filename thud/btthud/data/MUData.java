@@ -49,10 +49,7 @@ public class MUData {
         
         contacts = new Hashtable();			// data for our contact list
     
-        map = new MUHex[MAX_X][MAX_Y];
-        for (int i = 0; i < MAX_X; i++)
-            for (int j = 0; j < MAX_Y; j++)
-                map[i][j] = new MUHex();
+        map = new MUHex[MAX_X][MAX_Y];		// individual hexes will be allocated if they are needed.. this is not very memory efficient still
 
         myUnit = new MUMyInfo();			// data that represents our own unit
     }
@@ -124,33 +121,36 @@ public class MUData {
     // ----------------------------------
 
     public char getHexTerrain(int x, int y)
-    {
-        char		ter;
-        
+    {        
         if (x > 0 && x < MAX_X && y > 0 && y < MAX_Y)
-            ter = map[x][y].terrain;
-        else
-            ter = '?';
+        {
+            if (map[x][y] != null)
+                return map[x][y].terrain;
+            else
+                return '?';
+        }
 
-        return ter;
+        return '?';
     }
 
     public int getHexElevation(int x, int y)
     {
-        int			elev;
-
         if (x > 0 && x < MAX_X && y > 0 && y < MAX_Y)
-            elev = map[x][y].elevation;
-        else
-            elev = 0;
+        {
+            if (map[x][y] != null)
+                return map[x][y].elevation;
+            else
+                return 0;
+        }
 
-        return elev;
+        return 0;
     }
 
     public void setHex(int x, int y, char ter, int elevation)
     {
         if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y)
         {
+            map[x][y] = new MUHex();
             map[x][y].terrain = ter;
             map[x][y].elevation = elevation;
         }
@@ -161,9 +161,12 @@ public class MUData {
         MUHex		newHex = null;
 
         if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y)
-            newHex = map[x][y];
-        else
-            newHex = new MUHex();
+        {
+            if (map[x][y] != null)
+                newHex = map[x][y];
+            else
+                newHex = new MUHex();
+        }
 
         return newHex;
     }

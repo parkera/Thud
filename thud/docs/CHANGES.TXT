@@ -59,4 +59,6 @@ Version History:
   * Better ANSI support: background colors and underline mode now supported
   
  Bug Fixes:
+ 
+  * Much much quicker connect-to-MUX time
   
