@@ -25,6 +25,7 @@ public class PrefsDialog extends javax.swing.JDialog {
     private javax.swing.JPanel 			GeneralOptionsTab;
     private javax.swing.JCheckBox 		echoCheckBox;
     private javax.swing.JCheckBox 		highlightMyHexCheckBox;
+    private javax.swing.JCheckBox		overwriteWithUnknownCheckBox;
     private javax.swing.JLabel 			cliffDistanceLabel;
     private javax.swing.JComboBox 		cliffDistanceBox;
     private javax.swing.JLabel 			speedLengthLabel;
@@ -49,6 +50,8 @@ public class PrefsDialog extends javax.swing.JDialog {
 
     private javax.swing.JButton 		CancelButton;
     private javax.swing.JButton 		SaveButton;
+
+    private javax.swing.JLabel			nullLabel;
     
     /** Creates new form PrefsDialog */
     public PrefsDialog(java.awt.Frame parent, boolean modal) {
@@ -96,6 +99,8 @@ public class PrefsDialog extends javax.swing.JDialog {
         hexNumbersLabel = new javax.swing.JLabel();
         hexNumberSizeBox = new javax.swing.JComboBox();
 
+        nullLabel = new javax.swing.JLabel();
+        
         CancelButton = new javax.swing.JButton();
         SaveButton = new javax.swing.JButton();
 
@@ -115,7 +120,7 @@ public class PrefsDialog extends javax.swing.JDialog {
         });
         
         // --- GENERAL OPTIONS ---
-        GeneralOptionsTab.setLayout(new java.awt.GridLayout(4, 2));
+        GeneralOptionsTab.setLayout(new java.awt.GridLayout(5, 2));
         
         echoCheckBox = new javax.swing.JCheckBox("Echo Commands", null, prefs.echoCommands);
         echoCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -132,6 +137,16 @@ public class PrefsDialog extends javax.swing.JDialog {
             }
         });
         GeneralOptionsTab.add(highlightMyHexCheckBox);
+
+        overwriteWithUnknownCheckBox = new javax.swing.JCheckBox("Erase Unknown Terrain", null, prefs.overwriteWithUnknown);
+        overwriteWithUnknownCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                overwriteWithUnknownCheckBoxActionPerformed(evt);
+            }
+        });
+        GeneralOptionsTab.add(overwriteWithUnknownCheckBox);
+
+        GeneralOptionsTab.add(nullLabel);
         
         cliffDistanceLabel.setText("Cliff Detection Threshold");
         GeneralOptionsTab.add(cliffDistanceLabel);
@@ -294,6 +309,10 @@ public class PrefsDialog extends javax.swing.JDialog {
         prefs.highlightMyHex = highlightMyHexCheckBox.isSelected();
     }
 
+    private void overwriteWithUnknownCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {
+        prefs.overwriteWithUnknown = overwriteWithUnknownCheckBox.isSelected();
+    }
+    
     // Closes the dialog
     private void closeDialog(java.awt.event.WindowEvent evt) {
         setVisible(false);

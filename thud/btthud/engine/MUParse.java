@@ -666,8 +666,10 @@ public class MUParse implements Runnable {
             // Water is negative elevation
             if (terrTypeChar == '~' && terrElev != 0)
                 terrElev = -terrElev;
-            
-            data.setHex(tacSX + i, thisY, terrTypeChar, terrElev);
+
+            // If it's a '?' make sure we're supposed to overwrite
+            if (terrTypeChar != '?' || prefs.overwriteWithUnknown)
+                data.setHex(tacSX + i, thisY, terrTypeChar, terrElev);
         }
     }
 
