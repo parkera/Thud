@@ -648,7 +648,7 @@ public class Thud extends JFrame implements  ActionListener
         if (tacMap != null)
             tacMap.newPreferences(prefs);
         if (conList != null)
-            conList.newFontSize(prefs.contactFontSize);
+            conList.newPreferences(prefs);
         
         mainFontChanged();
     }

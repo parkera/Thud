@@ -196,6 +196,19 @@ public class BulkStyledDocument extends DefaultStyledDocument
             System.out.println("Error: insertParsedString: " + e);
         }
     }
+
+    public void clearAndInsertParsedString(ArrayList es)
+    {
+        try {            
+            if (getLength() > 0)
+                remove(0, getLength());		// clear the buffer
+
+            insertParsedString(es);
+            
+        } catch (Exception e) {
+            System.out.println("Error: insertParsedString: " + e);
+        }
+    }
     
     // Various methods for inserting pre-styled messages into the main window
     

@@ -26,17 +26,23 @@ public class MUContactList extends JFrame
                            implements Runnable,
                                       ActionListener
 {
-    MUConnection	conn;
-    MUData			data;
-    MUPrefs			prefs;
+    MUConnection		conn;
+    MUData				data;
+    MUPrefs				prefs;
 
-    Font			mFont;
-    int				fontSize;
+    Font				mFont;
     
-    JTextPane		contactPane;
-    Thread			thread = null;
+    JTextPane			contactPane;
+    Thread				thread = null;
     
-    boolean			go = true;
+    boolean				go = true;
+
+    MutableAttributeSet	conRegular;
+    MutableAttributeSet	conEnemy;
+    MutableAttributeSet	conLocked;
+    MutableAttributeSet	conFriend;
+    MutableAttributeSet	conExpired;
+    MutableAttributeSet	conDestroyed;
     
     public MUContactList(MUConnection conn, MUData data, MUPrefs prefs)
     {
@@ -47,14 +53,15 @@ public class MUContactList extends JFrame
         this.prefs = prefs;
 
         // Setup our new contact list pane
-        contactPane = new JTextPane();
+        BulkStyledDocument	bsd = new BulkStyledDocument(prefs.contactFontSize);        
+        contactPane = new JTextPane(bsd);
         contactPane.setBackground(Color.black);
         contactPane.setEditable(false);
         contactPane.setDoubleBuffered(true);
-        fontSize = prefs.contactFontSize;
-        mFont = new Font("Monospaced", Font.PLAIN, fontSize);
+
+        mFont = new Font("Monospaced", Font.PLAIN, prefs.contactFontSize);
         contactPane.setFont(mFont);
-        initStylesForTextPane(contactPane);
+        initAttributeSets();
 
         JScrollPane scrollPane = new JScrollPane(contactPane,
                                                  JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
@@ -78,40 +85,42 @@ public class MUContactList extends JFrame
         start();
     }
 
-    protected void initStylesForTextPane(JTextPane textPane)
+    protected void initAttributeSets()
     {
-        //Initialize some styles.
-        Style def = StyleContext.getDefaultStyleContext().
-        getStyle(StyleContext.DEFAULT_STYLE);
+        conRegular = new SimpleAttributeSet();
+        StyleConstants.setFontSize(conRegular, prefs.contactFontSize);
+        StyleConstants.setForeground(conRegular, Color.white);
 
-        StyleConstants.setFontSize(def, prefs.contactFontSize);
-        StyleConstants.setForeground(def, Color.white);
-        Style regular = textPane.addStyle("con-regular", def);
+        conEnemy = new SimpleAttributeSet();
+        conEnemy.setResolveParent(conRegular);
+        StyleConstants.setForeground(conEnemy, Color.yellow);
+        StyleConstants.setBold(conEnemy, true);
 
-        Style s = textPane.addStyle("con-enemy", regular);
-        StyleConstants.setForeground(s, Color.yellow);
-        StyleConstants.setBold(s, true);
+        conLocked = new SimpleAttributeSet();
+        conLocked.setResolveParent(conRegular);
+        StyleConstants.setForeground(conLocked, Color.red);
+        StyleConstants.setBold(conLocked, true);
 
-        s = textPane.addStyle("con-locked", regular);
-        StyleConstants.setForeground(s, Color.red);
-        StyleConstants.setBold(s, true);
+        conFriend = new SimpleAttributeSet();
+        conFriend.setResolveParent(conRegular);
+
+        conExpired = new SimpleAttributeSet();
+        conExpired.setResolveParent(conRegular);
+        StyleConstants.setForeground(conExpired, Color.gray);
+
+        conDestroyed = new SimpleAttributeSet();
+        conDestroyed.setResolveParent(conRegular);
+        StyleConstants.setForeground(conDestroyed, Color.gray);
+        StyleConstants.setStrikeThrough(conDestroyed, true);
         
-        s = textPane.addStyle("con-friend", regular);
-        StyleConstants.setForeground(s, Color.white);
-
-        s = textPane.addStyle("con-expired", regular);
-        StyleConstants.setForeground(s, Color.gray);
-
-        s = textPane.addStyle("con-destroyed", regular);
-        StyleConstants.setForeground(s, Color.gray);
-        StyleConstants.setStrikeThrough(s, true);
     }
-
-    public void newFontSize(int fontSize)
+    
+    public void newPreferences(MUPrefs prefs)
     {
-        this.fontSize = fontSize;
-        mFont = new Font("Monospaced", Font.PLAIN, fontSize);
+        this.prefs = prefs;
+        mFont = new Font("Monospaced", Font.PLAIN, prefs.contactFontSize);
         contactPane.setFont(mFont);
+        initAttributeSets();
     }
     
     // --------------------
@@ -126,22 +135,20 @@ public class MUContactList extends JFrame
     
     public void run()
     {
-        MUUnitInfo		unit = new MUUnitInfo();
-        Document 		doc = contactPane.getDocument();
+        MUUnitInfo								unit = new MUUnitInfo();
+        BulkStyledDocument 						doc = (BulkStyledDocument) contactPane.getDocument();
+        ArrayList								elements = new ArrayList();
+        DefaultStyledDocument.ElementSpec[]		list;
         
         while (go)
         {
             try
             {
                 if (data.hudRunning)
-                {
-                    //conn.sendCommand("contacts h");		// send contacts command
-
-                    if (doc.getLength() > 0)
-                        doc.remove(0, doc.getLength());		// clear the buffer
+                {                    
+                    elements.clear();
 
                     TreeSet				contactsTree = null;
-                    int					docL = doc.getLength();
                     
                     synchronized (data.contacts)
                     {
@@ -151,26 +158,35 @@ public class MUContactList extends JFrame
                         {
                             unit = (MUUnitInfo) it.next();
 
+                            elements.add(new DefaultStyledDocument.ElementSpec(conRegular, DefaultStyledDocument.ElementSpec.EndTagType));
+                            elements.add(new DefaultStyledDocument.ElementSpec(conRegular, DefaultStyledDocument.ElementSpec.StartTagType));
+
+                            AttributeSet		whichAttrs;
                             if (unit.isDestroyed())
-                                doc.insertString(docL, unit.makeContactString() + "\n", contactPane.getStyle("con-destroyed"));
+                                whichAttrs = conDestroyed;
                             else if (unit.isOld())
-                                doc.insertString(docL, unit.makeContactString() + "\n", contactPane.getStyle("con-expired"));
+                                whichAttrs = conExpired;
                             else if (unit.isFriend())
-                                doc.insertString(docL, unit.makeContactString() + "\n", contactPane.getStyle("con-friend"));
+                                whichAttrs = conFriend;
                             else if (!unit.isFriend() && !unit.isTarget())
-                                doc.insertString(docL, unit.makeContactString() + "\n", contactPane.getStyle("con-enemy"));
+                                whichAttrs = conEnemy;
                             else if (unit.isTarget())
-                                doc.insertString(docL, unit.makeContactString() + "\n", contactPane.getStyle("con-locked"));
+                                whichAttrs = conLocked;
                             else
-                                doc.insertString(docL, unit.makeContactString() + "\n", contactPane.getStyle("con-regular"));
+                                whichAttrs = conRegular;
+
+                            elements.add(new DefaultStyledDocument.ElementSpec(whichAttrs,
+                                                                               DefaultStyledDocument.ElementSpec.ContentType,
+                                                                               unit.makeContactString().toCharArray(),
+                                                                               0,
+                                                                               unit.makeContactString().length()));
                         }
 
                     }
 
-                    docL = doc.getLength();
-                    if (docL < 0)
-                        System.out.println("*** -> docLengthNew: " + docL);
-                    contactPane.setCaretPosition(docL);
+                    doc.clearAndInsertParsedString(elements);
+                    
+                    contactPane.setCaretPosition(doc.getLength());
                 }
 
                 // This should probably sleep until notified or something
