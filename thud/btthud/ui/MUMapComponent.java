@@ -908,6 +908,7 @@ public class MUMapComponent extends JComponent implements MouseListener
 
             if (self)
                 g.setStroke(oldStroke);
+            
             if (!self || (self && debug))		// note, turning on debug output for own unit disables weapon arcs
             {
                 // Draw text box
