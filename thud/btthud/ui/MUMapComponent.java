@@ -102,6 +102,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     BufferedImage			savedTerrain = null;
     Point2D					savedTerrainCenter = new Point2D.Double(0,0);
     Rectangle				savedTerrainBounds = new Rectangle(0, 0, 0, 0);
+    
         
     public MUMapComponent(MUData data, MUPrefs prefs)
     {
@@ -402,44 +403,22 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         // ----
 
-        synchronized (data)
-        {
-            // Paint the terrain
-            paintTerrain(g);
-            
-            // Set the transform that translates everything so as to make our own unit the center of the display
-            if (prefs.xOffset != 0 || prefs.yOffset != 0)
-            {
-                AffineTransform			xform = new AffineTransform(oldTrans);
-                xform.translate(-prefs.xOffset * (w + l), -prefs.yOffset * h);
-                g.setTransform(setupStandardTransform(xform, bounds));
-            }
-            else
-            {
-                g.setTransform(setupStandardTransform(oldTrans, bounds));
-            }
-            
-            // Paint other contacts on the map
-            paintContacts(g);
+        // Paint the terrain
+        paintTerrain(g);
 
-            // Paint our own unit
-            paintUnit(g);
-            
-            // Reset the transform
-            g.setTransform(oldTrans);
+        // Paint contacts on the map, including our own unit
+        paintContacts(g);
 
-            // ----
-
-            // Paint hex numbers
-            /* 
+        // Paint hex numbers
+        /*
             if (h >= 20)
-                paintNumbers(g);
-             */
-            // ----
-            
-            // Finally, draw our status bar at the bottom of the screen
-            paintStatusBar(g);
-        }
+         paintNumbers(g);
+         */
+
+        // Finally, draw our status bar at the bottom of the screen
+        paintStatusBar(g);
+
+        // ----
         
         // Reset the transform
         g.setTransform(oldTrans);
@@ -477,30 +456,48 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     public void paintContacts(Graphics2D g)
     {
         AffineTransform			oldTrans = g.getTransform();
-        
+
         MUUnitInfo				unit;
         Point2D					conPoint = new Point2D.Float();
         Iterator				contacts = data.getContactsIterator(false);		// we don't care if it's sorted here
         
-        // We could sort these by range, so closer units always stay on top... or something
-        // But really, who cares
-        while (contacts.hasNext())
+        // Set the transform that translates everything so as to make our own unit the center of the display
+        if (prefs.xOffset != 0 || prefs.yOffset != 0)
         {
-            // Get the next unit...
-            unit = (MUUnitInfo) contacts.next();
+            AffineTransform			xform = new AffineTransform(oldTrans);
+            xform.translate(-prefs.xOffset * (w + l), -prefs.yOffset * h);
+            g.setTransform(setupStandardTransform(xform, bounds));
+        }
+        else
+        {
+            g.setTransform(setupStandardTransform(oldTrans, bounds));
+        }
 
-            // Figure out where it is supposed to be drawn
-            conPoint = realForUnit(unit);
+        synchronized (data)
+        {
+            // Paint our own unit first
+            paintUnit(g);
 
-            // Draw it
-            drawHeading(g, conPoint, unit, HEADING_NORMAL);
-            if (unit.isJumping())
-                drawHeading(g, conPoint, unit, HEADING_JUMP);
-            // Limitations in hudinfo keep us from knowing the turret heading of enemy contacts, or we could draw that as well
-            
-            // Draw box for contact ID
-            // last 3 bools: friend, expired, target -- should get from contact data
-            drawIDBox(g, unit, conPoint, false, false, null);
+            // We could sort these by range, so closer units always stay on top... or something
+            // But really, who cares
+            while (contacts.hasNext())
+            {
+                // Get the next unit...
+                unit = (MUUnitInfo) contacts.next();
+
+                // Figure out where it is supposed to be drawn
+                conPoint = realForUnit(unit);
+
+                // Draw it
+                drawHeading(g, conPoint, unit, HEADING_NORMAL);
+                if (unit.isJumping())
+                    drawHeading(g, conPoint, unit, HEADING_JUMP);
+                // Limitations in hudinfo keep us from knowing the turret heading of enemy contacts, or we could draw that as well
+
+                // Draw box for contact ID
+                // last 3 bools: friend, expired, target -- should get from contact data
+                drawIDBox(g, unit, conPoint, false, false, null);
+            }            
         }
         
         // Reset the transformation
@@ -560,28 +557,21 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                 g2.setTransform(setupStandardTransform(g2oldTrans, savedTerrainBounds));
             }
 
-            // Paint the terrain
-            paintTerrainGraphics(g2);
+            synchronized (data)
+            {
+                // Paint the terrain
+                paintTerrainGraphics(g2);
 
+                // Clear the changed flag
+                data.setTerrainChanged(false);                
+            }
+            
             // Note the center of this picture
             savedTerrainCenter = realForUnit(data.myUnit);
-
-            // Clear the changed flag
-            data.setTerrainChanged(false);
 
             // Reset the transform
             g2.setTransform(g2oldTrans);
 
-            /*
-            g2.setColor(Color.red);
-            for (int i = 1; i < 5; i++)
-            {
-                g2.drawRect(0, 0, (int) bounds.getWidth() / i - 1, (int) bounds.getHeight() / i - 1);
-            }
-            g2.setColor(Color.blue);
-            g2.drawLine(0, 0, (int) savedTerrainBounds.getWidth(), (int) savedTerrainBounds.getHeight());
-            g2.drawLine((int) savedTerrainBounds.getWidth(), 0, 0, (int) savedTerrainBounds.getHeight());
-             */
         }
 
         // Translate the corner of our window to the center of our window
@@ -1373,64 +1363,67 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         g.drawLine(nextStartsAt, barRect.y + 1, nextStartsAt, barRect.y + barHeight);
         g.setColor(Color.black);
         nextStartsAt += spacingDiff;
-        
-        // Heat indicator
-        int			heatLength = data.myUnit.heat / 10;
-        if (heatLength > 50)
-            heatLength = 50;
-        Rectangle	heatRect = new Rectangle(nextStartsAt, barRect.y + 4, heatLength, 8);
-        Rectangle	totalHeatRect = new Rectangle(nextStartsAt, barRect.y + 4, heatBarMaxLength, 8);
-        
-        if (data.myUnit.heat - data.myUnit.heatDissipation >= 200)
-            g.setColor(Color.red);
-        else if (data.myUnit.heat - data.myUnit.heatDissipation >= 140)
-            g.setColor(Color.yellow);
-        else
-            g.setColor(Color.green);
-        g.fill(heatRect);
 
-        g.setColor(Color.white);
-        g.draw(totalHeatRect);
-        nextStartsAt += heatBarMaxLength + spacingDiff;
-        
-        // Sep
-        g.setColor(Color.darkGray);
-        g.drawLine(nextStartsAt, barRect.y + 1, nextStartsAt, barRect.y + barHeight);
-        g.setColor(Color.black);
-        nextStartsAt += spacingDiff;
-        
-        // Unit information
-        tempString = "[" + data.myUnit.id + "] " + data.myUnit.name + " (" + data.myUnit.ref + ")" + " S:" + data.myUnit.status;
-        tempRect = smallFont.getStringBounds(tempString, frc);
+        synchronized (data)
+        {
+            // Heat indicator
+            int			heatLength = data.myUnit.heat / 10;
+            if (heatLength > 50)
+                heatLength = 50;
+            Rectangle	heatRect = new Rectangle(nextStartsAt, barRect.y + 4, heatLength, 8);
+            Rectangle	totalHeatRect = new Rectangle(nextStartsAt, barRect.y + 4, heatBarMaxLength, 8);
 
-        g.setFont(smallFont);
-        g.setColor(Color.white);
-        g.drawString(tempString, nextStartsAt, barRect.y + 11);
-        nextStartsAt += tempRect.getWidth() + spacingDiff;
+            if (data.myUnit.heat - data.myUnit.heatDissipation >= 200)
+                g.setColor(Color.red);
+            else if (data.myUnit.heat - data.myUnit.heatDissipation >= 140)
+                g.setColor(Color.yellow);
+            else
+                g.setColor(Color.green);
+            g.fill(heatRect);
 
-        // Sep
-        g.setColor(Color.darkGray);
-        g.drawLine(nextStartsAt, barRect.y + 1, nextStartsAt, barRect.y + barHeight);
-        g.setColor(Color.black);
-        nextStartsAt += spacingDiff;
+            g.setColor(Color.white);
+            g.draw(totalHeatRect);
+            nextStartsAt += heatBarMaxLength + spacingDiff;
 
-        // Armor status
-        float		armorLeft = data.myUnit.percentArmorLeft();
-        g.setColor(data.myUnit.colorForPercent(armorLeft));
-        tempString = armorLeft + "% / ";
-        tempRect = smallFont.getStringBounds(tempString, frc);
-        g.setFont(smallFont);
-        g.drawString(tempString, nextStartsAt, barRect.y + 11);
-        nextStartsAt += tempRect.getWidth();	// Don't put in spacing here, the space is there in the string
+            // Sep
+            g.setColor(Color.darkGray);
+            g.drawLine(nextStartsAt, barRect.y + 1, nextStartsAt, barRect.y + barHeight);
+            g.setColor(Color.black);
+            nextStartsAt += spacingDiff;
 
-        // Internal status
-        float		internalLeft = data.myUnit.percentInternalLeft();
-        g.setColor(data.myUnit.colorForPercent(internalLeft));
-        tempString = internalLeft + "%";
-        tempRect = smallFont.getStringBounds(tempString, frc);
-        g.setFont(smallFont);
-        g.drawString(tempString, nextStartsAt, barRect.y + 11);
-        nextStartsAt += tempRect.getWidth() + spacingDiff;
+            // Unit information
+            tempString = "[" + data.myUnit.id + "] " + data.myUnit.name + " (" + data.myUnit.ref + ")" + " S:" + data.myUnit.status;
+            tempRect = smallFont.getStringBounds(tempString, frc);
+
+            g.setFont(smallFont);
+            g.setColor(Color.white);
+            g.drawString(tempString, nextStartsAt, barRect.y + 11);
+            nextStartsAt += tempRect.getWidth() + spacingDiff;
+
+            // Sep
+            g.setColor(Color.darkGray);
+            g.drawLine(nextStartsAt, barRect.y + 1, nextStartsAt, barRect.y + barHeight);
+            g.setColor(Color.black);
+            nextStartsAt += spacingDiff;
+
+            // Armor status
+            float		armorLeft = data.myUnit.percentArmorLeft();
+            g.setColor(data.myUnit.colorForPercent(armorLeft));
+            tempString = armorLeft + "% / ";
+            tempRect = smallFont.getStringBounds(tempString, frc);
+            g.setFont(smallFont);
+            g.drawString(tempString, nextStartsAt, barRect.y + 11);
+            nextStartsAt += tempRect.getWidth();	// Don't put in spacing here, the space is there in the string
+
+            // Internal status
+            float		internalLeft = data.myUnit.percentInternalLeft();
+            g.setColor(data.myUnit.colorForPercent(internalLeft));
+            tempString = internalLeft + "%";
+            tempRect = smallFont.getStringBounds(tempString, frc);
+            g.setFont(smallFont);
+            g.drawString(tempString, nextStartsAt, barRect.y + 11);
+            nextStartsAt += tempRect.getWidth() + spacingDiff;            
+        }
         
         // Reset transform
         g.setTransform(oldTrans);

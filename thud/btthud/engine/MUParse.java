@@ -229,30 +229,6 @@ public class MUParse implements Runnable {
 
             return true;
         }
-        else if (l.startsWith("sethexnumbers"))
-        {
-            StringTokenizer	st = new StringTokenizer(l);
-            st.nextToken();
-
-            String		tempString = st.nextToken().trim();
-
-            if (tempString.equals("on"))
-            {
-                prefs.tacShowHexNumbers = true;
-            }
-            else if (tempString.equals("off"))
-            {
-                prefs.tacShowHexNumbers = false;
-            }
-            else
-            {
-                messageLine(": Invalid parameter for sethexnumbers. Valid ones are: on off ");
-                return true;
-            }
-
-            messageLine(": Tactical display hex numbers turned " + tempString);
-            return true;
-        }
         
         return false;
     }
