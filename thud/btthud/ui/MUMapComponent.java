@@ -328,7 +328,6 @@ public class MUMapComponent extends JComponent implements MouseListener
         //Graphics2D			g = (Graphics2D) (gfx.create(0, 0, bounds.width, bounds.height));
         Graphics2D			g = (Graphics2D) gfx;
         AffineTransform		oldTrans = g.getTransform();
-        AffineTransform		baseTrans = g.getTransform();
 
         //g.addRenderingHints(rHints);
         
@@ -340,9 +339,9 @@ public class MUMapComponent extends JComponent implements MouseListener
 
         if (prefs.hexHeight != h)
             changeHeight(prefs.hexHeight);
-        
-        myLocX = data.myUnit.x + (int) prefs.xOffset;
-        myLocY = data.myUnit.y + (int) prefs.yOffset;
+
+        myLocX = data.myUnit.x;
+        myLocY = data.myUnit.y;
         
         // First, let's do some initial setup on our tactical map area
         g.setColor(Color.black);
@@ -352,24 +351,45 @@ public class MUMapComponent extends JComponent implements MouseListener
         numAcross = (int) ((bounds.width / (w + l)) + 3);
         numDown = (int) ((bounds.height / h) + 3);
 
-        //AffineTransform		offsetXform = new AffineTransform(baseTrans);
-        //offsetXform.translate(prefs.xOffset, prefs.yOffset);
-        //g.setTransform(offsetXform);
-        
-        // Paint the terrain
-        paintTerrain(g);
-        // Paint hex numbers
-        
-        if (h >= 20)
-            paintNumbers(g);
-        
-        // Paint our own unit
-        paintUnit(g);
-        // Paint other contacts on the map
-        paintContacts(g);
+        // ----
 
-        // Finally, draw our status bar at the bottom of the screen
-        paintStatusBar(g);
+        synchronized (data)
+        {
+            // Set the transform that translates everything so as to make our own unit the center of the display
+            if (prefs.xOffset != 0 || prefs.yOffset != 0)
+            {
+                AffineTransform			xform = g.getTransform();
+                xform.translate(-prefs.xOffset * (w + l), -prefs.yOffset * h);
+                g.setTransform(setupStandardTransform(xform));
+            }
+            else
+            {
+                g.setTransform(setupStandardTransform(oldTrans));
+            }
+            
+            // Paint the terrain
+            paintTerrain(g);
+
+            // Paint other contacts on the map
+            paintContacts(g);
+
+            // Paint our own unit
+            paintUnit(g);
+
+            // Reset the transform
+            g.setTransform(oldTrans);
+
+            // ----
+
+            // Paint hex numbers
+            /*
+             if (h >= 20)
+             paintNumbers(g);
+             */
+
+            // Finally, draw our status bar at the bottom of the screen
+            paintStatusBar(g);            
+        }
         
         // Reset the transform
         g.setTransform(oldTrans);
@@ -382,20 +402,12 @@ public class MUMapComponent extends JComponent implements MouseListener
      */
     public void paintUnit(Graphics2D g)
     {
-        Point2D	 		unitPt = new Point2D.Float();
+        Point2D	 		unitPt = new Point2D.Double();
 
-        float			unitXOffset = prefs.xOffset * (w + l);
-        float			unitYOffset = prefs.yOffset * h;
-        
-        if (prefs.xOffset % 2 != 0 && data.myUnit.x % 2 == 0)
-            unitYOffset -= h/2;
-        else if (prefs.xOffset % 2 != 0 && data.myUnit.x % 2 != 0)
-            unitYOffset += h/2;
+        // Get the location of our own unit
+        unitPt = realForUnit(data.myUnit);
 
-        unitPt.setLocation((float) bounds.width / 2.0f - unitXOffset, (float) bounds.height / 2.0f - unitYOffset);
-
-        // Draw our own unit...
-
+        // Draw it
         drawHeading(g, unitPt, data.myUnit, HEADING_NORMAL);
         if (data.myUnit.heading != data.myUnit.desiredHeading)
             drawHeading(g, unitPt, data.myUnit, HEADING_DESIRED);
@@ -415,7 +427,6 @@ public class MUMapComponent extends JComponent implements MouseListener
     public void paintContacts(Graphics2D g)
     {
         AffineTransform			oldTrans = g.getTransform();
-        AffineTransform			baseTrans; // = g.getTransform();
 
         TreeSet					conTree;
         
@@ -424,10 +435,6 @@ public class MUMapComponent extends JComponent implements MouseListener
 
         int						hexX = myLocX - (numAcross / 2);
         int						hexY = myLocY - (numDown / 2);
-
-        baseTrans = setupStandardTransform(g.getTransform());
-
-        g.setTransform(baseTrans);
     
         synchronized (data.contacts)
         {
@@ -438,44 +445,13 @@ public class MUMapComponent extends JComponent implements MouseListener
         // But really, who cares
         for (Iterator it = conTree.iterator(); it.hasNext(); )
         {
+            // Get the next unit...
             unit = (MUUnitInfo) it.next();
 
-            
-            int			ubtc = unit.bearingToCenter;
-            double 		urtc = unit.rangeToCenter;
-            double		ufcOffsetX = 0;
-            double		ufcOffsetY = 0;
+            // Figure out where it is supposed to be drawn
+            conPoint = realForUnit(unit);
 
-            if (ubtc >= 0 && ubtc <= 90)
-            {
-                ufcOffsetX =  (urtc * (h) * Math.sin(toRadians(ubtc)));
-                ufcOffsetY = -(urtc * (h) * Math.cos(toRadians(ubtc)));
-            }
-            else if (ubtc >= 91 && ubtc <= 180)
-            {
-                ubtc -= 90;
-                ufcOffsetX =  (urtc * (h) * Math.cos(toRadians(ubtc)));
-                ufcOffsetY =  (urtc * (h) * Math.sin(toRadians(ubtc)));
-            }
-            else if (ubtc >= 181 && ubtc <= 270)
-            {
-                ubtc -= 180;
-                ufcOffsetX = -(urtc * (h) * Math.sin(toRadians(ubtc)));
-                ufcOffsetY =  (urtc * (h) * Math.cos(toRadians(ubtc)));
-            }
-            else if (ubtc >= 271 && ubtc <= 359)
-            {
-                ubtc -= 270;
-                ufcOffsetX = -(urtc * (h) * Math.cos(toRadians(ubtc)));
-                ufcOffsetY = -(urtc * (h) * Math.sin(toRadians(ubtc)));
-            }
-            
-            // Find out where the center of the hex they're in is at
-            Point2D	realHex = hexPoly.hexToReal(unit.x, unit.y, true);
-            
-            conPoint.setLocation(realHex.getX() + ufcOffsetX,
-                                 realHex.getY() + ufcOffsetY);
-        
+            // DRaw it
             drawHeading(g, conPoint, unit, HEADING_NORMAL);
             if (unit.isJumping())
                 drawHeading(g, conPoint, unit, HEADING_JUMP);
@@ -485,7 +461,7 @@ public class MUMapComponent extends JComponent implements MouseListener
             // last 3 bools: friend, expired, target -- should get from contact data
             drawIDBox(g, unit, conPoint, false, false, null);
 
-        } // end of contact loop
+        }
         
         // Reset the transformation
         g.setTransform(oldTrans);
@@ -521,19 +497,18 @@ public class MUMapComponent extends JComponent implements MouseListener
           ytrans = h/2 + (y * h)
            
         */
-        
-        // Adjust for findcenter
+
         
         AffineTransform			oldTrans = g.getTransform();
         AffineTransform			baseTrans; // = g.getTransform();
 
-        //int						myLocX = data.myUnit.x + (int) prefs.xOffset;
-        //int						myLocY = data.myUnit.y + (int) prefs.yOffset;
         int						hexX = myLocX - (numAcross / 2);
         int						hexY = myLocY - (numDown / 2);
 
-        baseTrans = setupStandardTransform(g.getTransform());
-        
+        // Account for offset views by moving the view over
+        hexX += prefs.xOffset;
+        hexY += prefs.yOffset;
+  
         // --------------------
         
         AffineTransform			trans = new AffineTransform();
@@ -551,7 +526,7 @@ public class MUMapComponent extends JComponent implements MouseListener
                         Point2D	realHex = hexPoly.hexToReal(hexX + j, hexY + i, false);
 
                         // Set the transform to our previously setup one
-                        trans.setTransform(baseTrans);
+                        trans.setTransform(oldTrans);
                         // Translate to where the hex should be located
                         // We have to compensate by -l for x because the picture in the array is shifted over by +l.
                         trans.translate(realHex.getX() - l, realHex.getY());
@@ -644,7 +619,8 @@ public class MUMapComponent extends JComponent implements MouseListener
     }
 
     /**
-      * Setup the standard transformation for contacts, terrain
+      * Setup the transformation that recenters tactical, contacts, and our own unit in the main window.
+      * @param base The current transform that we want to modify
       */
     public AffineTransform setupStandardTransform(AffineTransform base)
     {
@@ -653,51 +629,75 @@ public class MUMapComponent extends JComponent implements MouseListener
         int						hexX = myLocX - (numAcross / 2);
         int						hexY = myLocY - (numDown / 2);
 
-        int 					btc = data.myUnit.bearingToCenter;
-        double 					rtc = data.myUnit.rangeToCenter;
+        Point2D					unitDraw = realForUnit(data.myUnit);
+	
+        // Do some translation magic so that our unit is always in the exact center of the screen
+        // Translate our own unit to (0,0), then translate out to the middle of the window
+        newTrans.translate(-unitDraw.getX() + bounds.width/2,
+                           -unitDraw.getY() + bounds.height/2);
+
+        return newTrans;
+    }
+
+    /**
+      * Return a Point2D representing the real location of any unit. Used for drawing and translating.
+      * @param unit The unit we are getting a real point for
+      */
+    protected Point2D realForUnit(MUUnitInfo unit)
+    {
+        Point2D		p = new Point2D.Double();
+
+        // Get the centering info
+        Point2D		up = offsetsForCentering(unit.bearingToCenter, unit.rangeToCenter);
+
+        // Find out where the center of the hex they're in is at
+        Point2D		hp = hexPoly.hexToReal(unit.x, unit.y, true);
+
+        p.setLocation(hp.getX() + up.getX(),
+                      hp.getY() + up.getY());
+
+        return p;
+    }
+    
+    /**
+      * Return a Point2D with the x and y offsets for a given bearing to center and range to center.
+      * @param btc Bearing of unit to center of hex
+      * @param rtc Range of unit to center of hex
+      * @param reverse True if we should reverse the negative signs
+      */
+    protected Point2D offsetsForCentering(int ibtc, double rtc)
+    {
         double					fcOffsetX = 0;
         double					fcOffsetY = 0;
-
+        int						btc = ibtc;
+        
         if (btc >= 0 && btc <= 90)
         {
-            fcOffsetX = -(rtc * (h) * Math.sin(toRadians(btc)));
-            fcOffsetY =  (rtc * (h) * Math.cos(toRadians(btc)));
+            fcOffsetX =  (rtc * (h) * Math.sin(toRadians(btc)));
+            fcOffsetY = -(rtc * (h) * Math.cos(toRadians(btc)));
         }
         else if (btc >= 91 && btc <= 180)
         {
             btc -= 90;
-            fcOffsetX = -(rtc * (h) * Math.cos(toRadians(btc)));
-            fcOffsetY = -(rtc * (h) * Math.sin(toRadians(btc)));
+            fcOffsetX =  (rtc * (h) * Math.cos(toRadians(btc)));
+            fcOffsetY =  (rtc * (h) * Math.sin(toRadians(btc)));
         }
         else if (btc >= 181 && btc <= 270)
         {
             btc -= 180;
-            fcOffsetX =  (rtc * (h) * Math.sin(toRadians(btc)));
-            fcOffsetY = -(rtc * (h) * Math.cos(toRadians(btc)));
+            fcOffsetX = -(rtc * (h) * Math.sin(toRadians(btc)));
+            fcOffsetY =  (rtc * (h) * Math.cos(toRadians(btc)));
         }
         else if (btc >= 271 && btc <= 359)
         {
             btc -= 270;
-            fcOffsetX =  (rtc * (h) * Math.cos(toRadians(btc)));
-            fcOffsetY =  (rtc * (h) * Math.sin(toRadians(btc)));
+            fcOffsetX = -(rtc * (h) * Math.cos(toRadians(btc)));
+            fcOffsetY = -(rtc * (h) * Math.sin(toRadians(btc)));
         }
-
-        if (prefs.xOffset % 2 != 0 && data.myUnit.x % 2 == 0)
-            fcOffsetY -= h/2;
-        else if (prefs.xOffset % 2 != 0 && data.myUnit.x % 2 != 0)
-            fcOffsetY += h/2;
-
-        Point2D					unitDraw = hexPoly.hexToReal(myLocX, myLocY, true);
-
-        // Do some translation magic so that our unit is always in the exact center of the screen
-        // Basically, we translate the center of our current hex to 0,0
-        // Then we translate to compensate for our distance from the center of the hex
-        // Then we move the whole thing to the center of the window
-        newTrans.translate(-unitDraw.getX() + fcOffsetX + bounds.width/2,
-                           -unitDraw.getY() + fcOffsetY + bounds.height/2);
-
-        return newTrans;
+        
+        return new Point2D.Double(fcOffsetX, fcOffsetY);
     }
+    
     /**
       * Get the proper color to describe a terrain character.
       */
@@ -784,7 +784,6 @@ public class MUMapComponent extends JComponent implements MouseListener
     /**
      * Paint the numbers which tell us which hexes are on the map.
      * @param g The graphics context into which we are drawing.
-     * @param h The height of each hex. The width will be set to h/2.
      */
     public void paintNumbers(Graphics2D g)
     {
@@ -828,9 +827,9 @@ public class MUMapComponent extends JComponent implements MouseListener
             fcOffsetY =  (rtc * (h) * Math.sin(toRadians(btc)));
         }
 
-        if (prefs.xOffset % 2 != 0 && data.myUnit.x % 2 == 0)
+        if (data.myUnit.x % 2 == 0)
             fcOffsetY -= h/2;
-        else if (prefs.xOffset % 2 != 0 && data.myUnit.x % 2 != 0)
+        else
             fcOffsetY += h/2;
 
         Point2D					unitDraw = hexPoly.hexToReal(myLocX, myLocY, true);

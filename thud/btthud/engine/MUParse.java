@@ -241,65 +241,68 @@ public class MUParse {
     {
         if (l.startsWith("#HUD:" + sessionKey + ":"))
         {
-            // Must be a result for us to parse
-            StringTokenizer st = new StringTokenizer(l);
-            // Get the first word, ie #HUD:key:GS:R# 
-            String			firstWord = st.nextToken();
-            // And get the part which specifies which command we're looking at
-            StringTokenizer st2 = new StringTokenizer(firstWord, ":");
-            // Skip the #HUD and key
-            st2.nextToken(); st2.nextToken();
-            
-            String			whichCommand = st2.nextToken();
-
-            // Get the rest of our string, for passing to other functions
-            String			restOfCommand = st.nextToken();
-            while (st.hasMoreTokens())
-                   restOfCommand = restOfCommand + " " + st.nextToken();
-
-            if (whichCommand.equals("???") ||
-                restOfCommand.startsWith("Not in a BattleTech unit") ||
-                restOfCommand.startsWith("You are destroyed!") ||
-                restOfCommand.startsWith("Reactor is not online"))
+            synchronized (data)
             {
-                //data.hudRunning = false;
-                //commands.endTimers();
-                //messageLine("> Please stop display... Reason: " + restOfCommand);
+                // Must be a result for us to parse
+                StringTokenizer st = new StringTokenizer(l);
+                // Get the first word, ie #HUD:key:GS:R#
+                String			firstWord = st.nextToken();
+                // And get the part which specifies which command we're looking at
+                StringTokenizer st2 = new StringTokenizer(firstWord, ":");
+                // Skip the #HUD and key
+                st2.nextToken(); st2.nextToken();
+
+                String			whichCommand = st2.nextToken();
+
+                // Get the rest of our string, for passing to other functions
+                String			restOfCommand = st.nextToken();
+                while (st.hasMoreTokens())
+                    restOfCommand = restOfCommand + " " + st.nextToken();
+
+                if (whichCommand.equals("???") ||
+                    restOfCommand.startsWith("Not in a BattleTech unit") ||
+                    restOfCommand.startsWith("You are destroyed!") ||
+                    restOfCommand.startsWith("Reactor is not online"))
+                {
+                    //data.hudRunning = false;
+                    //commands.endTimers();
+                    //messageLine("> Please stop display... Reason: " + restOfCommand);
+                    return true;
+                }
+
+                // Now we check it against everything
+                if (whichCommand.equals("GS"))		// general status
+                    parseHudInfoGS(restOfCommand);
+                else if (whichCommand.equals("C"))	// contacts
+                    parseHudInfoC(restOfCommand);
+                else if (whichCommand.equals("T"))	// tactical
+                {
+                    // Now we're expecting an 'S', an 'L', or a 'D'
+                    String subCommand = st2.nextToken();
+                    if (subCommand.equals("S#"))
+                        parseHudInfoTS(restOfCommand);
+                    else if (subCommand.equals("L#"))
+                        parseHudInfoTL(restOfCommand);
+                    else if (subCommand.equals("D#"))
+                        parseHudInfoTD(restOfCommand);
+                }
+                else if (whichCommand.equals("SGI"))	// static general information
+                    parseHudInfoSGI(restOfCommand);
+                else if (whichCommand.equals("AS"))		// Armor status
+                    parseHudInfoAS(restOfCommand);
+                else if (whichCommand.equals("OAS"))	// Original armor status
+                    parseHudInfoOAS(restOfCommand);
+                else if (whichCommand.equals("KEY"))	// 'Key set' .. don't need to do anything further
+                    return true;
+                else if (whichCommand.equals("WL"))		// Weapon list
+                    parseHudInfoWL(restOfCommand);
+                else if (whichCommand.equals("WE"))		// Our own weapons
+                    parseHudInfoWE(restOfCommand);
+                else
+                    messageLine("> Unrecognized HUDINFO data: " + whichCommand);
+
                 return true;
             }
-            
-            // Now we check it against everything
-            if (whichCommand.equals("GS"))		// general status
-                parseHudInfoGS(restOfCommand);
-            else if (whichCommand.equals("C"))	// contacts
-                parseHudInfoC(restOfCommand);
-            else if (whichCommand.equals("T"))	// tactical
-            {
-                // Now we're expecting an 'S', an 'L', or a 'D'
-                String subCommand = st2.nextToken();
-                if (subCommand.equals("S#"))
-                    parseHudInfoTS(restOfCommand);
-                else if (subCommand.equals("L#"))
-                    parseHudInfoTL(restOfCommand);
-                else if (subCommand.equals("D#"))
-                    parseHudInfoTD(restOfCommand);
-            }
-            else if (whichCommand.equals("SGI"))	// static general information
-                parseHudInfoSGI(restOfCommand);
-            else if (whichCommand.equals("AS"))		// Armor status
-                parseHudInfoAS(restOfCommand);
-            else if (whichCommand.equals("OAS"))	// Original armor status
-                parseHudInfoOAS(restOfCommand);
-            else if (whichCommand.equals("KEY"))	// 'Key set' .. don't need to do anything further
-                return true;
-            else if (whichCommand.equals("WL"))		// Weapon list
-                parseHudInfoWL(restOfCommand);
-            else if (whichCommand.equals("WE"))		// Our own weapons
-                parseHudInfoWE(restOfCommand);
-            else
-                messageLine("> Unrecognized HUDINFO data: " + whichCommand);
-
-            return true;
         }
         else if (l.startsWith("#HUD hudinfo"))
             parseHudInfoVersion(l);

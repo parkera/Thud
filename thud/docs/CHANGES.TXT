@@ -57,15 +57,17 @@ Version History:
  New Features:
  
   * Better ANSI support: background colors and underline mode now supported
-  * If you are in a tank, it will show a red line indicating turret facing, and other jumping mechs show a green line indicating jump heading
+  * If you are in a tank, it will show a red line indicating turret facing
+  * Other jumping mechs show a green line indicating jump heading
   
  Bug Fixes:
  
   * Much much quicker connect-to-MUX time
   * Much quicker text handling
+  * More efficient and usable map scrolling
   * Elevation numbers now show when 'Darken Elevations' is turned off
-  * If the connetion is dropped for some reason, Thud should now behave better
+  * If the connection is dropped for some reason, Thud should now behave better -- choose your connection from the menu to reconnect
   * Menu items properly disabled/enabled depending on connection status
-  * Choosing a new connection while still connected should disconnect properly
+  * Choosing a new connection while still connected should disconnect properly first, then reconnect
   
   
