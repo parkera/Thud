@@ -34,7 +34,6 @@ public class Thud extends JFrame implements  ActionListener
     Font	mFont = new Font("Monospaced", Font.PLAIN, 10);		// default main font
     AboutBox aboutBox = null;
     // Declarations for menus
-    protected int		acceleratorModifier = java.awt.Event.CTRL_MASK;
     
     static final JMenuBar mainMenuBar = new JMenuBar();
 	
@@ -99,22 +98,26 @@ public class Thud extends JFrame implements  ActionListener
     
     public void addFileMenuItems() {
         miNew = new JMenuItem ("New");
-        miNew.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, acceleratorModifier));
+        miNew.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N,
+                                                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         fileMenu.add(miNew).setEnabled(false);
         miNew.addActionListener(this);
 
         miOpen = new JMenuItem ("Open...");
-        miOpen.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, acceleratorModifier));
+        miOpen.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O,
+                                                     Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         fileMenu.add(miOpen).setEnabled(false);
         miOpen.addActionListener(this);
 		
         miClose = new JMenuItem ("Close");
-        miClose.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, acceleratorModifier));
+        miClose.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W,
+                                                      Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         fileMenu.add(miClose).setEnabled(true);
         miClose.addActionListener(this);
 		
         miSave = new JMenuItem ("Save");
-        miSave.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, acceleratorModifier));
+        miSave.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S,
+                                                     Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         fileMenu.add(miSave).setEnabled(false);
         miSave.addActionListener(this);
 		
@@ -126,7 +129,8 @@ public class Thud extends JFrame implements  ActionListener
         fileMenu.addSeparator();
 
         miQuit = new JMenuItem("Quit");
-        miQuit.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, acceleratorModifier));
+        miQuit.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q,
+                                                     Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         fileMenu.add(miQuit).setEnabled(true);
         miQuit.addActionListener(this);
         
@@ -142,7 +146,8 @@ public class Thud extends JFrame implements  ActionListener
         hudMenu.addSeparator();
         
         miStartStop = new JMenuItem("Start/Stop");
-        miStartStop.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, acceleratorModifier));
+        miStartStop.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G,
+                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         hudMenu.add(miStartStop).setEnabled(true);
         miStartStop.addActionListener(this);
 
@@ -165,34 +170,44 @@ public class Thud extends JFrame implements  ActionListener
         switch (i)
         {
             case 0:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_1, acceleratorModifier));
+                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_1,
+                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 1:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_2, acceleratorModifier));
+                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_2,
+                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 2:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_3, acceleratorModifier));
+                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_3,
+                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 3:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_4, acceleratorModifier));
+                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_4,
+                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 4:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_5, acceleratorModifier));
+                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_5,
+                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 5:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_6, acceleratorModifier));
+                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_6,
+                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 6:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_7, acceleratorModifier));
+                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_7,
+                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 7:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_8, acceleratorModifier));
+                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_8,
+                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 8:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_9, acceleratorModifier));
+                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_9,
+                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 9:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_0, acceleratorModifier));
+                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_0,
+                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
         }
     }
@@ -200,12 +215,14 @@ public class Thud extends JFrame implements  ActionListener
     public void addMapMenuItems()
     {
         miZoomIn = new JMenuItem("Zoom In");
-        miZoomIn.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_CLOSE_BRACKET, acceleratorModifier));
+        miZoomIn.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_CLOSE_BRACKET,
+                                                       Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miZoomIn).setEnabled(true);
         miZoomIn.addActionListener(this);
         
         miZoomOut = new JMenuItem("Zoom Out");
-        miZoomOut.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_OPEN_BRACKET, acceleratorModifier));
+        miZoomOut.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_OPEN_BRACKET,
+                                                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miZoomOut).setEnabled(true);
         miZoomOut.addActionListener(this);
 
@@ -213,24 +230,28 @@ public class Thud extends JFrame implements  ActionListener
         mapMenu.addSeparator();
 
         miShowArcs = new JCheckBoxMenuItem("Show Weapons Arcs", prefs.tacShowUnitNames);
-        miShowArcs.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, acceleratorModifier));
+        miShowArcs.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R,
+                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miShowArcs).setEnabled(true);
         miShowArcs.addActionListener(this);
         miShowArcs.setState(prefs.tacShowArcs);
         
         miMakeArcsWeaponRange = new JCheckBoxMenuItem("Make Arcs Weapon Ranges");
-        miMakeArcsWeaponRange.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, acceleratorModifier));
+        miMakeArcsWeaponRange.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M,
+                                                                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miMakeArcsWeaponRange).setEnabled(prefs.tacShowArcs);
         miMakeArcsWeaponRange.addActionListener(this);
         miMakeArcsWeaponRange.setState(prefs.makeArcsWeaponRange);
         
         miArcRetract = new JMenuItem("Retract Arc Range");
-        miArcRetract.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SEMICOLON, acceleratorModifier));
+        miArcRetract.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SEMICOLON,
+                                                           Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miArcRetract).setEnabled(!prefs.makeArcsWeaponRange && prefs.tacShowArcs);
         miArcRetract.addActionListener(this);
 
         miArcExtend = new JMenuItem("Extend Arc Range");
-        miArcExtend.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_QUOTE, acceleratorModifier));
+        miArcExtend.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_QUOTE,
+                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miArcExtend).setEnabled(!prefs.makeArcsWeaponRange && prefs.tacShowArcs);
         miArcExtend.addActionListener(this);
 
@@ -238,19 +259,22 @@ public class Thud extends JFrame implements  ActionListener
         mapMenu.addSeparator();
         
         miShowHexNumbers = new JCheckBoxMenuItem("Show Hex Numbers", prefs.tacShowHexNumbers);
-        miShowHexNumbers.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, acceleratorModifier));
+        miShowHexNumbers.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B,
+                                                               Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miShowHexNumbers).setEnabled(true);
         miShowHexNumbers.addActionListener(this);
         miShowHexNumbers.setState(prefs.tacShowHexNumbers);
         
         miShowUnitNames = new JCheckBoxMenuItem("Show Unit Names", prefs.tacShowUnitNames);
-        miShowUnitNames.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, acceleratorModifier));
+        miShowUnitNames.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U,
+                                                              Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miShowUnitNames).setEnabled(true);
         miShowUnitNames.addActionListener(this);
         miShowUnitNames.setState(prefs.tacShowUnitNames);
         
         miDarkenElevations = new JCheckBoxMenuItem("Darken Elevations", prefs.tacDarkenElev);
-        miDarkenElevations.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, acceleratorModifier));
+        miDarkenElevations.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D,
+                                                                 Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miDarkenElevations).setEnabled(true);
         miDarkenElevations.addActionListener(this);
         miDarkenElevations.setState(prefs.tacDarkenElev);
@@ -259,27 +283,32 @@ public class Thud extends JFrame implements  ActionListener
         mapMenu.addSeparator();
 
         miMoveLeft = new JMenuItem("Move Map Left");
-        miMoveLeft.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.Event.SHIFT_MASK + acceleratorModifier));
+        miMoveLeft.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A,
+                                                         java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miMoveLeft);
         miMoveLeft.addActionListener(this);
 
         miMoveRight = new JMenuItem("Move Map Right");
-        miMoveRight.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.Event.SHIFT_MASK + acceleratorModifier));
+        miMoveRight.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D,
+                                                          java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miMoveRight);
         miMoveRight.addActionListener(this);
 
         miMoveUp = new JMenuItem("Move Map Up");
-        miMoveUp.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.Event.SHIFT_MASK + acceleratorModifier));
+        miMoveUp.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W,
+                                                       java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miMoveUp);
         miMoveUp.addActionListener(this);
 
         miMoveDown = new JMenuItem("Move Map Down");
-        miMoveDown.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.Event.SHIFT_MASK + acceleratorModifier));
+        miMoveDown.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S,
+                                                         java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miMoveDown);
         miMoveDown.addActionListener(this);
 
         miResetOffsets = new JMenuItem("Reset Map Offsets");
-        miResetOffsets.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.Event.SHIFT_MASK + acceleratorModifier));
+        miResetOffsets.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R,
+                                                             java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miResetOffsets);
         miResetOffsets.addActionListener(this);
 
@@ -287,7 +316,8 @@ public class Thud extends JFrame implements  ActionListener
         mapMenu.addSeparator();
 
         miShowCliffs = new JCheckBoxMenuItem("Show Cliffs", prefs.tacShowCliffs);
-        miShowCliffs.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, acceleratorModifier));
+        miShowCliffs.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F,
+                                                           Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miShowCliffs).setEnabled(true);
         miShowCliffs.addActionListener(this);
         miShowCliffs.setState(prefs.tacShowCliffs);
@@ -299,23 +329,27 @@ public class Thud extends JFrame implements  ActionListener
     
     public void addEditMenuItems() {
         miUndo = new JMenuItem("Undo");
-        miUndo.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, acceleratorModifier));
+        miUndo.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z,
+                                                     Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         editMenu.add(miUndo).setEnabled(true);
         miUndo.addActionListener(this);
         editMenu.addSeparator();
 
         miCut = new JMenuItem("Cut");
-        miCut.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, acceleratorModifier));
+        miCut.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X,
+                                                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         editMenu.add(miCut).setEnabled(true);
         miCut.addActionListener(this);
 
         miCopy = new JMenuItem("Copy");
-        miCopy.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, acceleratorModifier));
+        miCopy.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C,
+                                                     Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         editMenu.add(miCopy).setEnabled(true);
         miCopy.addActionListener(this);
 
         miPaste = new JMenuItem("Paste");
-        miPaste.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, acceleratorModifier));
+        miPaste.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V,
+                                                      Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         editMenu.add(miPaste).setEnabled(true);
         miPaste.addActionListener(this);
 
@@ -327,7 +361,8 @@ public class Thud extends JFrame implements  ActionListener
         editMenu.addSeparator();
 
         miSelectAll = new JMenuItem("Select All");
-        miSelectAll.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, acceleratorModifier));
+        miSelectAll.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A,
+                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         editMenu.add(miSelectAll).setEnabled(true);
         miSelectAll.addActionListener(this);
 
@@ -378,7 +413,6 @@ public class Thud extends JFrame implements  ActionListener
         super("Thud");
         
         readPrefs();
-        setupSystemSpecifics();
         mainFontChanged();				// setup a new font
         
         this.getContentPane().setLayout(null);
@@ -893,29 +927,6 @@ public class Thud extends JFrame implements  ActionListener
         catch (Exception e)
         {
             System.out.println("Error: writePrefs: " + e);
-        }
-    }
-
-    // -----------------------
-    /** Handle system-specific setup. For example, the shortcut key on Mac OS is the command key, which Java says is META. Otherwise it's CNTRL.
-      *
-      */
-    public void setupSystemSpecifics()
-    {
-        try
-        {
-            prefs.theSystem = System.getProperties();
-
-            //System.out.println("Properties: " + prefs.theSystem);
-
-            if (prefs.theSystem.getProperty("os.name").equals("Mac OS X"))
-                acceleratorModifier = java.awt.Event.META_MASK;
-            
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error: setupSystemSpecifics: " + e);
-            prefs.theSystem = null;
         }
     }
     
