@@ -1346,66 +1346,63 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         g.setColor(Color.black);
         nextStartsAt += spacingDiff;
 
-        synchronized (data)
-        {
-            // Heat indicator
-            int			heatLength = data.myUnit.heat / 10;
-            if (heatLength > 50)
-                heatLength = 50;
-            Rectangle	heatRect = new Rectangle(nextStartsAt, barRect.y + 4, heatLength, 8);
-            Rectangle	totalHeatRect = new Rectangle(nextStartsAt, barRect.y + 4, heatBarMaxLength, 8);
+        // Heat indicator
+        int			heatLength = data.myUnit.heat / 10;
+        if (heatLength > 50)
+            heatLength = 50;
+        Rectangle	heatRect = new Rectangle(nextStartsAt, barRect.y + 4, heatLength, 8);
+        Rectangle	totalHeatRect = new Rectangle(nextStartsAt, barRect.y + 4, heatBarMaxLength, 8);
 
-            if (data.myUnit.heat - data.myUnit.heatDissipation >= 200)
-                g.setColor(Color.red);
-            else if (data.myUnit.heat - data.myUnit.heatDissipation >= 140)
-                g.setColor(Color.yellow);
-            else
-                g.setColor(Color.green);
-            g.fill(heatRect);
+        if (data.myUnit.heat - data.myUnit.heatDissipation >= 200)
+            g.setColor(Color.red);
+        else if (data.myUnit.heat - data.myUnit.heatDissipation >= 140)
+            g.setColor(Color.yellow);
+        else
+            g.setColor(Color.green);
+        g.fill(heatRect);
 
-            g.setColor(Color.white);
-            g.draw(totalHeatRect);
-            nextStartsAt += heatBarMaxLength + spacingDiff;
+        g.setColor(Color.white);
+        g.draw(totalHeatRect);
+        nextStartsAt += heatBarMaxLength + spacingDiff;
 
-            // Sep
-            g.setColor(Color.darkGray);
-            g.drawLine(nextStartsAt, barRect.y + 1, nextStartsAt, barRect.y + barHeight);
-            g.setColor(Color.black);
-            nextStartsAt += spacingDiff;
+        // Sep
+        g.setColor(Color.darkGray);
+        g.drawLine(nextStartsAt, barRect.y + 1, nextStartsAt, barRect.y + barHeight);
+        g.setColor(Color.black);
+        nextStartsAt += spacingDiff;
 
-            // Unit information
-            tempString = "[" + data.myUnit.id + "] " + data.myUnit.name + " (" + data.myUnit.ref + ")" + " S:" + data.myUnit.status;
-            tempRect = smallFont.getStringBounds(tempString, frc);
+        // Unit information
+        tempString = "[" + data.myUnit.id + "] " + data.myUnit.name + " (" + data.myUnit.ref + ")" + " S:" + data.myUnit.status;
+        tempRect = smallFont.getStringBounds(tempString, frc);
 
-            g.setFont(smallFont);
-            g.setColor(Color.white);
-            g.drawString(tempString, nextStartsAt, barRect.y + 11);
-            nextStartsAt += tempRect.getWidth() + spacingDiff;
+        g.setFont(smallFont);
+        g.setColor(Color.white);
+        g.drawString(tempString, nextStartsAt, barRect.y + 11);
+        nextStartsAt += tempRect.getWidth() + spacingDiff;
 
-            // Sep
-            g.setColor(Color.darkGray);
-            g.drawLine(nextStartsAt, barRect.y + 1, nextStartsAt, barRect.y + barHeight);
-            g.setColor(Color.black);
-            nextStartsAt += spacingDiff;
+        // Sep
+        g.setColor(Color.darkGray);
+        g.drawLine(nextStartsAt, barRect.y + 1, nextStartsAt, barRect.y + barHeight);
+        g.setColor(Color.black);
+        nextStartsAt += spacingDiff;
 
-            // Armor status
-            float		armorLeft = data.myUnit.percentArmorLeft();
-            g.setColor(data.myUnit.colorForPercent(armorLeft));
-            tempString = armorLeft + "% / ";
-            tempRect = smallFont.getStringBounds(tempString, frc);
-            g.setFont(smallFont);
-            g.drawString(tempString, nextStartsAt, barRect.y + 11);
-            nextStartsAt += tempRect.getWidth();	// Don't put in spacing here, the space is there in the string
+        // Armor status
+        float		armorLeft = data.myUnit.percentArmorLeft();
+        g.setColor(data.myUnit.colorForPercent(armorLeft));
+        tempString = armorLeft + "% / ";
+        tempRect = smallFont.getStringBounds(tempString, frc);
+        g.setFont(smallFont);
+        g.drawString(tempString, nextStartsAt, barRect.y + 11);
+        nextStartsAt += tempRect.getWidth();	// Don't put in spacing here, the space is there in the string
 
-            // Internal status
-            float		internalLeft = data.myUnit.percentInternalLeft();
-            g.setColor(data.myUnit.colorForPercent(internalLeft));
-            tempString = internalLeft + "%";
-            tempRect = smallFont.getStringBounds(tempString, frc);
-            g.setFont(smallFont);
-            g.drawString(tempString, nextStartsAt, barRect.y + 11);
-            nextStartsAt += tempRect.getWidth() + spacingDiff;            
-        }
+        // Internal status
+        float		internalLeft = data.myUnit.percentInternalLeft();
+        g.setColor(data.myUnit.colorForPercent(internalLeft));
+        tempString = internalLeft + "%";
+        tempRect = smallFont.getStringBounds(tempString, frc);
+        g.setFont(smallFont);
+        g.drawString(tempString, nextStartsAt, barRect.y + 11);
+        nextStartsAt += tempRect.getWidth() + spacingDiff;
         
         // Reset transform
         g.setTransform(oldTrans);
