@@ -508,7 +508,7 @@ public class Thud extends JFrame implements  ActionListener
 
         miMuteMainWindow = new JCheckBoxMenuItem("Mute Main Window Text");
         miMuteMainWindow.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SEMICOLON,
-                                                               Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+                                                               java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         editMenu.add(miMuteMainWindow).setEnabled(true);
         miMuteMainWindow.setState(false);		// Main window is never muted on starting up
         
@@ -654,7 +654,7 @@ public class Thud extends JFrame implements  ActionListener
         
         bsd.insertPlainString(" *** Thud, (c) 2001-2003 Anthony Parker <asp@mac.com> ***");
         bsd.insertPlainString(" *** bt-thud.sourceforge.net                          ***");
-        bsd.insertPlainString(" *** Version: 1.2                                     ***");
+        bsd.insertPlainString(" *** Version: 1.3                                     ***");
         bsd.insertPlainString(" *** Built: " + buildNumber + "              ***");
         bsd.insertPlainString(" *** Contact Tony @ 3030MUX with questions/comments   ***\n");
 

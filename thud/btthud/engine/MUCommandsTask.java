@@ -91,7 +91,13 @@ public class MUCommandsTask extends TimerTask {
                 {
                     conn.sendCommand("hudinfo as");
                     forceArmorStatus = false;
-                }                
+                }
+
+                // Do we send a static general info? (See if we've turned into a MW or vice-versa)
+                if (count % (4 * prefs.slugCommandUpdate) == 0)
+                {
+                    conn.sendCommand("hudinfo sgi");
+                }
             }           
         }
         catch (Exception e)

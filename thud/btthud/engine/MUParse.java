@@ -417,6 +417,12 @@ public class MUParse implements Runnable {
             info = new MUMyInfo();
 
         info.type = st.nextToken();
+
+        if (info.type.equals("I"))
+            prefs.hudinfoTacHeight = 5;		// Because MechWarriors with long tacticals slow down the MUX
+        else
+            prefs.hudinfoTacHeight = 40;
+        
         info.ref = st.nextToken();
         info.name = st.nextToken();
 
