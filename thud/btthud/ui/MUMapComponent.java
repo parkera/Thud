@@ -1159,14 +1159,10 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                 
                 if (prefs.tacShowArcs)
                 {
-                    AffineTransform arcXform = new AffineTransform(oldTrans);
-                    double			headingRad;
+                    AffineTransform			arcXform = new AffineTransform(g.getTransform());
+                    double					headingDeg = -data.myUnit.heading - 180.0;
 
-                    // If we have a turret, we don't add in the turret heading here
-                    headingRad = ((double) (data.myUnit.heading + (data.myUnit.canHaveTurret() ? 0 : data.myUnit.turretHeading)) / 180) * PI + PI;
-
-                    arcXform.rotate(headingRad, pt.getX(), pt.getY());
-                    arcXform.translate(pt.getX(), pt.getY());
+                    arcXform.translate(h / 4, h / 4);
                     g.setTransform(arcXform);
 
                     // This is our own unit. Let's draw the helper 'arcs'
@@ -1177,39 +1173,43 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                     Arc2D	rightArc = new Arc2D.Double();
                     Arc2D	rearArc = new Arc2D.Double();
 
-                    frontArc.setArcByCenter(0, 0, prefs.makeArcsWeaponRange ? data.myUnit.maxFrontRange() * h : r, -30.0, -120.0, Arc2D.PIE);
+                    frontArc.setArcByCenter(0,
+                                            0,
+                                            prefs.makeArcsWeaponRange ? data.myUnit.maxFrontRange() * h : r,
+                                            -30.0 + headingDeg,
+                                            -120.0,
+                                            Arc2D.PIE);
                     g.setColor(new Color(0, 0, 255, 30));			// faded blue
                     //g.draw(frontArc);
                     g.fill(frontArc);
 
-                    leftArc.setArcByCenter(0, 0, prefs.makeArcsWeaponRange ? data.myUnit.maxLeftRange() * h : r, -30.0, 60.0, Arc2D.PIE);
-                    rightArc.setArcByCenter(0, 0, prefs.makeArcsWeaponRange ? data.myUnit.maxRightRange() * h : r, -150, -60.0, Arc2D.PIE);
+                    leftArc.setArcByCenter(0,
+                                           0,
+                                           prefs.makeArcsWeaponRange ? data.myUnit.maxLeftRange() * h : r,
+                                           -30.0 + headingDeg,
+                                           60.0,
+                                           Arc2D.PIE);
+                    rightArc.setArcByCenter(0,
+                                            0,
+                                            prefs.makeArcsWeaponRange ? data.myUnit.maxRightRange() * h : r,
+                                            -150 + headingDeg,
+                                            -60.0,
+                                            Arc2D.PIE);
                     g.setColor(new Color(255, 255, 0, 30));			// faded yellow
                     //g.draw(leftArc);
                     //g.draw(rightArc);
                     g.fill(leftArc);
                     g.fill(rightArc);
 
-                    rearArc.setArcByCenter(0, 0, prefs.makeArcsWeaponRange ? data.myUnit.maxRearRange() * h : r, 30.0, 120.0, Arc2D.PIE);
+                    rearArc.setArcByCenter(0,
+                                           0,
+                                           prefs.makeArcsWeaponRange ? data.myUnit.maxRearRange() * h : r,
+                                           30.0 + headingDeg,
+                                           120.0,
+                                           Arc2D.PIE);
                     g.setColor(new Color(255, 0, 0, 30));			// faded red
                     //g.draw(rearArc);
                     g.fill(rearArc);
-
-                    if (data.myUnit.canHaveTurret())
-                    {
-                        Arc2D	turretArc = new Arc2D.Double();
-                        double	turretRad = ((double) (data.myUnit.heading + data.myUnit.turretHeading) / 180) * PI;
-
-                        arcXform = new AffineTransform(oldTrans);
-                        arcXform.rotate(turretRad, pt.getX(), pt.getY());
-                        arcXform.translate(pt.getX(), pt.getY());
-                        g.setTransform(arcXform);
-                        
-                        turretArc.setArcByCenter(0, 0, prefs.makeArcsWeaponRange ? data.myUnit.maxTurretRange() * h : r, -30.0, -120.0, Arc2D.PIE);
-                        g.setColor(new Color(0, 255, 0, 30));			// faded green
-                        g.fill(turretArc);
-                    }
-
                 }
             }
             g.setTransform(oldTrans);
