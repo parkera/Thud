@@ -468,9 +468,30 @@ public class Thud extends JFrame implements  ActionListener
         textField.addActionListener(this);
         textField.setFont(mFont);
         textField.setEnabled(true);
+        
+        textPane = new JTextPane(bsd);
+        textPane.setDocument(bsd);
+        textPane.setBackground(Color.black);
+        textPane.setEditable(false);
+        textPane.setFont(mFont);
 
-        /*
+        JScrollPane scrollPane = new JScrollPane(textPane,
+                                                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                                                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+
+        Container contentPane = getContentPane();
+        contentPane.setLayout(new BorderLayout());
+
+        // Setup the text pane
+        contentPane.add(scrollPane, BorderLayout.CENTER);
+
+        // Setup the text field
+        contentPane.add(textField, BorderLayout.SOUTH);
+
         // Add listeners for PageUp, PageDown, Home, End
+        /* Not working, but not sure why not...
+            
         textField.getInputMap().put(KeyStroke.getKeyStroke(java.awt.Event.PGUP, 0), "PageUp");
         textField.getActionMap().put("PageUp", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -498,27 +519,7 @@ public class Thud extends JFrame implements  ActionListener
                 textPane.setCaretPosition(bsd.getLength());
             }
         });
-         */
-        
-        textPane = new JTextPane(bsd);
-        textPane.setDocument(bsd);
-        textPane.setBackground(Color.black);
-        textPane.setEditable(false);
-        textPane.setFont(mFont);
-
-        JScrollPane scrollPane = new JScrollPane(textPane,
-                                                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                                                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-
-        Container contentPane = getContentPane();
-        contentPane.setLayout(new BorderLayout());
-
-        // Setup the text pane
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-
-        // Setup the text field
-        contentPane.add(textField, BorderLayout.SOUTH);
+        */
     }
 
     // ------------------------------------------------------------------------
@@ -534,7 +535,6 @@ public class Thud extends JFrame implements  ActionListener
         
         this.getContentPane().setLayout(null);
 
-        //this.addWindowListener(new WindowListener
         // Only works for Java 1.4
         //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -813,6 +813,7 @@ public class Thud extends JFrame implements  ActionListener
     // Turn the HUD on/off
     public void doStartStop()
     {
+        // Only turn the HUD on if we're connected
         if (connected)
         {
             data.hudRunning = !data.hudRunning;		// turn the HUD actions on/off
@@ -844,10 +845,6 @@ public class Thud extends JFrame implements  ActionListener
                 parse.messageLine("*** Display Stopped ***");
                 commands.endTimers();
             }            
-        }
-        else
-        {
-            parse.messageLine("*** No Connection: Display Not Started ***");
         }
     }
 

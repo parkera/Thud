@@ -907,7 +907,6 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         AffineTransform			winTrans;
         AffineTransform			trans = new AffineTransform();
         
-        //Point2D					offset = offsetsForCentering(data.myUnit.bearingToCenter, data.myUnit.rangeToCenter);
         Rectangle				barRect;
         Point2D					realHex;
         Point2D					unitPos = realForUnit(data.myUnit);

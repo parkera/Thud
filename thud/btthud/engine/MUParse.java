@@ -216,6 +216,7 @@ public class MUParse implements Runnable {
         else if (l.startsWith("cleardoc"))
         {
             doc.clearDocument();
+            return true;
         }
         
         return false;
