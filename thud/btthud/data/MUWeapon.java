@@ -22,6 +22,7 @@ public class MUWeapon {
     public String	fireModes;
     public String	ammoModes;
     public String	damageType;
+    public int		heat;
 
     public MUWeapon()
     {

@@ -68,6 +68,8 @@ public class MUCommandsTask extends TimerTask {
                 if (forceContacts || (count % (4 * prefs.fastCommandUpdate) == 0))
                 {
                     conn.sendCommand("hudinfo c");
+                    if (data.hiSupportsBuildingContacts())
+                        conn.sendCommand("hudinfo cb");
                     synchronized (data)
                     {
                         data.expireAllContacts();
@@ -77,7 +79,8 @@ public class MUCommandsTask extends TimerTask {
                 }
 
                 // Do we send a tactical?
-                if (forceTactical || (count % (4 * prefs.slugCommandUpdate) == 0))
+                // If we know we're on an LOS-only map, send it at a faster pace
+                if (forceTactical || (count % (4 * (data.mapLOSOnly ? prefs.mediumCommandUpdate : prefs.slugCommandUpdate)) == 0))
                 {
                     conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight);
                     forceTactical = false;

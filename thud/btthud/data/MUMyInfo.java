@@ -20,6 +20,7 @@ public class MUMyInfo extends MUUnitInfo {
     public int			fuel;
 
     public float		walkSpeed, runSpeed, backSpeed, verticalSpeed;
+    public int			jumpTargetX, jumpTargetY;
     
     public String		ref;
     public String		advTech;

@@ -34,9 +34,6 @@ public class MUParse implements Runnable {
     BulkStyledDocument		doc = null;
     MUPrefs					prefs = null;
     MUCommands				commands = null;
-    
-    int						hudInfoMajorVersion = 0;		// Version 0 means not available
-    int						hudInfoMinorVersion = 0;
 
     String					sessionKey;
     String					hudInfoStart = new String("#HUD:");
@@ -65,27 +62,6 @@ public class MUParse implements Runnable {
     }
     
     // Methods
-
-    // -------------------------------------------------------
-    // Setters and Getters
-    
-    public int getHudInfoMajorVersion() {
-        return hudInfoMajorVersion;
-    }
-
-    public void setHudInfoMajorVersion(int v) {
-        hudInfoMajorVersion = v;
-    }
-
-    // ---
-    
-    public int getHudInfoMinorVersion() {
-        return hudInfoMinorVersion;
-    }
-
-    public void setHudInfoMinorVersion(int v) {
-        hudInfoMinorVersion = v;
-    }
 
     // ---
 
@@ -237,7 +213,8 @@ public class MUParse implements Runnable {
 
         return false;
     }
-    
+
+    /* Warning: This code relies on major version 0 of the hudinfo spec, and a minimum of minor version 6 */
     public boolean matchHudInfoCommand(String l)
     {
         if (l.startsWith(hudInfoStart))
@@ -282,6 +259,8 @@ public class MUParse implements Runnable {
                     parseHudInfoGS(restOfCommand);
                 else if (whichCommand == "C")	// contacts
                     parseHudInfoC(restOfCommand);
+                else if (whichCommand == "CB")	// building contacts
+                    parseHudInfoCB(restOfCommand);
                 else if (whichCommand == "T")	// tactical
                 {
                     // Now we're expecting an 'S', an 'L', or a 'D'
@@ -336,8 +315,8 @@ public class MUParse implements Runnable {
         st.nextToken(); st.nextToken(); st.nextToken();
 
         StringTokenizer st2 = new StringTokenizer(st.nextToken(), ".");
-        hudInfoMajorVersion = Integer.parseInt(st2.nextToken());
-        hudInfoMinorVersion = Integer.parseInt(st2.nextToken());
+        data.setHudInfoMajorVersion(Integer.parseInt(st2.nextToken()));
+        data.setHudInfoMinorVersion(Integer.parseInt(st2.nextToken()));
     }
     
     /**
@@ -390,6 +369,18 @@ public class MUParse implements Runnable {
                 info.status = st.nextToken();
             else
                 info.status = "";
+
+            if (data.hiSupportsOwnJumpInfo())
+            {
+                // We have our jump target code now
+                tempStr = st.nextToken().intern();
+                if (tempStr != "-")
+                {
+                    info.jumping = true;
+                    info.jumpTargetX = Integer.parseInt(tempStr);
+                    info.jumpTargetY = Integer.parseInt(st.nextToken());
+                }
+            }
         }
         catch (Exception e)
         {
@@ -543,7 +534,68 @@ public class MUParse implements Runnable {
             System.out.println("Error: parseHudInfoC: " + e);
         }
     }
+/*
+ f. Building Contacts
 
+ command:
+	hudinfo cb
+
+ response:
+ Zero or more:
+#HUD:<key>:CB:L# AC,BN,X,Y,Z,RN,BR,CF,MCF,BS
+ Exactly once:
+#HUD:<KEY>:CB:D# Done
+
+ AC: arc, weapon arc the building is in
+ BN: string, name of the building, or '-' if unknown
+ X, Y, Z: coordinates of building
+ RN: range, range to building
+ BR: degree, bearing to building
+ CF: integer, current construction factor of building
+ MCF: integer, maximum construction factor of building
+ BS: building status string
+
+ Example:
+ > hudinfo cb
+ < #HUD:C58x2:CB:L# *,Underground Hangar,55,66,7,25.1,180,1875,2000,X
+ < #HUD:C58x2:CB:D# Done
+ */
+    public void parseHudInfoCB(String l)
+    {
+        if (l == "Done")
+            return;
+
+        try
+        {
+            StringTokenizer st = new StringTokenizer(l, ",");
+            MUBuildingInfo	building = new MUBuildingInfo();
+            String			tempStr;
+
+            building.arc = st.nextToken();
+            building.name = st.nextToken();
+
+            building.x = Integer.parseInt(st.nextToken());
+            building.y = Integer.parseInt(st.nextToken());
+            building.z = Integer.parseInt(st.nextToken());
+
+            building.range = Float.parseFloat(st.nextToken());
+            building.bearing = Integer.parseInt(st.nextToken());
+
+            building.cf = Integer.parseInt(st.nextToken());
+            building.maxCf = Integer.parseInt(st.nextToken());
+
+            if (st.hasMoreTokens())
+                building.status = st.nextToken();
+
+            data.newContact(building);
+            
+        }
+        catch (Exception e)
+        {
+            System.out.println("Error: parseHudInfoCB: " + e);
+        }
+    }
+    
     protected int	tacSX, tacSY, tacEX, tacEY;
 
     /**
@@ -558,6 +610,18 @@ public class MUParse implements Runnable {
         tacSY = Integer.parseInt(st.nextToken());
         tacEX = Integer.parseInt(st.nextToken());
         tacEY = Integer.parseInt(st.nextToken());
+
+        if (data.hiSupportsExtendedMapInfo())
+        {
+            // We have some more info about our map
+            data.mapId = st.nextToken();
+            data.mapName = st.nextToken();
+            data.mapVersion = st.nextToken();
+
+            // Is this a LOS-only map? 
+            if (st.hasMoreTokens())
+                data.mapLOSOnly = st.nextToken().equals("l");
+        }
     }
 
     /**
@@ -710,6 +774,7 @@ public class MUParse implements Runnable {
         
         StringTokenizer	st = new StringTokenizer(l, ",");
         MUWeapon		w = new MUWeapon();
+        String			tempStr;
 
         // I'm not sure if the HUD will return -1 or - for invalid (ie underwater LRMs). It looks as if -1 at the moment, but the spec says -
         w.typeNumber = Integer.parseInt(st.nextToken());
@@ -726,10 +791,25 @@ public class MUParse implements Runnable {
         w.weight = Integer.parseInt(st.nextToken());
         w.damage = Integer.parseInt(st.nextToken());
         w.recycle = Integer.parseInt(st.nextToken());
-        // Skip these 
-        //w.fireModes = st.nextToken();
-        //w.ammoModes = st.nextToken();
-        //w.damageType = st.nextToken();
+
+        /*
+        // This whole section is a mess because it's hard to check for no ammo mode, etc 
+        tempStr = st.nextToken();
+        if (tempStr != null)
+            w.fireModes = new String(tempStr);
+        tempStr = st.nextToken();
+        if (tempStr != null)
+            w.ammoModes = new String(tempStr);
+        tempStr = st.nextToken();
+        if (tempStr != null)
+            w.damageType = new String(tempStr);
+
+        if (data.hiSupportsWLHeatInfo())
+        {
+            // We have heat as well
+            w.heat = Integer.parseInt(st.nextToken());
+        }
+        */
 
         MUUnitInfo.newWeapon(w);
     }

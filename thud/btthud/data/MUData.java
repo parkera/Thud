@@ -38,6 +38,8 @@ public class MUData {
     // The map
     MUHex						map[][] = null;
     boolean						terrainChanged = true;
+    public String				mapName, mapId, mapVersion;
+    public boolean				mapLOSOnly = false;
 
     // One MUHex for each elevation and terrain
     // By storing references to MUHexes we can save memory
@@ -46,9 +48,14 @@ public class MUData {
     
     // We store the contact data in a ArrayList, because we need to iterate over it efficiently
     ArrayList					contacts = null;
+    ArrayList					buildings = null;
 
     // This is the time that we received our last hudinfo data
     public long					lastDataTime;
+
+    // What version of hudinfo are we working with?
+    int						hudInfoMajorVersion = 0;
+    int						hudInfoMinorVersion = 0;
     
     public MUData()
     {
@@ -242,5 +249,56 @@ public class MUData {
     public boolean terrainChanged()
     {
         return terrainChanged;
+    }
+
+    /**
+      * Set hudInfoMajorVersion
+      */
+    public void setHudInfoMajorVersion(int v)
+    {
+        hudInfoMajorVersion = v;
+    }
+
+    public void setHudInfoMinorVersion(int v)
+    {
+        hudInfoMinorVersion = v;
+    }
+
+    // ---------------------------------
+    // These functions are to determine if certain features exist (they were added in particular versions)
+    // I thought it'd be easier to keep track of these here instead of spreading them across multiple files
+    // that have 'magic numbers' to compare to
+    // 'hi' = hudinfo
+
+    public boolean hiSupportsOwnJumpInfo()
+    {
+        if (hudInfoMinorVersion > 6)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean hiSupportsWLHeatInfo()
+    {
+        if (hudInfoMinorVersion > 6)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean hiSupportsBuildingContacts()
+    {
+        if (hudInfoMinorVersion > 6)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean hiSupportsExtendedMapInfo()
+    {
+        if (hudInfoMinorVersion > 6)
+            return true;
+        else
+            return false;
     }
 }
