@@ -448,7 +448,7 @@ public class MUUnitInfo extends Object implements Comparable {
                     
                 break;
             case 'N':
-                break;;
+                break;
             case 'Y':
                 break;
             case 'U':
