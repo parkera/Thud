@@ -98,8 +98,8 @@ public class MUParse {
         // Don't output if we get a match
         boolean							matched = false;
 
-        if (l == null)
-            return;
+        if (l.length() == 0)
+            doc.insertNewLine();
         
         try
         {

@@ -202,7 +202,8 @@ public class BulkStyledDocument extends DefaultStyledDocument
     public void insertPlainString(String l)
     {
         try {
-            insertString(getLength(),"\n" + l, attrPlain);
+            insertNewLine();
+            insertString(getLength(), l, attrPlain);
         } catch (Exception e) {
             System.out.println("Error: insertPlainString: " + e);            
         }
@@ -211,7 +212,8 @@ public class BulkStyledDocument extends DefaultStyledDocument
     public void insertMessageString(String l)
     {
         try {
-            insertString(getLength(),"\n" + l + "\n", attrHudMessage);
+            insertNewLine();
+            insertString(getLength(), l + "\n", attrHudMessage);
         } catch (Exception e) {
             System.out.println("Error: insertMessageString: " + e);
         }
@@ -220,7 +222,8 @@ public class BulkStyledDocument extends DefaultStyledDocument
     public void insertCommandString(String l)
     {
         try {
-            insertString(getLength(), "\n" + l + "\n", attrCommand);
+            insertNewLine();
+            insertString(getLength(), l + "\n", attrCommand);
         } catch (Exception e) {
             System.out.println("Error: insertCommandString: " + e);
         }

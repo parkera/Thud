@@ -203,6 +203,7 @@ public class MUMapComponent extends JComponent implements MouseListener
         this.prefs = prefs;
         setupFonts();
         changeHeight(prefs.hexHeight);
+        repaint();
     }
     /**
       * The purpose of this function is to take some CPU-intensive stuff that mostly stays the same and move it outside
@@ -223,8 +224,6 @@ public class MUMapComponent extends JComponent implements MouseListener
         terrainFont = new Font("Monospaced", Font.PLAIN, h/2 - 2);
 
         hexPoly = new HexShape(h);
-
-        //terrain = new BufferedImage(MUData.MAX_X * h, MUData.MAX_Y * h, BufferedImage.TYPE_INT_ARGB);
         
         // Now draw our images      
         for (int i = 0; i < TOTAL_TERRAIN; i++)
@@ -240,7 +239,10 @@ public class MUMapComponent extends JComponent implements MouseListener
                 //g.fill(hexPoly.getBounds());
 
                 // Setup the color
-                g.setColor(colorForElevation(colorForTerrain(terrainTypes[i]), j));
+                if (prefs.tacDarkenElev)
+                    g.setColor(colorForElevation(colorForTerrain(terrainTypes[i]), j));
+                else
+                    g.setColor(colorForTerrain(terrainTypes[i]));
 
                 // Fill the hex
                 g.fill(hexPoly);
@@ -684,10 +686,7 @@ public class MUMapComponent extends JComponent implements MouseListener
       */
     
     protected BufferedImage imageForTerrain(char terrain, int elevation)
-    {
-        if (!prefs.tacDarkenElev)
-            elevation = 0;
-        
+    {        
         switch (terrain)
         {
             case '.':							// plain

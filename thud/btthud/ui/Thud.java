@@ -482,7 +482,9 @@ public class Thud extends JFrame implements  ActionListener
     
     public void StartConnection(String host, int port)
     {
-
+        // List of the classes which MUParse should notify when new data is available
+        ArrayList				toNotify = new ArrayList();
+        
         if (conn != null)
         {
             // We must already have a connection. Let's clean up that one, then go to this new one
@@ -774,7 +776,7 @@ public class Thud extends JFrame implements  ActionListener
         miArcRetract.setEnabled(!prefs.makeArcsWeaponRange && prefs.tacShowArcs);
         miArcExtend.setEnabled(!prefs.makeArcsWeaponRange && prefs.tacShowArcs);
         
-        tacMap.repaint();
+        tacMap.newPreferences(prefs);
     }
     
     public void doMakeArcsWeaponRange()
@@ -792,42 +794,42 @@ public class Thud extends JFrame implements  ActionListener
             prefs.arcIndicatorRange = 1;
         if (prefs.arcIndicatorRange > 200)
             prefs.arcIndicatorRange = 200;
-        tacMap.repaint();
+        tacMap.newPreferences(prefs);
     }
 
     public void doShowHexNumbers()
     {
         prefs.tacShowHexNumbers = !prefs.tacShowHexNumbers;
         miShowHexNumbers.setState(prefs.tacShowHexNumbers);
-        tacMap.repaint();
+        tacMap.newPreferences(prefs);
     }
 
     public void doShowUnitNames()
     {
         prefs.tacShowUnitNames = !prefs.tacShowUnitNames;
         miShowUnitNames.setState(prefs.tacShowUnitNames);
-        tacMap.repaint();
+        tacMap.newPreferences(prefs);
     }
 
     public void doDarkenElevations()
     {
         prefs.tacDarkenElev = !prefs.tacDarkenElev;
         miDarkenElevations.setState(prefs.tacDarkenElev);
-        tacMap.repaint();
+        tacMap.newPreferences(prefs);
     }
 
     public void doShowCliffs()
     {
         prefs.tacShowCliffs = !prefs.tacShowCliffs;
         miShowCliffs.setState(prefs.tacShowCliffs);
-        tacMap.repaint();
+        tacMap.newPreferences(prefs);
     }
 
     public void doShowIndicators()
     {
         prefs.tacShowIndicators = !prefs.tacShowIndicators;
         miShowIndicators.setState(prefs.tacShowIndicators);
-        tacMap.repaint();
+        tacMap.newPreferences(prefs);
     }
 
     public void doGetBackgroundColor()

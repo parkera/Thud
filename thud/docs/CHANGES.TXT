@@ -62,5 +62,6 @@ Version History:
  
   * Much much quicker connect-to-MUX time
   * Much quicker text handling
+  * Elevation numbers now show when 'Darken Elevations' is turned off
   
   
