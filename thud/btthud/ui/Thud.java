@@ -101,6 +101,8 @@ public class Thud extends JFrame implements  ActionListener
     LinkedList				commandHistory = new LinkedList();
     int						historyLoc = 1;							// how far we are from end of history list
 
+    boolean					firstLaunch = false;
+    
     static final int		DEBUG = 0;
     
     // ------------------------------------------------------------------------
@@ -645,8 +647,15 @@ public class Thud extends JFrame implements  ActionListener
         bsd.insertPlainString(" *** Built: " + buildNumber + "              ***");
         bsd.insertPlainString(" *** Contact Tony @ 3030MUX with questions/comments   ***\n");
 
-        // And finally, show ourselves
+        // Show ourselves
         setVisible(true);
+
+        if (firstLaunch)
+        {
+            // Display the new changes dialog
+            doReleaseNotes();
+            firstLaunch = false;
+        }
     }
     
     // -----------------
@@ -1204,6 +1213,7 @@ public class Thud extends JFrame implements  ActionListener
             {
                 prefs = new MUPrefs();
                 prefs.defaultPrefs();
+                firstLaunch = true;
             }
             else
             {
@@ -1220,6 +1230,8 @@ public class Thud extends JFrame implements  ActionListener
             // Maybe the file format changed. Let's just create some new prefs
             prefs = new MUPrefs();
             prefs.defaultPrefs();
+
+            firstLaunch = true;
         }
         
     }

@@ -17,8 +17,12 @@ find . -name "*.java" | xargs javac -d build
 sh makeManifest.sh
 
 # Make the .jar file
+cp CHANGES.TXT build
+cp CHANGES.RTF build
 cd build
-jar cmf ../MANIFEST.MF Thud.jar btthud/
+jar cmf ../MANIFEST.MF Thud.jar CHANGES.TXT CHANGES.RTF btthud/
+rm CHANGES.TXT
+rm CHANGES.RTF
 
 # Done!
 echo "All done. To run Thud, change directory to 'build', then type:"

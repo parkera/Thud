@@ -12,13 +12,21 @@
 package btthud.ui;
 
 import javax.swing.*;
+import javax.swing.text.*;
+import javax.swing.text.rtf.*;
 import java.awt.*;
+
+import java.net.*;
+import java.io.*;
 
 public class ReleaseNotesDialog extends javax.swing.JDialog {
 
-    JButton 		okButton;
-    JTextArea		notesTextArea;
-        
+    JButton 				okButton;
+    JTextPane				notesPane;
+
+    Document				doc;
+    RTFEditorKit			rtf;
+    
     public ReleaseNotesDialog(java.awt.Frame parent, boolean modal)
     {
         super(parent, modal);
@@ -28,11 +36,35 @@ public class ReleaseNotesDialog extends javax.swing.JDialog {
     private void initComponents()
     {
         okButton = new javax.swing.JButton();
-        notesTextArea = new JTextArea("Test notes");
-        notesTextArea.setLineWrap(true);
-        notesTextArea.setRows(20);
-        notesTextArea.setColumns(80);
-        notesTextArea.setEditable(false);
+
+        rtf = new RTFEditorKit();
+        doc = rtf.createDefaultDocument();
+        
+        // Get current classloader, then get the CHANGES.RTF file
+        try
+        {
+            boolean			go = true;
+            ClassLoader 	cl = this.getClass().getClassLoader();
+            rtf.read(cl.getResourceAsStream("CHANGES.RTF"), doc, 0);
+        }
+        catch (Exception e)
+        {
+            try {
+                doc.insertString(doc.getLength(), "Please see: http://bt-thud.sourceforge.net for release notes.", null);
+            } catch (Exception e2) {
+                // I give up
+                System.out.println("Error: releaseNotesDialog: " + e + e2);
+            }
+        }
+        
+        notesPane = new JTextPane((StyledDocument) doc);
+        notesPane.setDocument(doc);
+        notesPane.setEditable(false);
+
+        JScrollPane scrollPane = new JScrollPane(notesPane,
+                                                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                                                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(600,300));
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -48,7 +80,7 @@ public class ReleaseNotesDialog extends javax.swing.JDialog {
             }
         });
         
-        getContentPane().add(notesTextArea, java.awt.BorderLayout.CENTER);
+        getContentPane().add(scrollPane, java.awt.BorderLayout.CENTER);
         
         pack();
     }
