@@ -78,7 +78,7 @@ public class ANSIParser {
             switch (charCode2)
             {
                 case 0:
-                    StyleConstants.setForeground(a, Color.black);
+                    StyleConstants.setForeground(a, Color.gray);
                     break;
                 case 1:
                     StyleConstants.setForeground(a, Color.red);
