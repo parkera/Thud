@@ -13,18 +13,6 @@ import btthud.data.*;
 import btthud.engine.*;
 import btthud.util.*;
 
-/* Notes:
-
-This is the class that does probably the most interesting work in all of Thud. It draws the map and the components inside the map.
-
-It tries to draw as much as possible beforehand (in the changeHeight() function) so as to do as little processing as possible when it is drawing a lot of hexes across and down. This includes filling, drawing lines, drawing terrain types, and drawing elevations. It stores all of this in an array then copies it while running. It is probably possible to do further optimizations here, and that would be a good idea.
-
-Also needed; a better way to determine exactly what hexes to draw or not. Right now it just guestimates then adds on some on both sides. We could avoid drawing a lot of hexes if we had a more accurate algorithm.
-
-- asp, 7/7/2002
-
-*/
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
@@ -36,6 +24,18 @@ import javax.swing.text.*;
 
 import java.lang.*;
 import java.util.*;
+
+/* Notes:
+
+This is the class that does probably the most interesting work in all of Thud. It draws the map and the components inside the map.
+
+It tries to draw as much as possible beforehand (in the changeHeight() function) so as to do as little processing as possible when it is drawing a lot of hexes across and down. This includes filling, drawing lines, drawing terrain types, and drawing elevations. It stores all of this in an array then copies it while running. It is probably possible to do further optimizations here, and that would be a good idea.
+
+Also needed; a better way to determine exactly what hexes to draw or not. Right now it just guestimates then adds on some on both sides. We could avoid drawing a lot of hexes if we had a more accurate algorithm.
+
+- asp, 7/7/2002
+
+    */
 
 public class MUMapComponent extends JComponent implements MouseListener, ComponentListener
 {
