@@ -5,8 +5,14 @@ Version History:
 
 1.1
  
- Note: Due to changes in the preferences file format, your preferences will be reset on starting this version. Sorry. Again.
- 
+ BTech MUX Admins: In order for Thud to work on your site, you need to satisfy 2 requirements:
+   1. The HUDINFO protocol must be implemented
+   2. The command_quota_increment must be increased. Use: @admin command_quota_increment=4
+ If the increment is set to 4, then players can run 4 commands per second. The default is 1, which is too low for Thud to run and for players to be able to put in their own commands.
+ Players: If Thud appears to 'lag' your connection and commands you put in are not sent to the game after a short period of time, the cause is the administrators not increasing the command_quota_increment. Talk to them, not me.
+
+ Due to changes in the preferences file format, your preferences will be reset on starting this version. Sorry. Again.  
+
  New Features / Other Changes:
  
   * A preference to adjust the length of heading/speed indicator lines on contacts on the map. The lower the number, the longer the line.

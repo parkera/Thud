@@ -32,6 +32,7 @@ public class Thud extends JFrame implements  ActionListener
     JMenuBar mainMenuBar = new JMenuBar();
 	
     JMenu fileMenu;
+    protected JMenuItem miReleaseNotes;
     protected JMenuItem miQuit;
 	
     JMenu editMenu;
@@ -111,6 +112,7 @@ public class Thud extends JFrame implements  ActionListener
       */
     protected void setupListeners(ActionListener l)
     {
+        miReleaseNotes.addActionListener(l);
         miQuit.addActionListener(l);
 
         miUndo.addActionListener(l);
@@ -167,6 +169,11 @@ public class Thud extends JFrame implements  ActionListener
 
         // ----------
 
+        miReleaseNotes = new JMenuItem("View Release Notes...");
+        fileMenu.add(miReleaseNotes).setEnabled(true);
+
+        fileMenu.addSeparator();
+        
         miQuit = new JMenuItem("Quit");
         miQuit.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q,
                                                      Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -546,7 +553,7 @@ public class Thud extends JFrame implements  ActionListener
         textPane.setBackground(Color.black);
         textPane.setEditable(false);
         textPane.setFont(mFont);
-            
+        
         JScrollPane scrollPane = new JScrollPane(textPane,
                                                  JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                                                  JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -726,7 +733,8 @@ public class Thud extends JFrame implements  ActionListener
     // ActionListener interface (for menus)
     public void actionPerformed(ActionEvent newEvent)
     {
-        if (newEvent.getActionCommand().equals(miQuit.getActionCommand())) handleQuit();
+        if (newEvent.getActionCommand().equals(miReleaseNotes.getActionCommand())) doReleaseNotes();
+        else if (newEvent.getActionCommand().equals(miQuit.getActionCommand())) doQuit();
         else if (newEvent.getActionCommand().equals(miUndo.getActionCommand())) doUndo();
         else if (newEvent.getActionCommand().equals(miCut.getActionCommand())) doCut();
         else if (newEvent.getActionCommand().equals(miCopy.getActionCommand())) doCopy();
@@ -796,17 +804,25 @@ public class Thud extends JFrame implements  ActionListener
         }
     }
 
-    // --------------------------
+    // -----------------------
     // Display our about box
-    public void handleAbout() {
+    public void doAbout() {
         aboutBox.setResizable(false);
         aboutBox.setVisible(true);
         aboutBox.show();
     }
 
     // -----------------------
+    // Show the release notes
+    public void doReleaseNotes()
+    {
+        ReleaseNotesDialog		notesDialog = new ReleaseNotesDialog(this, true);
+        notesDialog.setVisible(true);
+    }
+
+    // -----------------------
     // Quit cleanly
-    public void handleQuit()
+    public void doQuit()
     {
         try
         {
@@ -830,7 +846,7 @@ public class Thud extends JFrame implements  ActionListener
     // Display the preferences dialog
     public void doPreferences()
     {
-        PrefsDialog		prefsDialog = new PrefsDialog(this, true);		// the middle boolean is to see if the dialog is modal
+        PrefsDialog		prefsDialog = new PrefsDialog(this, true);
         prefsDialog.setVisible(true);
 
         // Send messages around in case something changed
