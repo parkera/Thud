@@ -56,6 +56,7 @@ public class ANSIParser {
         }
         else if (charCode1 == 3)
         {
+            Color		c = (Color) a.getAttribute("background");
             switch (charCode2)
             {
                 case 0:
@@ -80,7 +81,8 @@ public class ANSIParser {
                     StyleConstants.setForeground(a, Color.cyan);
                     break;
                 case 7:
-                    StyleConstants.setForeground(a, Color.white);
+                    if (!a.containsAttribute("foreground", Color.white))	// For some reason, this is needed to prevent a white block of text
+                        StyleConstants.setForeground(a, Color.white);
                     break;
                 default:					// dunno what this is.... change nothing
                     break;

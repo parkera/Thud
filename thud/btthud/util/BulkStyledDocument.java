@@ -49,13 +49,17 @@ public class BulkStyledDocument extends DefaultStyledDocument
 
         StyleConstants.setFontSize(attrBase, fontSize);				// Default font size...
         StyleConstants.setForeground(attrBase, Color.white);		// ... and color
-
+        StyleConstants.setBackground(attrBase, Color.black);
+        
         thisAttrSet = new SimpleAttributeSet();
         thisAttrSet.setResolveParent(attrBase);
+
         attrPlain = new SimpleAttributeSet();
         attrPlain.setResolveParent(attrBase);
+        
         attrCommand = new SimpleAttributeSet();
         attrCommand.setResolveParent(attrBase);
+
         attrHudMessage = new SimpleAttributeSet();
         attrHudMessage.setResolveParent(attrBase);
 
