@@ -242,42 +242,42 @@ public class MUUnitInfo extends Object implements Comparable {
         */
         StringBuffer	sb = new StringBuffer();
 
-        sb.append(primarySensor ? "P" : " ");
-        sb.append(secondarySensor ? "S" : " ");
+        sb.append(primarySensor ? 'P' : ' ');
+        sb.append(secondarySensor ? 'S' : ' ');
         sb.append(arc);
-        sb.append("[");
+        sb.append('[');
         sb.append(id);
-        sb.append("]");
+        sb.append(']');
         sb.append(type);
-        sb.append(" ");
+        sb.append(' ');
 
         sb.append(leftJust(name, 12, true));
-        sb.append(" ");
+        sb.append(' ');
 
-        sb.append("x:");
+        sb.append('x'); sb.append(':');
         sb.append(rightJust(String.valueOf(x), 3, false));
-        sb.append(" ");
-        sb.append("y:");
+        sb.append(' ');
+        sb.append('y'); sb.append(':');
         sb.append(rightJust(String.valueOf(y), 3, false));
-        sb.append(" ");
-        sb.append("z:");
+        sb.append(' ');
+        sb.append('z'); sb.append(':');
         sb.append(rightJust(String.valueOf(z), 3, false));
-        sb.append(" ");
+        sb.append(' ');
 
-        sb.append("r:");
+        sb.append('r'); sb.append(':');
         sb.append(rightJust(String.valueOf(range), 4, true));
-        sb.append(" ");
-        sb.append("b:");
+        sb.append(' ');
+        sb.append('b'); sb.append(':');
         sb.append(rightJust(String.valueOf(bearing), 3, false));
-        sb.append(" ");
+        sb.append(' ');
 
-        sb.append("s:");
+        sb.append('s'); sb.append(':');
         sb.append(rightJust(String.valueOf(speed), 5, true));
-        sb.append(" ");
-        sb.append("h:");
+        sb.append(' ');
+        sb.append('h'); sb.append(':');
         sb.append(rightJust(String.valueOf(heading), 3, false));
-        sb.append(" ");
-        sb.append("S:");
+        sb.append(' ');
+        sb.append('S'); sb.append(':');
         sb.append(status);
 
         return sb.toString();
@@ -291,7 +291,7 @@ public class MUUnitInfo extends Object implements Comparable {
             StringBuffer sb = new StringBuffer(l);
 
             for (int i = 0; i < w - l.length(); i++)
-                sb.append(" ");
+                sb.append(' ');
 
             return sb.toString();
         }
@@ -322,7 +322,7 @@ public class MUUnitInfo extends Object implements Comparable {
             StringBuffer sb = new StringBuffer(l);
 
             for (int i = 0; i < w - l.length(); i++)
-                sb.insert(0, " ");
+                sb.insert(0, ' ');
 
             return sb.toString();
         }
