@@ -10,6 +10,7 @@ package btthud.ui;
 
 import java.awt.*;
 import javax.swing.*;
+import java.awt.image.*;
 
 import btthud.data.*;
 
@@ -34,11 +35,11 @@ public class CustomCursors {
             Image			paste = new ImageIcon(cl.getResource("cursors/paste.gif")).getImage();
             Image			undo = new ImageIcon(cl.getResource("cursors/undo.gif")).getImage();
 
-            crosshairCursor = Toolkit.getDefaultToolkit().createCustomCursor(crosshair, new Point(7, 7), "Crosshair");
-            terrainCursor = Toolkit.getDefaultToolkit().createCustomCursor(terrain, new Point(7, 7), "Terrain Only");
-            elevationCursor = Toolkit.getDefaultToolkit().createCustomCursor(elevation, new Point(7, 7), "Elevation Only");
-            pasteCursor = Toolkit.getDefaultToolkit().createCustomCursor(paste, new Point(7, 7), "Paste");
-            undoCursor = Toolkit.getDefaultToolkit().createCustomCursor(undo, new Point(7, 7), "Undo");
+            crosshairCursor = createOneCursor(crosshair, new Point(7, 7), "Crosshair");
+            terrainCursor = createOneCursor(terrain, new Point(7, 7), "Terrain Only");
+            elevationCursor = createOneCursor(elevation, new Point(7, 7), "Elevation Only");
+            pasteCursor = createOneCursor(paste, new Point(7, 7), "Paste");
+            undoCursor = createOneCursor(undo, new Point(7, 7), "Undo");
 
             for (int i = 0; i < MUXHex.TOTAL_PAINTABLE_TERRAIN; i++)
                 terrainIcons[i] = new ImageIcon(cl.getResource("tools/" + MUXHex.nameForId(i) + ".png"));
@@ -53,6 +54,31 @@ public class CustomCursors {
         }
     }
 
+    static private Cursor createOneCursor(Image img, Point hotSpot, String name)
+    {
+        Cursor      c;
+        int         imWidth = img.getWidth(null);
+        int         imHeight = img.getHeight(null);
+        
+        // all of our icons are 
+        Dimension   bestSize = Toolkit.getDefaultToolkit().getBestCursorSize(imWidth, imHeight);
+        
+        if (bestSize.width == imWidth && bestSize.height == imHeight) {
+            // The requested size/height match our icon, so just create the cursor
+            c = Toolkit.getDefaultToolkit().createCustomCursor(img, hotSpot, name);
+        } else {
+            // Create a new image at this new 'best' size, then draw our icon into the upper-left corner
+            BufferedImage   newImage = new BufferedImage(bestSize.width,
+                                                         bestSize.height,
+                                                         BufferedImage.TYPE_INT_ARGB);
+            Graphics2D      g2 = newImage.createGraphics();
+            g2.drawImage(img, 0, 0, null);
+            c = Toolkit.getDefaultToolkit().createCustomCursor(newImage, hotSpot, name);
+        }
+        
+        return c;
+    }
+    
     // ---------------
     
     static public Cursor getCrosshairCursor() { return crosshairCursor; }
