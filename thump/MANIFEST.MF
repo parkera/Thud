@@ -1,0 +1,3 @@
+Main-Class: btthud.ui.Thump
+Implementation-Version: Fri Mar 14 20:15:42 PST 2003
+

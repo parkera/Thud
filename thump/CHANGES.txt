@@ -1,0 +1,10 @@
+1.0b2
+New Features:
+- Added 'Inspector' palette which shows various information about whatever hex is currently under the mouse
+
+Bug Fixes:
+- Fixed bug that allowed palettes to show up on startup regardless of 'show/hide' preference
+
+
+1.0b1
+- Initial version
