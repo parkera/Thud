@@ -632,11 +632,11 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             if (hexX + j >= 0)		// Make sure we're drawing within the boundaries of the map
             {
                 for (int i = 0; i < numDown; i++)
-                {                    
-                    if (hexY + i >= 0 && data.getHexTerrain(hexX + j, hexY + i) != '?')	// Make sure we're drawing within the boundaries of the map
+                {
+                    // Make sure we're drawing within the boundaries of the map
+                    if (hexY + i >= 0 && data.getHexTerrain(hexX + j, hexY + i) != MUHex.UNKNOWN)
                     {
                         // This gives us the x,y location of this hex
-                        //Point2D	realHex = hexPoly.hexToReal(hexX + j, hexY + i, false);
                         hexPoly.hexToReal(hexX + j, hexY + i, false, realHex);
                         
                         // Set the transform to our previously setup one

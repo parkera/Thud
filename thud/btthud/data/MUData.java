@@ -157,10 +157,10 @@ public class MUData {
             if (map[x][y] != null)
                 return map[x][y].terrain();
             else
-                return '?';
+                return MUHex.UNKNOWN;
         }
 
-        return '?';
+        return MUHex.UNKNOWN;
     }
 
     /**
@@ -193,8 +193,8 @@ public class MUData {
             e = -e;
         // Since we use this function in determining cliff edges, a few corrections...
 
-        if (getHexTerrain(x, y) == '-')		// ice
-            e = 0;							// You can cross it, even tho it may be dangerous
+        if (getHexTerrain(x, y) == MUHex.ICE)		// ice
+            e = 0;									// You can cross it, even tho it may be dangerous
         
         return e;
     }
