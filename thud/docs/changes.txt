@@ -1,0 +1,53 @@
+
+Thud, by Anthony Parker <asp@mac.com>, Tony at 3030MUX
+
+Version History:
+
+-1.0d November 16, 2001
+
+ * First version.
+
+< Many versions in here I did not bother to keep track of >
+
+-0.6b April 7, 2002
+
+ New Features:
+
+  * The map can now be scrolled around the main unit. The commands are in the 'Map' menu, and are most effective when using the keyboard shortcuts.
+  * Weapons arcs can now reflect the range of your weapons in that particular arc or 1 hex (whichever is longer). For example, if your unit has one LRM-5 on your Right Arm and 1 Medium Laser (rear facing) in your Center Torso, then the right yellow arc will be 21 hexes long, the blue front arc will be 21 hexes long (RA weapons can fire in the front arc), the yellow left arc will be 1 hex long, and the rear red arc will be 9 hexes long. 
+  * Weapons arcs can be switched between an arbitrary user-settable range (as used in previous versions) or the weapons range as described above. They can also be turned off completely.
+  * Menus reorganized a bit make them easier to navigate. Also, items in the 'HUD' menu have a keyboard shortcut. 3030MUX is Control-1 by default.
+  * Thud now prints its version number to the main window upon startup.
+
+ Bug Fixes:
+
+  * Menu shortcuts should now change the modifier they use based on the platform that Thud is being run on. This means 'Meta' (Command) on the Macintosh, and 'Control' on everything else.
+  * Zooming out to height zero should no longer be possible.
+  * A few internal changes that should speed up Thud were made.
+  * The .jar file that Thud is shipped in now has a proper manifest file. This means Thud can be started from the command line simply using: java -jar Thud.jar
+
+ Future Plans:
+
+  * A dialog to input user/password for connecting when a MUX is chosen from the 'HUD' menu.
+  * A method to add and remove MUXes from the 'HUD' menu.
+  * Moving some of the currently available preferences to a Preferences dialog box, plus adding some of the advanced ones.
+  * More intuitive controls for scrolling the map are needed.
+  * A better armor display of some kind, instead of just an overall percentage.
+
+1.0fc1
+
+ I've decided to move to a more traditional version numbering system as we approach a final 1.0 release. :)
+ 
+ New Features:
+
+  * Thud will now exit when the main window is closed.
+  * Your own unit is now drawn in a bold line on the tactical map to help differentiate it in large battles.
+  * New option: Showing cliffs will highlight edges in red which will cause a fall if crossed by a 'Mech or tank (greater than 2 elevation changes).
+  * There is now a preferences window which allows for changing of colors on the map display, font sizes, and more.
+  * Changes to internal way that maps are stored.
+  
+ Bug Fixes:
+  
+  * Thud now handles underground maps properly (unknown hexes show up black on the tactical display).
+  * Some work on map correctness done, but there's still more to do.
+  
