@@ -17,7 +17,8 @@ import java.awt.*;
 
  f - flash                       i - inverse
  h - hilite                      n - normal
-
+ u - underline
+ 
  x - black foreground            X - black background
  r - red foreground              R - red background
  g - green foreground            G - green background
@@ -33,17 +34,6 @@ public class ANSIParser {
 
     // ---------
     // Utility methods
-
-    /**
-    * Check to see if an escape code refers to a bold code
-     */
-    static public boolean boldEscapeCode(int charCode1)
-    {
-            if (charCode1 == 1)
-                return true;
-            else
-                return false;
-    }
     
     /**
     * Check to see if this is a 'normal' code
@@ -74,6 +64,14 @@ public class ANSIParser {
         if (charCode1 == 1)		// highlight
         {
             StyleConstants.setBold(a, true);
+        }
+        else if (charCode1 == 4 && charCode2 == -1)
+        {
+            StyleConstants.setUnderline(a, true);
+        }
+        else if (charCode1 == 5)
+        {
+            StyleConstants.setItalic(a, true);		// Use italics as substitute for annoying-as-hell blinking
         }
         else if (charCode1 == 3)
         {
@@ -106,7 +104,39 @@ public class ANSIParser {
                 default:					// dunno what this is.... change nothing
                     break;
             }
-        } // end of charcode check
+        }
+        else if (charCode1 == 4)
+        {
+            switch (charCode2)
+            {
+                case 0:
+                    StyleConstants.setBackground(a, Color.black);
+                    break;
+                case 1:
+                    StyleConstants.setBackground(a, Color.red);
+                    break;
+                case 2:
+                    StyleConstants.setBackground(a, Color.green);
+                    break;
+                case 3:
+                    StyleConstants.setBackground(a, Color.yellow);
+                    break;
+                case 4:
+                    StyleConstants.setBackground(a, Color.blue);
+                    break;
+                case 5:
+                    StyleConstants.setBackground(a, Color.magenta);
+                    break;
+                case 6:
+                    StyleConstants.setBackground(a, Color.cyan);
+                    break;
+                case 7:
+                    StyleConstants.setBackground(a, Color.white);
+                    break;
+                default:					// dunno what this is.... change nothing
+                    break;
+            }
+        }
     
         return a;
     }

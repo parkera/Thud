@@ -52,3 +52,11 @@ Version History:
   * Some work on map correctness done, but there's still more to do.
   * A lot of small bug fixes
   
+1.0b6
+
+ New Features:
+ 
+  * Better ANSI support: background colors and underline mode now supported
+  
+ Bug Fixes:
+  

@@ -108,11 +108,9 @@ public class BulkStyledDocument extends DefaultStyledDocument
                         int		charCode1 = Character.digit(l.charAt(i + parsePos), 10);		// (i + parsePos) character, base 10
                         int		charCode2 = (charCode1 == 1 ? -1 : Character.digit(l.charAt(i + parsePos + 1), 10));  // Next character, base 10, or -1
 
-                        if (ANSIParser.boldEscapeCode(charCode1))			// set ourselves bold
-                            StyleConstants.setBold(thisAttrSet, true);
-                        else if (ANSIParser.normalEscapeCode(charCode1))	// go back to our base attribute set
+                        if (ANSIParser.normalEscapeCode(charCode1))	// go back to our base attribute set
                             thisAttrSet = new SimpleAttributeSet(attrBase);
-                        else												// merge our current attributes with what these escape codes say
+                        else										// merge our current attributes with what these escape codes say
                             thisAttrSet.addAttributes(ANSIParser.parseEscapeCode(charCode1, charCode2));
 
                         parsePos++;				// move on to next character... (see below)
