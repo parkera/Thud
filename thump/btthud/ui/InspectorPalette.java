@@ -49,7 +49,7 @@ public class InspectorPalette extends JInternalFrame {
         lHexLabel = new JLabel("Hex: ");
         contentPane.add(lHexLabel, BorderLayout.WEST);
         
-        lHex = new JLabel("             ");
+        lHex = new JLabel("                ");
         contentPane.add(lHex, BorderLayout.CENTER);
 
         pack();

@@ -1,3 +1,8 @@
+1.2
+
+Bug Fixes:
+ - Made the hex inspector window slightly larger, and put it in a different location by default
+ 
 1.1 January 11, 2004
 Bug Fixes:
  - Cursor aims properly on Windows now (it was too big previously)

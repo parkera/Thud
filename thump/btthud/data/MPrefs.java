@@ -75,7 +75,7 @@ public class MPrefs extends Object implements Serializable, Cloneable
         terrainToolsLoc = new Point(8, 87);
         elevationToolsLoc = new Point(89, 10);
         brushToolsLoc = new Point(354, 10);
-        inspectorLoc = new Point(8, 500);
+        inspectorLoc = new Point(91, 10);
         mapFrameLoc = new Point(89, 87);
 
         showTools = true;
