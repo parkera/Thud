@@ -72,13 +72,13 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         
         if (file == null)
         {
+            map = new MUXMap(mapSize, mapSize);
+            map.clearMap();
+            
             setTitle("Untitled " + documentsOpened + sizeString());
             this.file = new File("Untitled " + documentsOpened);
             documentsOpened++;
             newFile = true;
-            
-            map = new MUXMap(mapSize, mapSize);
-            map.clearMap();
         }
         else
         {

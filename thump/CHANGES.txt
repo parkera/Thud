@@ -1,3 +1,12 @@
+1.1  ---
+New Features:
+
+Bug Fixes:
+ - Cancel button on 'New Map' dialog box now works
+ 
+Performance Improvements:
+ - Zooming, scrolling, and drawing hexes are all much faster
+
 1.0b2 May 31, 2003
 New Features:
 - Added 'Inspector' palette which shows various information about whatever hex is currently under the mouse
