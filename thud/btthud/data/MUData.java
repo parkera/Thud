@@ -151,6 +151,11 @@ public class MUData {
         int	e = getHexElevation(x, y);
         if (e < 0)
             e = -e;
+        // Since we use this function in determining cliff edges, a few corrections...
+
+        if (getHexTerrain(x, y) == '-')		// ice
+            e = 0;							// You can cross it, even tho it may be dangerous
+        
         return e;
     }
     
