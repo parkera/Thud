@@ -643,7 +643,7 @@ public class Thud extends JFrame implements  ActionListener
         
         bsd.insertPlainString(" *** Thud, (c) 2001-2002 Anthony Parker <asp@mac.com> ***");
         bsd.insertPlainString(" *** bt-thud.sourceforge.net                          ***");
-        bsd.insertPlainString(" *** Version: 1.1 (beta)                              ***");
+        bsd.insertPlainString(" *** Version: 1.1                                     ***");
         bsd.insertPlainString(" *** Built: " + buildNumber + "              ***");
         bsd.insertPlainString(" *** Contact Tony @ 3030MUX with questions/comments   ***\n");
 
@@ -1218,7 +1218,7 @@ public class Thud extends JFrame implements  ActionListener
             else
             {
                 FileInputStream		fis = new FileInputStream(prefsFile);
-                ObjectInputStream ois = new ObjectInputStream(fis);
+                ObjectInputStream 	ois = new ObjectInputStream(fis);
                 
                 prefs = (MUPrefs) ois.readObject();
                 fis.close();
