@@ -939,6 +939,13 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             skip = 2;
         else
             skip = 1;
+
+        // If we're skipping by 5, we do it on multiples of 5... etc
+        if (skip != 1)
+        {
+            startX -= startX % skip;
+            startY -= startY % skip;            
+        }
         
         // Set the proper font
         g.setFont(hexNumberFont);
