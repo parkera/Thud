@@ -14,13 +14,13 @@ import java.util.*;
 
 public class MUXMap implements Serializable {
 
-    MUXHex			hexCache[][] = new MUXHex[MUXHex.TOTAL_TERRAIN][19];		// 19 different elevations
-    MUXHex			map[][] = null;
-    boolean			hexesChanged[][];
+    MUXHex              hexCache[][] = new MUXHex[MUXHex.TOTAL_TERRAIN][19];		// 19 different elevations
+    MUXHex		map[][] = null;
+    boolean		hexesChanged[][];
     
-    int				sizeX, sizeY;
+    int                 sizeX, sizeY;
 
-    boolean			hasChanged;
+    boolean		hasChanged;
 
     LinkedList		selectedHexes;
 
@@ -88,15 +88,17 @@ public class MUXMap implements Serializable {
       */
     public boolean getHexSelected(int x, int y)
     {
-        return getHexSelected(new Point(x, y));
-    }
-
-    public boolean getHexSelected(Point p)
-    {
+        Point p = new Point(x, y);
+        
         if (validHex(p) && selectedHexes.indexOf(p) != -1)
             return true;
         else
             return false;
+    }
+
+    public boolean getHexSelected(Point p)
+    {
+        return getHexSelected((int) p.getX(), (int) p.getY());
     }
     
     /**

@@ -104,6 +104,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         mapComponent.addMouseListener(this);
         mapComponent.addMouseMotionListener(this);
         mapComponent.addMouseWheelListener(this);
+        
         resetCursor();
         
         // Setup the rulers (hex indicators on the side/top)
@@ -555,7 +556,8 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
 
         // Now send it off to see which tool deals with it
         if (tools.selectedTool() == ToolPalette.SELECTIVE_UNDO_TOOL ||
-            (e.getModifiers() & InputEvent.BUTTON2_MASK) == InputEvent.BUTTON2_MASK)
+            (e.getModifiers() & InputEvent.BUTTON2_MASK) == InputEvent.BUTTON2_MASK ||
+            (e.getModifiers() & InputEvent.BUTTON3_MASK) == InputEvent.BUTTON3_MASK)
         {
             return selectiveUndoClicked(hex);
         }
@@ -994,4 +996,5 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
     {
         return (" (" + map.getSizeX() + " x " + map.getSizeY() + ")");
     }
+
 }

@@ -104,7 +104,7 @@ public class TerrainToolOptions extends JInternalFrame {
         for (int i = 0; i < MUXHex.PAINTABLE_TERRAIN_TYPES.length; i++)
         {
             if (MUXHex.PAINTABLE_TERRAIN_TYPES[i] == c)
-                return c;
+                return i;
         }
 
         return -1;

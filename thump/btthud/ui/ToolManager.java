@@ -164,6 +164,11 @@ public class ToolManager {
         brushTools.keyTyped(e);
     }
 
+    public void registerKeyActions(InputMap i, ActionMap a)
+    {
+        elevTools.registerKeyActions(i, a);
+    }
+
     // ---------------------
 
     public void updateInspector(Point h)

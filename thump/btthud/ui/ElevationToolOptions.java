@@ -67,10 +67,22 @@ public class ElevationToolOptions extends JInternalFrame {
         
         pack();
         setLocation(prefs.elevationToolsLoc);
+
         // Show the window now
         this.show();
     }
 
+    // ----------------------------
+
+    public void registerKeyActions(InputMap imap, ActionMap amap)
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            imap.put(KeyStroke.getKeyStroke(ELEVATION_KEYS[i]), "elevation-" + Character.toString(ELEVATION_KEYS[i]));
+            amap.put("elevation-" + Character.toString(ELEVATION_KEYS[i]), new SetElevationAction(ELEVATION_KEYS[i]));
+        }
+    }
+    
     // ----------------------------
 
     public int selectedElevation()
@@ -78,6 +90,11 @@ public class ElevationToolOptions extends JInternalFrame {
         return bElevation.getValue();
     }
 
+    public void setElevation(int i)
+    {
+        bElevation.setValue(i);
+    }
+    
     // ---------------------------
 
     static public int toolForChar(char c)
@@ -85,7 +102,7 @@ public class ElevationToolOptions extends JInternalFrame {
         for (int i = 0; i < ELEVATION_KEYS.length; i++)
         {
             if (ELEVATION_KEYS[i] == c)
-                return c;
+                return i;
         }
 
         return -1;
@@ -97,6 +114,19 @@ public class ElevationToolOptions extends JInternalFrame {
         {
             // They've typed an elevation char
             bElevation.setValue(Character.getNumericValue(e.getKeyChar()));
+        }
+    }
+
+    public class SetElevationAction extends AbstractAction {
+
+        int							e;
+
+        public SetElevationAction(char c) {
+            e = toolForChar(c);
+        }
+
+        public void actionPerformed(ActionEvent event) {
+            setElevation(e);
         }
     }
 }

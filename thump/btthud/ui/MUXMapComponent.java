@@ -209,16 +209,17 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
 
         hexPoly = new HexShape(h);
 
-        // Now draw our images      
+        // Now draw our images
+        
         for (int i = 0; i < MUXHex.TOTAL_TERRAIN; i++)
         {
             for (int j = 0; j < 10; j++)
             {
                 BufferedImage	newImage = new BufferedImage(hexPoly.getBounds().width, hexPoly.getBounds().height, BufferedImage.TYPE_INT_ARGB);
-
+                
                 // Get the graphics context for this BufferedImage
                 Graphics2D		g = (Graphics2D) newImage.getGraphics();
-
+                
                 g.addRenderingHints(rHints);
                 
                 //g.setColor(alphaColor);
@@ -231,36 +232,36 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
                 
                 // Fill the hex
                 g.fill(hexPoly);
-
+                
                 // Draw the line around the hex
                 g.setColor(Color.gray);
                 g.draw(hexPoly);                    
-
+                
                 // Draw the elevation number (lower right corner)
                 if (prefs.tacShowTerrainElev && h >= 20)
                 {
                     // Draw the elevation
                     g.setColor(Color.black);
                     g.setFont(elevFont);
-
+                    
                     if (j != 0)			// We don't draw zero elevation numbers
                     {
                         String		hexElev = Integer.toString(j);
                         int			width;
-
+                        
                         if (j < 0 && Math.abs(j) <= 9)
                             width = 2 * elevWidth[Math.abs(j)];
                         else if (j > 0 && j <= 9)
                             width = elevWidth[j];
                         else
                             width = elevWidth[0];
-
+                        
                         g.drawString(hexElev,
-                                     (float) (hexPoly.getX(0) + w - width),
-                                     (float) (hexPoly.getY(0) + h - 2));
+                                        (float) (hexPoly.getX(0) + w - width),
+                                        (float) (hexPoly.getY(0) + h - 2));
                     }
                 }
-
+                
                 // Draw the terrain type (upper left corner)
                 if (prefs.tacShowTerrainChar && h >= 20)
                 {
@@ -364,17 +365,41 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
       * @param g The graphics context into which we are drawing.
       */
     public void paintTerrainGraphics(Graphics2D g)
-    {        
+    {
+        Rectangle   clipRect = g.getClipBounds();
+        Point       startCoord, endCoord;
+        
+        startCoord = hexPoly.realToHex((int) clipRect.getX(), (int) clipRect.getY());
+        endCoord = hexPoly.realToHex((int) clipRect.getX() + (int) clipRect.getWidth(), (int) clipRect.getY() + (int) clipRect.getHeight());
+        
+        // Make sure we get the edges of other hexes
+        startCoord.setLocation(startCoord.getX() - 1, startCoord.getY() - 1);
+        endCoord.setLocation(endCoord.getX() + 2, endCoord.getY() + 2);
+        
+        // Assumes map is square
+        clipPoint(startCoord, 0, map.getSizeX());
+        clipPoint(endCoord, 0, map.getSizeX());
+        
         // Now we go into a loop to draw the proper colors or textures for each terrain
-        for (int x = 0; x < map.getSizeX(); x++)
+        for (int x = (int) startCoord.getX(); x < (int) endCoord.getX(); x++)
         {
-            for (int y = 0; y < map.getSizeY(); y++)
+            for (int y = (int) startCoord.getY(); y < (int) endCoord.getY(); y++)
             {
-                if (hexInRect(x, y, g.getClip())) {
-                    paintOneHex(g, x, y);
-                }
+                paintOneHex(g, x, y);
             }
         }
+    }
+    
+    private void clipPoint(Point p, int min, int max)
+    {
+        if (p.getX() < min)
+            p.setLocation(min, p.getY());
+        if (p.getY() < min)
+            p.setLocation(p.getX(), min);
+        if (p.getX() > max)
+            p.setLocation(max, p.getY());
+        if (p.getY() > max)
+            p.setLocation(p.getX(), max);
     }
 
     /**
@@ -410,23 +435,30 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
     {
         AffineTransform			oldTrans = g.getTransform();
         AffineTransform			trans = new AffineTransform(oldTrans);
-        Point2D					realHex = new Point2D.Float();				// drawing coordinates
+        Point2D                         realHex = new Point2D.Float();				// drawing coordinates
         
-        hexPoly.hexToReal(x, y, false, realHex);
+        hexPoly.hexToReal(x, y, HexShape.HEX_UPPER_LEFT, realHex);
 
         // Make sure that this hex is actually viewable
-        if (!g.hitClip((int) realHex.getX(), (int) realHex.getY(), (int) (w + 2 * l), h))
+        /*
+        if (!g.hitClip((int) Math.floor(realHex.getX() - l), 
+                       (int) Math.floor(realHex.getY() - h), 
+                       (int) Math.ceil(w + 2f * l), 
+                       (int) Math.ceil(h)))
             return;
+        */
         
-        trans.translate(realHex.getX() -  l, realHex.getY());
+        trans.translate(realHex.getX() - l, realHex.getY());
         g.setTransform(trans);
+        
         g.drawImage(imageForTerrain(map.getHexTerrain(x, y),
                                     map.getHexAbsoluteElevation(x, y)),
                     null,
                     null);
         
         // Optional stuff -----------------------
-
+        
+        /*
         if (prefs.tacShowHexNumbers)
         {
             AffineTransform			beforeNumberRot = g.getTransform();
@@ -441,14 +473,14 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
                          (float) (hexPoly.getY(2) + (hexNumberFont.getLineMetrics(hexString, frc)).getAscent()));
             g.setTransform(beforeNumberRot);
         }
-
+        
         if (prefs.tacShowCliffs)
         {
             Stroke		saveStroke = g.getStroke();
             int			thisElevation = map.getHexElevation(x, y);
             g.setColor(Color.red);
             g.setStroke(new BasicStroke(2.0f));		// Make the red line wider
-
+            
             if (x % 2 == 0)
             {
                 // Even X
@@ -481,10 +513,11 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
                 if (Math.abs(map.getHexElevation(x + 1, y - 1) - thisElevation) > prefs.cliffDiff)
                     g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
             }
-
+            
             g.setStroke(saveStroke);				// Restore the old stroke
         }
-
+        */
+        
         // Draw the line if it's selected
         if (map.getHexSelected(x, y))
         {
@@ -492,7 +525,7 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
             Stroke		saveStroke = g.getStroke();
             g.setColor(Color.black);
             g.setStroke(new BasicStroke(3.0f));		// Make the black line wider
-
+            
             if (x % 2 == 0)
             {
                 // Even X
@@ -525,7 +558,7 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
                 if (!map.getHexSelected(x + 1, y - 1))
                     g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
             }
-
+            
             g.setStroke(saveStroke);				// Restore the old stroke
         }
 
@@ -557,22 +590,16 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
     {
         return hexPoly.realToHex(rX, rY);
     }
-
-    public Point2D hexToReal(int hX, int hY, boolean center)
+    
+    public boolean hexInRect(int hX, int hY, Rectangle r)
     {
-        return hexPoly.hexToReal(hX, hY, center);
-    }
-
-    public boolean hexInRect(int hX, int hY, Shape s)
-    {
-        return s.intersects(hexPoly.hexToRect(hX, hY));
+        return hexPoly.hexIntersectsClipRect(hX, hY, r);
     }
 
     public Rectangle2D rectForHex(Point h)
     {
         return hexPoly.hexToRect((int) h.getX(), (int) h.getY());
     }
-
     
     static public float toRadians(float a)
     {

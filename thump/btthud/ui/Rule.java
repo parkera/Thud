@@ -116,7 +116,7 @@ public class Rule extends JComponent {
                     g.setColor(Color.lightGray);
 
                 trans.setTransform(oldTrans);
-                hexPoly.hexToReal(0, i, false, realHex);
+                hexPoly.hexToReal(0, i, HexShape.HEX_UPPER_LEFT, realHex);
                 trans.translate(3, realHex.getY());
                 trans.rotate(Math.PI / 2);
                 g.setTransform(trans);
@@ -137,7 +137,7 @@ public class Rule extends JComponent {
                 if (i % 2 == 0)
                     trans.translate(0, h/2);
 
-                hexPoly.hexToReal(i, 0, false, realHex);
+                hexPoly.hexToReal(i, 0, HexShape.HEX_UPPER_LEFT, realHex);
                 trans.translate(realHex.getX(), -realHex.getY() + stringRect.getHeight() - 2);
                 g.setTransform(trans);
                 g.drawString(Integer.toString(i), 0, 0);

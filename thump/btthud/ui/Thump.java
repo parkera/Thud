@@ -289,7 +289,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         addPaintMenuItems();
         addPaletteMenuItems();
         addHelpMenuItems();
-        
+
         setJMenuBar(mainMenuBar);
     }
 
@@ -363,10 +363,12 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         desktop.add(newMap);
 
         try {
-            newMap.setSelected(true);
+            newMap.setSelected(true);            
         } catch (Exception e) {
             ErrorHandler.displayError("Error: makeNewMapperFrame: " + e);
         }
+
+        tools.registerKeyActions(newMap.getInputMap(), newMap.getActionMap());
 
         newMap.addInternalFrameListener(this);
     }

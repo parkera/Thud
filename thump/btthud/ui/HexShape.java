@@ -17,15 +17,19 @@ import java.awt.image.*;
 
 public class HexShape implements Shape {
 
-    float		x[] = {0f, 0f, 0f, 0f, 0f, 0f};
-    float		y[] = {0f, 0f, 0f, 0f, 0f, 0f};
+    public static final int     HEX_CENTER = 0;
+    public static final int     HEX_UPPER_LEFT = 1;
+    public static final int     HEX_LEFT = 2;
+    
+    float                       x[] = {0f, 0f, 0f, 0f, 0f, 0f};
+    float                       y[] = {0f, 0f, 0f, 0f, 0f, 0f};
 
     static final float		tan60 = (float) Math.tan(MUXMapComponent.toRadians(60.0f));
     static final float		sin60 = (float) Math.sin(MUXMapComponent.toRadians(60.0f));
 
-    float					h = 40;
-    float					w;
-    float					l;
+    float			h = 40;
+    float			w;
+    float			l;
     
     GeneralPath	gp;
 
@@ -153,47 +157,77 @@ public class HexShape implements Shape {
      * @param x The x coordinate, in hexes.
      * @param y The y coordinate, in hexes.
      * @param h The height of each hex
-     * @param center True if we want the center of the hex, false if we want the upper-left corner.
+     * @param center HEX_CENTER for center, HEX_LEFT for the leftmost point of the hex, HEX_UPPER_LEFT for upper-left corner.
      */
-    public Point2D hexToReal(int x, int y, boolean center)
+    public Point2D hexToReal(int x, int y, int center)
     {
-        float		xoffset, yoffset;
+        Point2D.Float       p = new Point2D.Float();
+        hexToReal(x, y, center, p);
+        return p;
+    }
 
-        xoffset = l + ((float)x * (w + l));			// initial offset of l, then add (w + l) * desired_x_coord...
-        yoffset = ((float)y * h);
-
-        if (x % 2 == 0)
-            yoffset += (h / 2f);
+    /**
+      * Only calculates the X part of a hex
+      */
+    public float hexToRealXPart(int x, int y, int center)
+    {
+        // If we want the leftmost point, we don't add the offset of l
+        // If we want the center, we add an offset of w/2
+        // If we want the upper-left, we start with offset of l and don't add the offset of w/2
+        // Add (w + l) * desired_x_coord...
+        float           xoffset;
         
-        if (center)
-        {
+        xoffset = (float)x * (w + l);
+        
+        if (center == HEX_CENTER || center == HEX_UPPER_LEFT)
+            xoffset += l;
+        
+        if (center == HEX_CENTER)
             xoffset += w / 2f;
-            yoffset += h / 2f;
-        }
-
-        return (new Point2D.Float(xoffset, yoffset));
+        
+        return xoffset;
     }
-
-    // For saving memory - use this method and pass in a Point instead of creating a new one
-    public void hexToReal(int x, int y, boolean center, Point2D pt)
+    
+    /** 
+      * Only calculates the Y part of a hex
+      */
+    public float hexToRealYPart(int x, int y, int center)
     {
-        float		xoffset, yoffset;
-
-        xoffset = l + ((float)x * (w + l));			// initial offset of l, then add (w + l) * desired_x_coord...
-        yoffset = ((float)y * h);
-
+        // If we want the center or leftmost point we add an offset of h/2
+        float           yoffset;
+        
+        yoffset = (float)y * h;
+        
         if (x % 2 == 0)
-            yoffset += (h / 2f);
-
-        if (center)
-        {
-            xoffset += w / 2f;
             yoffset += h / 2f;
-        }
-
-        pt.setLocation(xoffset, yoffset);
+        
+        if (center == HEX_CENTER || center == HEX_LEFT)
+            yoffset += h / 2f;
+        
+        return yoffset;
     }
-
+    
+    // For saving memory - use this method and pass in a Point instead of creating a new one
+    public void hexToReal(int x, int y, int center, Point2D pt)
+    {
+        pt.setLocation(hexToRealXPart(x, y, center), hexToRealYPart(x, y, center));
+    }
+    
+    /**
+      * Gives us a box which encloses a particular hex (for drawing/clipping purposes)
+      */
+    public Rectangle2D hexToRect(int x, int y)
+    {
+        Point2D         hexCenter = hexToReal(x, y, HexShape.HEX_UPPER_LEFT);
+        Rectangle2D     hexRect;
+        
+        hexCenter.setLocation(hexCenter.getX() - l, hexCenter.getY());
+        
+        hexRect = new Rectangle2D.Double(hexCenter.getX(), hexCenter.getY(), w + 2f * l, h);
+        
+        return hexRect;
+    }
+    
     /*
 
      This picture represents the smallest repeatable area in the hex map.
@@ -334,19 +368,13 @@ public class HexShape implements Shape {
             return new Point(-1, -1);
     }
 
-    /**
-      * Gives us a box which encloses a particular hex (for drawing/clipping purposes)
-      */
-    public Rectangle2D hexToRect(int x, int y)
+    /*
+     * Tests if a given hex intersects a particular Rectangle
+     */
+    public boolean hexIntersectsClipRect(int x, int y, Rectangle r)
     {
-        Point2D		hexCenter = hexToReal(x, y, false);
-        Rectangle2D	hexRect;
-
-        hexCenter.setLocation(hexCenter.getX() - l, hexCenter.getY());
-
-        hexRect = new Rectangle2D.Double(hexCenter.getX(), hexCenter.getY(), w + 2f * l, h);
-
-        return hexRect;
+        return r.intersects(hexToRealXPart(x, y, HexShape.HEX_UPPER_LEFT), 
+                            hexToRealYPart(x, y, HexShape.HEX_UPPER_LEFT), w + 2f * l, h);
     }
     
     // ----------------
