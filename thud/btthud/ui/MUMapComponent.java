@@ -371,7 +371,7 @@ public class MUMapComponent extends JComponent implements MouseListener
      */
     public void paintUnit(Graphics2D g)
     {
-        Point	 		unitPt = new Point();
+        Point2D	 		unitPt = new Point2D.Float();
 
         float			unitXOffset = prefs.xOffset * (w + l);
         float			unitYOffset = prefs.yOffset * h;
@@ -381,7 +381,7 @@ public class MUMapComponent extends JComponent implements MouseListener
         else if (prefs.xOffset % 2 != 0 && data.myUnit.x % 2 != 0)
             unitYOffset += h/2;
 
-        unitPt.setLocation(bounds.width / 2 - unitXOffset, bounds.height / 2 - unitYOffset);
+        unitPt.setLocation((float) bounds.width / 2.0f - unitXOffset, (float) bounds.height / 2.0f - unitYOffset);
 
         // Draw our own unit...
         drawHeading(g, unitPt, data.myUnit.heading, data.myUnit.speed, false, false);
@@ -402,7 +402,7 @@ public class MUMapComponent extends JComponent implements MouseListener
         TreeSet					conTree;
         
         MUUnitInfo				unit;
-        Point					conPoint = new Point();
+        Point2D					conPoint = new Point2D.Float();
 
         //int						myLocX = data.myUnit.x;
         //int						myLocY = data.myUnit.y;
@@ -840,7 +840,7 @@ public class MUMapComponent extends JComponent implements MouseListener
      * @param debug If true, draw some debug info specified in next arg
      * @param debugString If debug is true, draw this string in the id box
      */
-    public void drawIDBox(Graphics2D g, MUUnitInfo unit, Point pt, boolean self, boolean debug, String debugString)
+    public void drawIDBox(Graphics2D g, MUUnitInfo unit, Point2D pt, boolean self, boolean debug, String debugString)
     {
 
         try
@@ -1017,7 +1017,7 @@ public class MUMapComponent extends JComponent implements MouseListener
      * @param destroyed True if this unit is destroyed
      */
     
-    public void drawHeading(Graphics2D g, Point pt, int heading, double speed, boolean desired, boolean destroyed)
+    public void drawHeading(Graphics2D g, Point2D pt, int heading, double speed, boolean desired, boolean destroyed)
     {
         AffineTransform		trans = new AffineTransform();
         AffineTransform		oldTrans = g.getTransform();
