@@ -121,8 +121,6 @@ public class MUParse implements Runnable {
     {
         // Don't output if we get a match
         boolean		matched = false;
-        
-        ArrayList	es = doc.parseString(l);
 
         if (l == null)
             return;
@@ -137,8 +135,7 @@ public class MUParse implements Runnable {
                 if (l.length() == 0)
                     doc.insertNewLine();
                 
-                doc.insertParsedString(es);
-
+                doc.parseAndInsertString(l);
                 textPane.setCaretPosition(doc.getLength());                
             }
         }

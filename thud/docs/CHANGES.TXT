@@ -63,6 +63,7 @@ Version History:
   * If you are in a tank, it will show a red line indicating turret facing
   * Other jumping mechs show a green line indicating jump heading
   * Hex numbers along side and top now have a black bar behind them to make them much easier to read
+  * Hex numbers display at any zoom level - they skip numbers at far out zoom to make them readable
   * New option to display your heat level in the tactical display underneath your unit
   
  Bug Fixes:
@@ -75,5 +76,7 @@ Version History:
   * If the connection is dropped for some reason, Thud should now behave better -- choose your connection from the menu to reconnect
   * Menu items properly disabled/enabled depending on connection status
   * Choosing a new connection while still connected should disconnect properly first, then reconnect
+  * No more duplicate contacts on unknowns (seismic or BAP contacts)
+  * More misc. bug fixes than you can shake a stick at
   
   

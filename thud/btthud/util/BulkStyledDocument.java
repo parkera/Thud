@@ -85,6 +85,15 @@ public class BulkStyledDocument extends DefaultStyledDocument
     {
         cachedAttributes = new HashMap();
     }
+
+    /**
+      * Parse and insert a string that is destined for display on the main text window.
+      * @param l The raw string we want to convert
+      */
+    public void parseAndInsertString(String l)
+    {
+        insertParsedString(parseString(l));
+    }
     
     /**
       * Converts color codes into strings, then returns the uncolored string for parsing.
