@@ -410,10 +410,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         paintContacts(g);
 
         // Paint hex numbers
-        /*
-            if (h >= 20)
-         paintNumbers(g);
-         */
+        if (h >= 20)
+            paintNumbers(g);
 
         // Finally, draw our status bar at the bottom of the screen
         paintStatusBar(g);
@@ -905,24 +903,31 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         AffineTransform			winTrans;
         AffineTransform			trans = new AffineTransform();
         
-        Point2D					offset = offsetsForCentering(data.myUnit.bearingToCenter, data.myUnit.rangeToCenter);
+        //Point2D					offset = offsetsForCentering(data.myUnit.bearingToCenter, data.myUnit.rangeToCenter);
         Rectangle				barRect;
-        Rectangle2D 			stringRect;
         Point2D					realHex;
         Point2D					unitPos = realForUnit(data.myUnit);
         
-        int						startX = myLocX - (numAcross / 2);
-        int						startY = myLocY - (numDown / 2);
-        
-        // Account for shifted view
-        startX += prefs.xOffset;
-        startY += prefs.yOffset;
-
+        int						startX = (int) (myLocX - (numAcross / 2) + prefs.xOffset);
+        int						startY = (int) (myLocY - (numDown / 2) + prefs.yOffset);
         int						endX = startX + numAcross;
         int						endY = startY + numDown;
+
+        Rectangle2D				stringRectX = hexNumberFont.getStringBounds(Integer.toString(endX), frc);
+        Rectangle2D				stringRectY = hexNumberFont.getStringBounds(Integer.toString(endY), frc);
+
+        if (endX > endY)
+            barHeight = (int) stringRectX.getHeight() + 2;
+        else
+            barHeight = (int) stringRectY.getHeight() + 2;
         
-        if (data.myUnit.x % 2 == 0)
-            offset.setLocation(offset.getX(), offset.getY() + h/2);
+        if (startX < 0)
+            startX = 0;
+        if (startY < 0)
+            startY = 0;
+        
+        //if (data.myUnit.x % 2 == 0)
+        //    offset.setLocation(offset.getX(), offset.getY() + h/2);
         
         // Set the proper font
         g.setFont(hexNumberFont);
@@ -936,9 +941,9 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         // Set the proper window transform
         winTrans = new AffineTransform(oldTrans);
-        winTrans.translate(0, -unitPos.getY());
+        winTrans.translate(0, -unitPos.getY() + bounds.getHeight() / 2);
         g.setTransform(winTrans);
-                           
+        
         // Numbers along the side
         for (int i = startY; i <= endY; i++)
         {
@@ -949,39 +954,14 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
             trans.setTransform(winTrans);
             realHex = hexPoly.hexToReal(0, i, false);
-            trans.translate(-realHex.getX() + 4, realHex.getY() - offset.getY());
-            //trans.rotate(PI / 2);
+            trans.translate(4, realHex.getY());
+            trans.rotate(PI / 2);
             g.setTransform(trans);
             g.drawString(Integer.toString(i), 0, 0);
         }
-
-        /*
-        // Numbers along the side
-        for (int i = 1; i < numDown; i++)
-        {
-            if (hexY + i >= 0)
-            {
-                int			normY = 0;
-                if ((hexY + i) % 2 == 0)
-                    g.setColor(Color.white);
-                else
-                    g.setColor(Color.lightGray);
-                
-                trans.setTransform(oldTrans);
-                realHex = hexPoly.hexToReal(0, i, true);
-                normY = i * h;
-                trans.translate(-realHex.getX() + 4, realHex.getY() - offset.getY());
-                trans.rotate(PI / 2);
-                g.setTransform(trans);
-
-                g.drawString(Integer.toString(hexY + i), 0, 0);
-            }
-        }
-        */
         
         // Reset transform
         g.setTransform(oldTrans);
-
         
         // Bar along top
         barRect = new Rectangle(0, 0, bounds.width, barHeight);
@@ -992,42 +972,30 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         // Set the proper window transform
         winTrans = new AffineTransform(oldTrans);
-        winTrans.translate(-unitPos.getX(), 0);
+        winTrans.translate(-unitPos.getX() + bounds.getWidth() / 2, 0);
         g.setTransform(winTrans);
 
         // Numbers along the top
         for (int i = startX; i <= endX; i++)
         {
-            if (i % 2 == 0)
-                g.setColor(Color.white);
-            else
-                g.setColor(Color.lightGray);
-
             trans.setTransform(winTrans);
+            
+            if (i % 2 == 0)
+            {
+                g.setColor(Color.white);
+                trans.translate(0, h/2);			// Need to adjust for funky hex arrangement (ie, even hexes higher than odds)
+            }
+            else
+            {
+                g.setColor(Color.lightGray);   
+            }
+
             realHex = hexPoly.hexToReal(i, 0, false);
-            trans.translate(realHex.getX() - offset.getX(), -realHex.getY() + 10);
+            trans.translate(realHex.getX(), -realHex.getY() + stringRectY.getHeight() - 2);
             g.setTransform(trans);
             g.drawString(Integer.toString(i), 0, 0);
         }
-        /*
-        // Numbers across the top
-        for (int i = 1; i < numAcross; i++)
-        {
-            if (hexX + i >= 0)
-            {
-                if ((hexX + i) % 2 == 0)
-                    g.setColor(Color.white);
-                else
-                    g.setColor(Color.lightGray);
 
-                trans.setTransform(oldTrans);
-                trans.translate((i * (w + l)) - offset.getX(), 10);
-                g.setTransform(trans);
-
-                g.drawString(Integer.toString(hexX + i), 0, 0);
-            }
-        }
-         */
         g.setTransform(oldTrans);
     }
 
