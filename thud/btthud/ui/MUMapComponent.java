@@ -375,18 +375,18 @@ public class MUMapComponent extends JComponent implements MouseListener
 
             // Paint our own unit
             paintUnit(g);
-
+            
             // Reset the transform
             g.setTransform(oldTrans);
 
             // ----
 
             // Paint hex numbers
-            /*
-             if (h >= 20)
-             paintNumbers(g);
-             */
+            if (h >= 20)
+                paintNumbers(g);
 
+            // ----
+            
             // Finally, draw our status bar at the bottom of the screen
             paintStatusBar(g);            
         }
@@ -502,7 +502,7 @@ public class MUMapComponent extends JComponent implements MouseListener
         // Account for offset views by moving the view over
         hexX += prefs.xOffset;
         hexY += prefs.yOffset;
-  
+
         // --------------------
         
         AffineTransform			trans = new AffineTransform();
@@ -782,117 +782,82 @@ public class MUMapComponent extends JComponent implements MouseListener
     public void paintNumbers(Graphics2D g)
     {
         AffineTransform			oldTrans = g.getTransform();
-        AffineTransform			baseTrans = g.getTransform();
-        
-        int			startX = 0;
-        int			startY = 0;
+        AffineTransform			trans = new AffineTransform();
 
-        //int						myLocX = data.myUnit.x;
-        //int						myLocY = data.myUnit.y;
         int						hexX = myLocX - (numAcross / 2);
         int						hexY = myLocY - (numDown / 2);
 
-        int 					btc = data.myUnit.bearingToCenter;
-        double 					rtc = data.myUnit.rangeToCenter;
-        double					fcOffsetX = 0;
-        double					fcOffsetY = 0;
+        Point2D					offset = offsetsForCentering(data.myUnit.bearingToCenter, data.myUnit.rangeToCenter);
+        Rectangle				barRect;
 
-        if (btc >= 0 && btc <= 90)
-        {
-            fcOffsetX = -(rtc * (h) * Math.sin(toRadians(btc)));
-            fcOffsetY =  (rtc * (h) * Math.cos(toRadians(btc)));
-        }
-        else if (btc >= 91 && btc <= 180)
-        {
-            btc -= 90;
-            fcOffsetX = -(rtc * (h) * Math.cos(toRadians(btc)));
-            fcOffsetY = -(rtc * (h) * Math.sin(toRadians(btc)));
-        }
-        else if (btc >= 181 && btc <= 270)
-        {
-            btc -= 180;
-            fcOffsetX =  (rtc * (h) * Math.sin(toRadians(btc)));
-            fcOffsetY = -(rtc * (h) * Math.cos(toRadians(btc)));
-        }
-        else if (btc >= 271 && btc <= 359)
-        {
-            btc -= 270;
-            fcOffsetX =  (rtc * (h) * Math.cos(toRadians(btc)));
-            fcOffsetY =  (rtc * (h) * Math.sin(toRadians(btc)));
-        }
-
+        // Account for shifted view
+        hexX += prefs.xOffset;
+        hexY += prefs.yOffset;
+        
         if (data.myUnit.x % 2 == 0)
-            fcOffsetY -= h/2;
-        else
-            fcOffsetY += h/2;
-
-        Point2D					unitDraw = hexPoly.hexToReal(myLocX, myLocY, true);
+            offset.setLocation(offset.getX(), offset.getY() + h/2);
 
         // Set the proper font
         g.setFont(hexNumberFont);
+
+        // Should be doing something like this with the max number we're drawing right now
+        // To get the right height black bar
+        // Rectangle2D 		stringRect = infoFont.getStringBounds(textString, frc);
         
-        // Do some translation magic so that our unit is always in the exact center of the screen
-        // Basically, we translate the center of our current hex to 0,0
-        // Then we translate to compensate for our distance from the center of the hex
-        // Then we move the whole thing to the center of the window
-
-        baseTrans.translate(-unitDraw.getX() + fcOffsetX + bounds.width/2, 0);
-
-        AffineTransform		trans = new AffineTransform();
-
-        // Numbers across the top
-        for (int i = 1; i < numAcross; i++)
-        {
-            if (hexX + i >= 0)
-            {
-                if ((hexX + i) % 2 == 0)
-                    g.setColor(Color.gray);
-                else
-                    g.setColor(Color.darkGray);
-
-                Point2D	realHex = hexPoly.hexToReal(hexX + i, hexY, false);
-                trans.setTransform(baseTrans);
-                // Translate to where the hex should be located
-                // We have to compensate by -l for x because the picture in the array is shifted over by +l.
-                // (hexNumberFont.getLineMetrics(Integer.toString(hexX + i), frc)).getHeight()
-                
-                trans.translate(realHex.getX(), 10);
-                g.setTransform(trans);
-
-                g.drawString(Integer.toString(hexX + i), 0, 0);
-            }
-        }
-
+        // Bar along side
+        barRect = new Rectangle(0, 0, barHeight, bounds.height - barHeight);
+        g.setColor(Color.black);
+        g.fill(barRect);
+        g.setColor(Color.lightGray);
+        g.drawLine(barRect.width, 0, barRect.width, barRect.height);
+        
         // Numbers along the side
-        g.setTransform(oldTrans);
-        baseTrans = g.getTransform();
-        baseTrans.translate(0, -unitDraw.getY() + fcOffsetY + bounds.height/2);
-        
         for (int i = 1; i < numDown; i++)
         {
             if (hexY + i >= 0)
             {
                 if ((hexY + i) % 2 == 0)
-                    g.setColor(Color.gray);
+                    g.setColor(Color.white);
                 else
-                    g.setColor(Color.darkGray);
-
-                Point2D	realHex = hexPoly.hexToReal(hexX, hexY + i, false);
-                /*
-                if (hexX + i % 2 == 0)
-                    realHex.setLocation(realHex.getX(), realHex.getY() + h/2);
-                 */
+                    g.setColor(Color.lightGray);
                 
-                trans.setTransform(baseTrans);
-                // Translate to where the hex should be located
-                // We have to compensate by -l for x because the picture in the array is shifted over by +l.
-                trans.translate(2, realHex.getY() + 2);
+                trans.setTransform(oldTrans);
+                trans.translate(4, (i * h) - h - (offset.getY()));
+                trans.rotate(PI / 2);
                 g.setTransform(trans);
 
                 g.drawString(Integer.toString(hexY + i), 0, 0);
             }
         }
 
+        // Reset transform
+        g.setTransform(oldTrans);
+        
+        // Bar along top
+        barRect = new Rectangle(0, 0, bounds.width, barHeight);
+        g.setColor(Color.black);
+        g.fill(barRect);
+        g.setColor(Color.lightGray);
+        g.drawLine(barRect.x, barRect.height, barRect.width, barRect.height);
+        
+        // Numbers across the top
+        for (int i = 1; i < numAcross; i++)
+        {
+            if (hexX + i >= 0)
+            {
+                if ((hexX + i) % 2 == 0)
+                    g.setColor(Color.white);
+                else
+                    g.setColor(Color.lightGray);
+
+                trans.setTransform(oldTrans);
+                trans.translate((i * (w + l) - 2*w) - offset.getX(), 10);
+                g.setTransform(trans);
+
+                g.drawString(Integer.toString(hexX + i), 0, 0);
+            }
+        }
+        
         g.setTransform(oldTrans);
     }
 
@@ -902,7 +867,6 @@ public class MUMapComponent extends JComponent implements MouseListener
 
     /**
      * Draw a white box for blanking out terrain or whatever. Then draw ID into it.
-     * NOTE: The transformation should be corrected for the translation before calling this.
      * @param g The graphics context into which we are drawing.
      * @param unit The unit we're drawing
      * @param self If true, we're drawing our own unit

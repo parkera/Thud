@@ -132,7 +132,7 @@ public class MUData {
       */
     public char getHexTerrain(int x, int y)
     {        
-        if (x > 0 && x < MAX_X && y > 0 && y < MAX_Y)
+        if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y)
         {
             if (map[x][y] != null)
                 return map[x][y].terrain();
@@ -150,7 +150,7 @@ public class MUData {
      */
     public int getHexElevation(int x, int y)
     {
-        if (x > 0 && x < MAX_X && y > 0 && y < MAX_Y)
+        if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y)
         {
             if (map[x][y] != null)
                 return map[x][y].elevation();

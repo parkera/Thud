@@ -643,7 +643,7 @@ public class MUParse {
         String			tacData = st.nextToken();
 
         // Format: TerrElevTerrElevTerrElev...
-        for (int i = 0; i < tacEX - tacSX; i++)
+        for (int i = 0; i <= tacEX - tacSX; i++)
         {
             char		terrTypeChar = tacData.charAt(2 * i);
             char		terrElevChar = tacData.charAt(2 * i + 1);		//tacData.substring(2*i+1, 2*i+2);
