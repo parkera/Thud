@@ -141,7 +141,8 @@ public class MUUnitInfo extends Object implements Comparable {
     {
         turretHeading = 180;
     }
-    
+
+    // For debugging purposes only (pretty inefficient)
     public String toString()
     {
         String	out = new String("\nMUUnitInfo: ");
@@ -222,9 +223,26 @@ public class MUUnitInfo extends Object implements Comparable {
     {
         expired--;
     }
+    
     /**
       * Make a human-readable contact string, similar to standard .c for display
       */
+
+    // Storing some strings for efficiency here
+    static final String		STR_P = new String("P").intern();
+    static final String		STR_S = new String("S").intern();
+    static final String		STR_SPACE = new String(" ").intern();
+    static final String		STR_L_BRACKET = new String("[").intern();
+    static final String		STR_R_BRACKET = new String("]").intern();
+    static final String		STR_X = new String("x:").intern();
+    static final String		STR_Y = new String("y:").intern();
+    static final String		STR_Z = new String("z:").intern();
+    static final String		STR_R = new String("r:").intern();
+    static final String		STR_B = new String("b:").intern();
+    static final String		STR_LOW_S = new String("s:").intern();
+    static final String		STR_H = new String("h:").intern();
+    static final String		STR_STATUS_S = new String("S:").intern();
+    
     public String makeContactString()
     {
         /* Example:
@@ -232,32 +250,45 @@ public class MUUnitInfo extends Object implements Comparable {
         */
         StringBuffer	sb = new StringBuffer();
 
-        sb.append(primarySensor ? "P" : " ");
-        sb.append(secondarySensor ? "S" : " ");
+        sb.append(primarySensor ? STR_P : STR_SPACE);
+        sb.append(secondarySensor ? STR_S : STR_SPACE);
         sb.append(arc);
-        sb.append("[" + id + "]");
+        sb.append(STR_L_BRACKET);
+        sb.append(id);
+        sb.append(STR_R_BRACKET);
         sb.append(type);
-        sb.append(" ");
+        sb.append(STR_SPACE);
 
         sb.append(leftJust(name, 12, true));
-        sb.append(" ");
+        sb.append(STR_SPACE);
 
-        sb.append("x:" + rightJust(String.valueOf(x), 3, false) + " ");
-        sb.append("y:" + rightJust(String.valueOf(y), 3, false) + " ");
-        sb.append("z:" + rightJust(String.valueOf(z), 3, false) + " ");
+        sb.append(STR_X);
+        sb.append(rightJust(String.valueOf(x), 3, false));
+        sb.append(STR_SPACE);
+        sb.append(STR_Y);
+        sb.append(rightJust(String.valueOf(y), 3, false));
+        sb.append(STR_SPACE);
+        sb.append(STR_Z);
+        sb.append(rightJust(String.valueOf(z), 3, false));
+        sb.append(STR_SPACE);
 
-        sb.append("r:" + rightJust(String.valueOf(range), 4, true) + " ");
-        sb.append("b:" + rightJust(String.valueOf(bearing), 3, false) + " ");
+        sb.append(STR_R);
+        sb.append(rightJust(String.valueOf(range), 4, true));
+        sb.append(STR_SPACE);
+        sb.append(STR_B);
+        sb.append(rightJust(String.valueOf(bearing), 3, false));
+        sb.append(STR_SPACE);
 
-        sb.append("s:" + rightJust(String.valueOf(speed), 5, true) + " ");
-        sb.append("h:" + rightJust(String.valueOf(heading), 3, false) + " ");
-        sb.append("S:" + status);
+        sb.append(STR_LOW_S);
+        sb.append(rightJust(String.valueOf(speed), 5, true));
+        sb.append(STR_SPACE);
+        sb.append(STR_H);
+        sb.append(rightJust(String.valueOf(heading), 3, false));
+        sb.append(STR_SPACE);
+        sb.append(STR_STATUS_S);
+        sb.append(status);
 
         return sb.toString();
-        /*
-        return (primarySensor ? "P" : " ") + (secondarySensor ? "S" : " ") + arc + "[" + id + "]" + type + " " + team + " " + name + " " +
-                "x: " + x + " y: " + y + " z: " + z + " r: " + range + " b: " + bearing + " s: " + speed + " h:" + heading + " S:" + flags;
-        */
     }
 
     public String leftJust(String l, int w, boolean trunc)
