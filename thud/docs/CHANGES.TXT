@@ -18,6 +18,7 @@ Version History:
   
  Bug fixes:
  
+  * Finally found and fixed the 'straight lines aren't straight' bug. Hexes are properly shaped now.
   * Reduced memory usage of map data
   * Increased efficiency of parsing data from the MUX
   * Thud won't keep sending commands if it's lagged... it'll hold up until it gets some data again before resuming spamming you

@@ -625,10 +625,11 @@ public class Thud extends JFrame implements  ActionListener
         
         // Initilization strings
         Package			pkg = Package.getPackage("btthud.ui");
-        String			buildNumber;
+        String			buildNumber = null;
         if (pkg != null)
-            buildNumber = new String(pkg.getImplementationVersion());
-        else
+            buildNumber = pkg.getImplementationVersion();
+
+        if (buildNumber == null)
             buildNumber = "Unknown";
         
         bsd.insertPlainString(" *** Thud, (c) 2001-2002 Anthony Parker <asp@mac.com> ***");
