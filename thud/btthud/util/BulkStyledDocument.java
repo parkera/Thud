@@ -95,7 +95,6 @@ public class BulkStyledDocument extends DefaultStyledDocument
                     // Don't bother adding an empty string
                     if (i - start > 0)
                     {
-                        //styles.add(new StyleRunHolder(new SimpleAttributeSet(thisAttrSet), start, thisStr.length() - start));
                         elements.add(new ElementSpec(new SimpleAttributeSet(thisAttrSet),
                                                      ElementSpec.ContentType,
                                                      l.substring(i - thisStr.length(), i).toCharArray(),
@@ -152,7 +151,6 @@ public class BulkStyledDocument extends DefaultStyledDocument
             // Put the final section of the string into our holder
             if (i - start != 0)
             {
-                //styles.add(new StyleRunHolder(new SimpleAttributeSet(thisAttrSet), start, thisStr.length() - start));
                 elements.add(new ElementSpec(new SimpleAttributeSet(thisAttrSet),
                                              ElementSpec.ContentType,
                                              l.substring(i - thisStr.length(), i).toCharArray(),
