@@ -154,7 +154,7 @@ public class MUMyInfo extends MUUnitInfo {
         else
             return (float) 100;
     }
-
+    
     /**
       * Return a float corresponding to percentage internal structure left on the whole unit.
       */
@@ -171,6 +171,42 @@ public class MUMyInfo extends MUUnitInfo {
 
         if (totalAvailInternal != 0)
             return (float) ((int) (100.0 * ((float) totalLeftInternal / (float) totalAvailInternal)));
+        else
+            return (float) 100;
+    }
+    
+    /**
+        * Return a float corresponding to percentage armor left on the specified location.
+     */
+    public float percentArmorLeft(int loc)
+    {
+        int			totalAvailArmor = armor[loc].of;
+        
+        if (totalAvailArmor != 0)
+            return(float) ((int) (100.0 * ((float) armor[loc].f / (float) totalAvailArmor)));
+        else
+            return (float) 100;
+    }
+
+    public float percentRearArmorLeft(int loc)
+    {
+        int			totalAvailArmor = armor[loc].or;
+
+        if (totalAvailArmor != 0)
+            return (float) ((int) (100.0 * ((float) armor[loc].r / (float) totalAvailArmor)));
+        else
+            return (float) 100;
+    }
+    
+    /**
+        * Return a float corresponding to percentage internal structure left on the specified location.
+     */
+    public float percentInternalLeft(int loc)
+    {
+        int			totalAvailInternal = armor[loc].oi;
+        
+        if (totalAvailInternal != 0)
+            return (float) ((int) (100.0 * ((float) armor[loc].i / (float) totalAvailInternal)));
         else
             return (float) 100;
     }
