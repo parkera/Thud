@@ -13,6 +13,9 @@ mkdir -p build
 # Compile all files with .java in the name
 find . -name "*.java" | xargs javac -d build
 
+# Make the MANIFEST.MF file
+sh makeManifest.sh
+
 # Make the .jar file
 cd build
 jar cmf ../MANIFEST.MF Thud.jar btthud/

@@ -1,2 +1,0 @@
-Main-Class: btthud.ui.Thud
-

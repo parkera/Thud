@@ -1,0 +1,16 @@
+Hi there!
+
+This README is here in case you have some sudden urge to build Thud from scratch. I've included a couple of shell scripts which should get our UNIX/Linux friends going (and of course, it works on Mac OS X as well). Just type this at the command line after you've navigated to the 'thud' directory:
+
+sh build.sh
+
+If you're not on one of those systems, you can still take a look at the scripts to see what steps are needed in order to build Thud. Esentially, you need to compile all of the .java files and make sure they are packaged properly.
+
+Note about MANIFEST.MF:
+
+Don't forget it! You'll need it in order for the .jar file to operate properly. At the very minimum, it should contain this one line followed by a blank line:
+
+Main-Class: btthud.ui.Thud
+
+Okay that's all for now. I'll probably update this file with more detail later.
+- Tony, 3030MUX
