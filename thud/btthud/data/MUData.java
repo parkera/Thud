@@ -205,6 +205,7 @@ public class MUData {
       * @param x X coordinate
       * @param y Y coordinate
       */
+    /*
     public MUHex getHex(int x, int y)
     {
         if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y)
@@ -217,6 +218,7 @@ public class MUData {
 
         return new MUHex();
     }
+     */
     
   /**
     * Clear data that is 'Mech specific, so that when we start the HUD again we have a clean slate.

@@ -635,6 +635,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         int						hexX = myLocX - (numAcross / 2);
         int						hexY = myLocY - (numDown / 2);
 
+        Point2D					realHex = new Point2D.Float();
+
         // Account for offset views by moving the view over
         hexX += prefs.xOffset;
         hexY += prefs.yOffset;
@@ -653,8 +655,9 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                     if (hexY + i >= 0 && data.getHexTerrain(hexX + j, hexY + i) != '?')	// Make sure we're drawing within the boundaries of the map
                     {
                         // This gives us the x,y location of this hex
-                        Point2D	realHex = hexPoly.hexToReal(hexX + j, hexY + i, false);
-
+                        //Point2D	realHex = hexPoly.hexToReal(hexX + j, hexY + i, false);
+                        hexPoly.hexToReal(hexX + j, hexY + i, false, realHex);
+                        
                         // Set the transform to our previously setup one
                         trans.setTransform(oldTrans);
                         // Translate to where the hex should be located
@@ -908,7 +911,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         AffineTransform			trans = new AffineTransform();
         
         Rectangle				barRect;
-        Point2D					realHex;
+        Point2D					realHex = new Point2D.Float();
         Point2D					unitPos = realForUnit(data.myUnit);
         
         int						startX = (int) (myLocX - (numAcross / 2) + prefs.xOffset);
@@ -970,7 +973,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                 g.setColor(Color.lightGray);
 
             trans.setTransform(winTrans);
-            realHex = hexPoly.hexToReal(0, i - prefs.yOffset, false);
+            hexPoly.hexToReal(0, i - prefs.yOffset, false, realHex);
             trans.translate(4, realHex.getY());
             trans.rotate(PI / 2);
             g.setTransform(trans);
@@ -1006,7 +1009,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             if ((i - prefs.xOffset) % 2 == 0)
                 trans.translate(0, h/2);
             
-            realHex = hexPoly.hexToReal(i - prefs.xOffset, 0, false);
+            hexPoly.hexToReal(i - prefs.xOffset, 0, false, realHex);
             trans.translate(realHex.getX(), -realHex.getY() + stringRectY.getHeight() - 2);
             g.setTransform(trans);
             g.drawString(Integer.toString(i), 0, 0);

@@ -173,6 +173,26 @@ public class HexShape implements Shape {
         return (new Point2D.Float((int) xoffset, (int) yoffset));
     }
 
+    // For saving memory - use this method and pass in a Point instead of creating a new one
+    public void hexToReal(int x, int y, boolean center, Point2D pt)
+    {
+        double		xoffset, yoffset;
+
+        xoffset = l + ((float)x * (w + l));			// initial offset of l, then add (w + l) * desired_x_coord...
+        yoffset = ((float)y * h);
+
+        if (x % 2 == 0)
+            yoffset += (h / 2.0f);
+
+        if (center)
+        {
+            xoffset += w / 2.0f;
+            yoffset += h / 2.0f;
+        }
+
+        pt.setLocation((int) xoffset, (int) yoffset);
+    }
+
     // ----------------
 
     public PathIterator getPathIterator(AffineTransform at)
