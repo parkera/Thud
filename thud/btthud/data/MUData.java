@@ -38,6 +38,11 @@ public class MUData {
     // The map
     MUHex						map[][] = null;
     boolean						terrainChanged = true;
+
+    // One MUHex for each elevation and terrain
+    // By storing references to MUHexes we can save memory
+    // 19 = -9 thru 0 and 1 thru 9
+    MUHex						hexCache[][] = new MUHex[MUHex.TOTAL_TERRAIN][19];
     
     // We store the contact data in a ArrayList, because we need to iterate over it efficiently
     ArrayList					contacts = null;
@@ -47,11 +52,24 @@ public class MUData {
         hudRunning = false;
 
         clearData();
-    
+
+        createHexCache();
+        
         map = new MUHex[MAX_X][MAX_Y];		// individual hexes will be allocated if they are needed.. this is not very memory efficient still
         
     }
 
+    public void createHexCache()
+    {
+        for (int i = 0; i < MUHex.TOTAL_TERRAIN; i++)
+        {
+            for (int j = -9; j < 10; j++)
+            {
+                hexCache[i][j + 9] = new MUHex(i, j);
+            }
+        }
+    }
+    
     /**
       * Adds a new contact to our list of contacts, or updates an existing one
       */
@@ -192,11 +210,7 @@ public class MUData {
     {
         if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y)
         {
-            if (map[x][y] == null)
-                map[x][y] = new MUHex();
-            
-            map[x][y].setTerrain(ter);
-            map[x][y].setElevation(elevation);
+            map[x][y] = hexCache[MUHex.idForTerrain(ter)][elevation + 9];
         }
     }
     

@@ -46,6 +46,12 @@ public class MUHex
         elevation = 0;
     }
 
+    public MUHex(int terrain, int elevation)
+    {
+        this.terrain = terrain;
+        this.elevation = elevation;
+    }
+    
     // ---------------
 
     // Return the 'id' for the terrain, not the char
