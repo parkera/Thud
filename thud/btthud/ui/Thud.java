@@ -541,7 +541,7 @@ public class Thud extends JFrame implements  ActionListener
 
     protected void setupNewTextFields()
     {
-        bsd = new BulkStyledDocument(prefs.mainFontSize, prefs.maxScrollbackSize);
+        bsd = new BulkStyledDocument(prefs.mainFontSize, prefs.maxScrollbackSize, mFont);
         
         textField = new OptionTextField(80, prefs.antiAliasText);
         textField.addActionListener(this);
@@ -1187,7 +1187,7 @@ public class Thud extends JFrame implements  ActionListener
         mFont = new Font("Monospaced", Font.PLAIN, prefs.mainFontSize);
 
         if (bsd != null)
-            bsd.setFontSize(prefs.mainFontSize);
+            bsd.setFontSize(prefs.mainFontSize, mFont);
         if (textField != null)
             textField.setFont(mFont);
     }

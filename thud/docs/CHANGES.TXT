@@ -28,6 +28,7 @@ Version History:
   * Reduced memory usage of map data
   * Increased efficiency of parsing data from the MUX
   * Thud won't keep sending commands if it's lagged... it'll hold up until it gets some data again before resuming spamming you
+  * Tabs are closer to the right size in the main window
   
 1.0
 

@@ -52,14 +52,15 @@ public class MUContactList extends JFrame
         this.conn = conn;
         this.prefs = prefs;
 
+        mFont = new Font("Monospaced", Font.PLAIN, prefs.contactFontSize);
+        
         // Setup our new contact list pane
-        BulkStyledDocument	bsd = new BulkStyledDocument(prefs.contactFontSize, 1000);        // Yes, max of 1000 contacts. So sue me.
+        BulkStyledDocument	bsd = new BulkStyledDocument(prefs.contactFontSize, 1000, mFont);        // Yes, max of 1000 contacts. So sue me.
         contactPane = new OptionTextPane(bsd, prefs.antiAliasText);
         contactPane.setBackground(Color.black);
         contactPane.setEditable(false);
         contactPane.setDoubleBuffered(true);
 
-        mFont = new Font("Monospaced", Font.PLAIN, prefs.contactFontSize);
         contactPane.setFont(mFont);
         initAttributeSets();
 

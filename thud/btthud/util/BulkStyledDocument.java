@@ -10,6 +10,8 @@ package btthud.util;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.*;
+import java.awt.font.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -34,25 +36,46 @@ public class BulkStyledDocument extends DefaultStyledDocument
 
     int						maxLines = 1000;
 
+    static final int		NUM_TAB_STOPS = 20;
+    
+    TabStop[]				tabStops = new TabStop[NUM_TAB_STOPS];
+    TabSet					tabSet;
+
+    Font					font;
+    
     // ---------------
     
-    public BulkStyledDocument(int fontSize, int maxLines)
+    public BulkStyledDocument(int fontSize, int maxLines, Font font)
     {
         super();
 
         this.fontSize = fontSize;
         this.maxLines = maxLines;
         
-        setFontSize(fontSize);
+        setFontSize(fontSize, font);
     }
 
-    public void setFontSize(int fontSize)
+    public void setFontSize(int fontSize, Font font)
     {
+        this.font = font;
         this.fontSize = fontSize;
-
+        
         StyleConstants.setFontSize(attrBase, fontSize);				// Default font size...
         StyleConstants.setForeground(attrBase, Color.white);		// ... and color
         StyleConstants.setBackground(attrBase, Color.black);
+
+        FontRenderContext		frc = new FontRenderContext(new AffineTransform(), true, false);
+
+        Rectangle2D		maxCharSize = font.getMaxCharBounds(frc);
+        int				maxWidth = (int) (maxCharSize.getWidth());
+
+        for (int i = 0; i < NUM_TAB_STOPS; i++)
+            tabStops[i] = new TabStop(i * maxWidth * 8);
+
+        tabSet = new TabSet(tabStops);
+        
+        StyleConstants.setTabSet(attrBase, tabSet);
+
         
         thisAttrSet = new SimpleAttributeSet();
         thisAttrSet.setResolveParent(attrBase);
