@@ -412,8 +412,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             paintContacts(g);
 
             // Paint hex numbers
-            if (h >= 20)
-                paintNumbers(g);
+            paintNumbers(g);
 
             // Finally, draw our status bar at the bottom of the screen
             paintStatusBar(g);            
@@ -917,6 +916,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         int						startY = (int) (myLocY - (numDown / 2) + prefs.yOffset);
         int						endX = startX + numAcross;
         int						endY = startY + numDown;
+        int						skip = 1;
 
         Rectangle2D				stringRectX = hexNumberFont.getStringBounds(Integer.toString(endX), frc);
         Rectangle2D				stringRectY = hexNumberFont.getStringBounds(Integer.toString(endY), frc);
@@ -930,6 +930,15 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             startX = 0;
         if (startY < 0)
             startY = 0;
+
+        if (h <= 5)
+            skip = 5;
+        else if (h <= 10)
+            skip = 3;
+        else if (h <= 20)
+            skip = 2;
+        else
+            skip = 1;
         
         // Set the proper font
         g.setFont(hexNumberFont);
@@ -947,7 +956,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         g.setTransform(winTrans);
         
         // Numbers along the side
-        for (int i = startY; i <= endY; i++)
+        for (int i = startY; i <= endY; i += skip)
         {
             if (i % 2 == 0)
                 g.setColor(Color.white);
@@ -978,7 +987,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         g.setTransform(winTrans);
 
         // Numbers along the top
-        for (int i = startX; i <= endX; i++)
+        for (int i = startX; i <= endX; i += skip)
         {
             trans.setTransform(winTrans);
             
