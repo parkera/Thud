@@ -204,8 +204,10 @@ public class MUData {
             e = -e;
         // Since we use this function in determining cliff edges, a few corrections...
 
+        /*
         if (getHexTerrain(x, y) == MUHex.ICE)		// ice
             e = 0;									// You can cross it, even tho it may be dangerous
+        */
         
         return e;
     }

@@ -764,8 +764,8 @@ public class MUParse implements Runnable {
             else
                 terrElev = 0;										// Elev was probably a ? (ie, underground map)
 
-            // Water is negative elevation
-            if (terrTypeChar == '~' && terrElev != 0)
+            // Water and ice are negative elevation
+            if ((terrTypeChar == '~' || terrTypeChar == '-') && terrElev != 0)
                 terrElev = -terrElev;
 
             // If it's a '?' make sure we're supposed to overwrite
