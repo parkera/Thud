@@ -28,8 +28,8 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public boolean				echoCommands;
 
     // These are delays for sending commands, in seconds
-    public double				contactsDelay, findcenterDelay, tacticalDelay, tacticalRedrawDelay;
-    public double				armorRedrawDelay;
+    public double				fastCommandUpdate, mediumCommandUpdate, slowCommandUpdate, slugCommandUpdate;
+
     // How high do we want our auto-tactical to be?
     public int					hudinfoTacHeight;
     
@@ -55,12 +55,15 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public Properties			theSystem;
 
     public Color				terrainColors[] = new Color[MUHex.TOTAL_TERRAIN];
-    //public Color				cBuilding, cRoad, cPlains, cWater, cLightForest, cHeavyForest, cWall, cMountain, cRough, cFire, cSmoke, cIce, cSmokeOnWater, cUnknown;
 
     public int					mainFontSize, smallFontSize, hexNumberFontSize, infoFontSize, elevationFontSize, contactFontSize;
     public int					maxScrollbackSize;
     
     public ArrayList			hosts = new ArrayList();
+
+    public static final int			FAST_UPDATE = 1;
+    public static final int			NORMAL_UPDATE = 2;
+    public static final int			SLOW_UPDATE = 3;
     
     public MUPrefs()
     {
@@ -96,11 +99,11 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         commandHistory = 20;
         echoCommands = true;
 
-        contactsDelay = 1.0;
-        findcenterDelay = 1.0;
-        tacticalRedrawDelay = 1.0;
-        tacticalDelay = 15.0;
-        armorRedrawDelay = 1.0;
+        fastCommandUpdate = 1.0;
+        mediumCommandUpdate = 2.0;
+        slowCommandUpdate = 5.0;
+        slugCommandUpdate = 20.0;
+        
         hudinfoTacHeight = 40;
         elevationColorMultiplier = 0.08f;
 

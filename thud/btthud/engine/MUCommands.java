@@ -43,9 +43,9 @@ public class MUCommands
         }
     }
 
-    public void refreshTactical()
+    public void forceTactical()
     {
-        sendCommand("hudinfo t " + prefs.hudinfoTacHeight);
+        commandSendingTask.forceTactical = true;
     }
     
     public void startTimers()

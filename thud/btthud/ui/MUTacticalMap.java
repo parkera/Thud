@@ -82,7 +82,7 @@ public class MUTacticalMap extends JFrame
                 if (data.hudRunning)
                     map.repaint(map.getBounds());
 
-                Thread.sleep((int) (prefs.tacticalRedrawDelay * 1000.0));
+                Thread.sleep(1000);
             }
             catch (InterruptedException e)
             {

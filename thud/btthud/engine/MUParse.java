@@ -198,13 +198,14 @@ public class MUParse implements Runnable {
             {
                 newDelay = Double.parseDouble(st.nextToken().trim());
 
-                if (newDelay < 0.5)
-                    newDelay = 0.5;
+                if (newDelay < 1.0)
+                    newDelay = 1.0;
 
-                prefs.contactsDelay = newDelay;
-                prefs.findcenterDelay = newDelay;
-                prefs.tacticalRedrawDelay = newDelay;
-
+                prefs.fastCommandUpdate = newDelay;
+                prefs.mediumCommandUpdate = 2 * newDelay;
+                prefs.slowCommandUpdate = 5 * newDelay;
+                prefs.slugCommandUpdate = 15 * newDelay;
+                
                 if (data.hudRunning)
                 {
                     commands.endTimers();
@@ -232,7 +233,7 @@ public class MUParse implements Runnable {
     public boolean matchForCommandSending(String l)
     {
         if (l.startsWith("Pos changed to ") && data.hudRunning)
-            commands.refreshTactical();
+            commands.forceTactical();
 
         return false;
     }
@@ -308,7 +309,14 @@ public class MUParse implements Runnable {
             }
         }
         else if (l.startsWith("#HUD hudinfo"))
+        {
             parseHudInfoVersion(l);
+        }
+        else if (l.startsWith("#HUD:"))
+        {
+            // This could be reached if the key didn't match or something.. we'll just keep it from showing up
+            return true;
+        }
 
         return false;
     }

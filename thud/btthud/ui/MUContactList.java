@@ -188,7 +188,7 @@ public class MUContactList extends JFrame
                 }
 
                 // This should probably sleep until notified or something
-                Thread.sleep((int) (prefs.contactsDelay * 1000.0));
+                Thread.sleep(1000);
 
             }
             catch (InterruptedException e)

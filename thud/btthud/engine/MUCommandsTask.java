@@ -17,10 +17,10 @@ public class MUCommandsTask extends TimerTask {
     MUData				data;
     MUPrefs				prefs;
     
-    boolean				forceContacts;
-    boolean				forceTactical;
-    boolean				forceGeneralStatus;
-    boolean				forceArmorStatus;
+    public boolean		forceContacts;
+    public boolean		forceTactical;
+    public boolean		forceGeneralStatus;
+    public boolean		forceArmorStatus;
 
     int					count;
     
@@ -35,14 +35,21 @@ public class MUCommandsTask extends TimerTask {
     {
         // We've been woken up, now we need to decide which commands to send
 
+        /* We have several options on how fast we want to send commands:
+             prefs.fastCommandUpdate -> fastest: 1, 2, or 3 seconds
+             prefs.mediumCommandUpdate -> 2, 5, 10 seconds
+             prefs.slowCommandUpdate -> 3, 10, 15 seconds
+             prefs.slugComandUpdate -> slowest: 15, 30, 45 seconds
+        */
+        
         try
         {
             // Do we send general status?
-            if (forceGeneralStatus || (count % 4 == 0))
+            if (forceGeneralStatus || (count % (4 * prefs.fastCommandUpdate) == 0))
                 conn.sendCommand("hudinfo gs");
 
             // Do we send a contacts?
-            if (forceContacts || (count % 4 == 0))
+            if (forceContacts || (count % (4 * prefs.fastCommandUpdate) == 0))
             {
                 conn.sendCommand("hudinfo c");
                 synchronized (data)
@@ -52,11 +59,11 @@ public class MUCommandsTask extends TimerTask {
             }
 
             // Do we send a tactical?
-            if (forceTactical || (count % (4 * 20) == 0))
+            if (forceTactical || (count % (4 * prefs.slugCommandUpdate) == 0))
                 conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight);
 
             // Do we send an armor status?
-            if (forceArmorStatus || (count % (4 * 3) == 0))
+            if (forceArmorStatus || (count % (4 * prefs.mediumCommandUpdate) == 0))
                 conn.sendCommand("hudinfo as");
             
         }

@@ -32,11 +32,6 @@ public class Thud extends JFrame implements  ActionListener
     JMenuBar mainMenuBar = new JMenuBar();
 	
     JMenu fileMenu;
-    protected JMenuItem miNew;
-    protected JMenuItem miOpen;
-    protected JMenuItem miClose;
-    protected JMenuItem miSave;
-    protected JMenuItem miSaveAs;
     protected JMenuItem miQuit;
 	
     JMenu editMenu;
@@ -75,6 +70,12 @@ public class Thud extends JFrame implements  ActionListener
     protected JMenuItem miRemoveHost;
     protected JMenuItem miDisconnect;
 
+    JMenu updateMenu;
+    protected JCheckBoxMenuItem miFastUpdate;
+    protected JCheckBoxMenuItem miNormalUpdate;
+    protected JCheckBoxMenuItem miSlowUpdate;
+    protected JMenuItem miSendTacticalUpdate;
+    
     JMenu debugMenu;
     protected JMenuItem miDumpDocument;
     
@@ -98,6 +99,8 @@ public class Thud extends JFrame implements  ActionListener
 
     LinkedList				commandHistory = new LinkedList();
     int						historyLoc = 1;							// how far we are from end of history list
+
+    static final int		DEBUG = 0;
     
     // ------------------------------------------------------------------------
     // MENU ITEM SETUP
@@ -108,11 +111,6 @@ public class Thud extends JFrame implements  ActionListener
       */
     protected void setupListeners(ActionListener l)
     {
-        miNew.addActionListener(l);
-        miOpen.addActionListener(l);
-        miClose.addActionListener(l);
-        miSave.addActionListener(l);
-        miSaveAs.addActionListener(l);
         miQuit.addActionListener(l);
 
         miUndo.addActionListener(l);
@@ -153,6 +151,11 @@ public class Thud extends JFrame implements  ActionListener
         miRemoveHost.addActionListener(l);
         miDisconnect.addActionListener(l);
 
+        miFastUpdate.addActionListener(l);
+        miNormalUpdate.addActionListener(l);
+        miSlowUpdate.addActionListener(l);
+        miSendTacticalUpdate.addActionListener(l);
+        
         miDumpDocument.addActionListener(l);
     }
     
@@ -163,32 +166,6 @@ public class Thud extends JFrame implements  ActionListener
         fileMenu = new JMenu("File");
 
         // ----------
-        
-        miNew = new JMenuItem ("New");
-        miNew.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N,
-                                                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        fileMenu.add(miNew).setEnabled(false);
-
-        miOpen = new JMenuItem ("Open...");
-        miOpen.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O,
-                                                     Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        fileMenu.add(miOpen).setEnabled(false);
-		
-        miClose = new JMenuItem ("Close");
-        miClose.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W,
-                                                      Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        fileMenu.add(miClose).setEnabled(true);
-		
-        miSave = new JMenuItem ("Save");
-        miSave.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S,
-                                                     Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        fileMenu.add(miSave).setEnabled(false);
-		
-        miSaveAs = new JMenuItem ("Save As...");
-        fileMenu.add(miSaveAs).setEnabled(false);
-
-        // ----
-        fileMenu.addSeparator();
 
         miQuit = new JMenuItem("Quit");
         miQuit.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q,
@@ -248,18 +225,58 @@ public class Thud extends JFrame implements  ActionListener
     }
 
     // -----------------------
+    // Update Menu Items
+    public void addUpdateMenuItems()
+    {
+        updateMenu = new JMenu("Update");
+
+        // ----------
+
+        miFastUpdate = new JCheckBoxMenuItem("Fast Update Speed");
+        miFastUpdate.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_1,
+                                                           java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        updateMenu.add(miFastUpdate).setEnabled(true);
+        miFastUpdate.setState(prefs.fastCommandUpdate == 1.0 ? true : false);
+
+        miNormalUpdate = new JCheckBoxMenuItem("Normal Update Speed");
+        miNormalUpdate.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_2,
+                                                           java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        updateMenu.add(miNormalUpdate).setEnabled(true);
+        miNormalUpdate.setState(prefs.fastCommandUpdate == 3.0 ? true : false);
+
+        miSlowUpdate = new JCheckBoxMenuItem("Slow Update Speed");
+        miSlowUpdate.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_3,
+                                                           java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        updateMenu.add(miSlowUpdate).setEnabled(true);
+        miSlowUpdate.setState(prefs.fastCommandUpdate == 5.0 ? true : false);
+
+        // ----------
+
+        updateMenu.addSeparator();
+
+        
+        miSendTacticalUpdate = new JMenuItem("Update Tactical Map Now");
+        miSendTacticalUpdate.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N,
+                                                              Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        updateMenu.add(miSendTacticalUpdate).setEnabled(false);
+
+        // Disable the update menu until we're actually connected
+        updateMenu.setEnabled(false);
+        mainMenuBar.add(updateMenu);
+    }
+    // -----------------------
     // Debug Menu Items
     public void addDebugMenuItems()
     {
         debugMenu = new JMenu("Debug");
 
         // ----------
-        
+
         miDumpDocument = new JMenuItem("Dump Document Structure");
         debugMenu.add(miDumpDocument).setEnabled(true);
 
-        // Debug off for now
-        mainMenuBar.add(debugMenu);
+        if (DEBUG == 1)
+            mainMenuBar.add(debugMenu);
     }
 
     // -----------------------
@@ -494,6 +511,7 @@ public class Thud extends JFrame implements  ActionListener
         addFileMenuItems();
         addEditMenuItems();
         addMapMenuItems();
+        addUpdateMenuItems();
         addHUDMenuItems();
         addDebugMenuItems();
 
@@ -661,6 +679,7 @@ public class Thud extends JFrame implements  ActionListener
             miStartStop.setEnabled(true);
             miDisconnect.setEnabled(true);
             mapMenu.setEnabled(true);
+            updateMenu.setEnabled(true);
         }
         catch (Exception e)
         {
@@ -688,6 +707,7 @@ public class Thud extends JFrame implements  ActionListener
             miStartStop.setEnabled(false);
             miDisconnect.setEnabled(false);
             mapMenu.setEnabled(false);
+            updateMenu.setEnabled(false);
         }
     }
 
@@ -705,12 +725,7 @@ public class Thud extends JFrame implements  ActionListener
     // ActionListener interface (for menus)
     public void actionPerformed(ActionEvent newEvent)
     {
-        if (newEvent.getActionCommand().equals(miNew.getActionCommand())) doNew();
-        else if (newEvent.getActionCommand().equals(miOpen.getActionCommand())) doOpen();
-        else if (newEvent.getActionCommand().equals(miClose.getActionCommand())) doClose();
-        else if (newEvent.getActionCommand().equals(miSave.getActionCommand())) doSave();
-        else if (newEvent.getActionCommand().equals(miSaveAs.getActionCommand())) doSaveAs();
-        else if (newEvent.getActionCommand().equals(miQuit.getActionCommand())) handleQuit();
+        if (newEvent.getActionCommand().equals(miQuit.getActionCommand())) handleQuit();
         else if (newEvent.getActionCommand().equals(miUndo.getActionCommand())) doUndo();
         else if (newEvent.getActionCommand().equals(miCut.getActionCommand())) doCut();
         else if (newEvent.getActionCommand().equals(miCopy.getActionCommand())) doCopy();
@@ -741,6 +756,10 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miAddNewHost.getActionCommand())) doAddNewHost();
         else if (newEvent.getActionCommand().equals(miRemoveHost.getActionCommand())) doRemoveHost();
         else if (newEvent.getActionCommand().equals(miDisconnect.getActionCommand())) doDisconnect();
+        else if (newEvent.getActionCommand().equals(miFastUpdate.getActionCommand())) doChangeUpdate(MUPrefs.FAST_UPDATE);
+        else if (newEvent.getActionCommand().equals(miNormalUpdate.getActionCommand())) doChangeUpdate(MUPrefs.NORMAL_UPDATE);
+        else if (newEvent.getActionCommand().equals(miSlowUpdate.getActionCommand())) doChangeUpdate(MUPrefs.SLOW_UPDATE);
+        else if (newEvent.getActionCommand().equals(miSendTacticalUpdate.getActionCommand())) doSendTacUpdate();
         else if (newEvent.getActionCommand().equals(miDumpDocument.getActionCommand())) doDumpDocumentStructure();
         else		// this is sorta bad, we assume that if it's not a menu item they hit return in the text field. need to fix
         {
@@ -843,17 +862,7 @@ public class Thud extends JFrame implements  ActionListener
     }
     
     // -----------------------
-    // Here's a whole slew of things we don't support
-    public void doNew() {}
-	
-    public void doOpen() {}
-	
-    public void doClose() {}
-	
-    public void doSave() {}
-	
-    public void doSaveAs() {}
-	
+    // Here's a whole slew of things we don't support	
     public void doUndo() {}
 	
     public void doCut() {}
@@ -919,11 +928,15 @@ public class Thud extends JFrame implements  ActionListener
                 
                 // Start sending commands
                 commands.startTimers();
+
+                miSendTacticalUpdate.setEnabled(true);
             }
             else
             {
                 parse.messageLine("*** Display Stopped ***");
                 commands.endTimers();
+                
+                miSendTacticalUpdate.setEnabled(false);
             }            
         }
     }
@@ -1102,6 +1115,51 @@ public class Thud extends JFrame implements  ActionListener
         stopConnection();
     }
 
+    // -----------------------
+    // Change the update speed
+    public void doChangeUpdate(int whichSpeed)
+    {
+        switch (whichSpeed)
+        {
+            case MUPrefs.FAST_UPDATE:
+                prefs.fastCommandUpdate = 1.0;
+                prefs.mediumCommandUpdate = 2.0;
+                prefs.slowCommandUpdate = 3.0;
+                prefs.slugCommandUpdate = 15.0;
+                miFastUpdate.setState(true);
+                miNormalUpdate.setState(false);
+                miSlowUpdate.setState(false);
+                break;
+
+            case MUPrefs.NORMAL_UPDATE:
+                prefs.fastCommandUpdate = 3.0;
+                prefs.mediumCommandUpdate = 5.0;
+                prefs.slowCommandUpdate = 10.0;
+                prefs.slugCommandUpdate = 30.0;
+                miFastUpdate.setState(false);
+                miNormalUpdate.setState(true);
+                miSlowUpdate.setState(false);
+                break;
+
+            case MUPrefs.SLOW_UPDATE:
+                prefs.fastCommandUpdate = 5.0;
+                prefs.mediumCommandUpdate = 10.0;
+                prefs.slowCommandUpdate = 15.0;
+                prefs.slugCommandUpdate = 45.0;
+                miFastUpdate.setState(false);
+                miNormalUpdate.setState(false);
+                miSlowUpdate.setState(true);
+                break;
+        }
+    }
+
+    // -----------------------
+    // Forces a tactical update
+    public void doSendTacUpdate()
+    {
+        commands.forceTactical();
+    }
+    
     // -----------------------
     // Called when main font size changes
     public void mainFontChanged()
