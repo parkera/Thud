@@ -538,8 +538,11 @@ public class MUMapComponent extends JComponent implements MouseListener
 
                         if (prefs.tacShowCliffs)
                         {
+                            Stroke		saveStroke = g.getStroke();
+                            
                             g.setColor(Color.red);
-
+                            g.setStroke(new BasicStroke(2.0f));		// Make the red line wider
+                            
                             // We are at: hexX + j, hexY + i
                             if ((hexX + j) % 2 == 0)
                             {
@@ -573,6 +576,8 @@ public class MUMapComponent extends JComponent implements MouseListener
                                 if (Math.abs(data.getHexElevation(hexX + j + 1, hexY + i - 1) - hex.elevation()) > prefs.cliffDiff)
                                     g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
                             }
+
+                            g.setStroke(saveStroke);				// Restore the old stroke
                         }
                     }
                 }                
