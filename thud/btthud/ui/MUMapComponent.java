@@ -646,6 +646,12 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                     // Make sure we're drawing within the boundaries of the map
                     if (hexY + i >= 0 && data.getHexTerrain(hexX + j, hexY + i) != MUHex.UNKNOWN)
                     {
+                        int		hexAbsoluteElevation = data.getHexElevation(hexX + j, hexY + i);
+                        // Since we only store images of elevations 0 to 9 (not negative ones)
+                        //  we have to use the opposite color for negative elevations like water/water under ice
+                        if (hexAbsoluteElevation < 0)
+                            hexAbsoluteElevation = -hexAbsoluteElevation;
+                        
                         // This gives us the x,y location of this hex
                         hexPoly.hexToReal(hexX + j, hexY + i, false, realHex);
                         
@@ -657,7 +663,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                         g.setTransform(trans);
                         // And draw it
                         g.drawImage(imageForTerrain(data.getHexTerrain(hexX + j, hexY + i),
-                                                    data.getHexAbsoluteElevation(hexX + j, hexY + i)),
+                                                    hexAbsoluteElevation),
                                     null,
                                     null);
                         
@@ -684,7 +690,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                         if (prefs.tacShowCliffs)
                         {
                             Stroke		saveStroke = g.getStroke();
-                            int			thisElevation = data.getHexElevation(hexX + j, hexY + i);
+                            int			thisElevation = data.getHexAbsoluteElevation(hexX + j, hexY + i);
                             g.setColor(Color.red);
                             g.setStroke(new BasicStroke(2.0f));		// Make the red line wider
                             
@@ -692,33 +698,33 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                             if ((hexX + j) % 2 == 0)
                             {
                                 // Even X
-                                if (Math.abs(data.getHexElevation(hexX + j + 0, hexY + i - 1) - thisElevation) > prefs.cliffDiff)
+                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 0, hexY + i - 1) - thisElevation) > prefs.cliffDiff)
                                     g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
-                                if (Math.abs(data.getHexElevation(hexX + j - 1, hexY + i + 0) - thisElevation) > prefs.cliffDiff)
+                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j - 1, hexY + i + 0) - thisElevation) > prefs.cliffDiff)
                                     g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(1), (int) hexPoly.getY(1));
-                                if (Math.abs(data.getHexElevation(hexX + j - 1, hexY + i + 1) - thisElevation) > prefs.cliffDiff)
+                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j - 1, hexY + i + 1) - thisElevation) > prefs.cliffDiff)
                                     g.drawLine((int) hexPoly.getX(1), (int) hexPoly.getY(1), (int) hexPoly.getX(2), (int) hexPoly.getY(2));
-                                if (Math.abs(data.getHexElevation(hexX + j + 0, hexY + i + 1) - thisElevation) > prefs.cliffDiff)
+                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 0, hexY + i + 1) - thisElevation) > prefs.cliffDiff)
                                     g.drawLine((int) hexPoly.getX(2), (int) hexPoly.getY(2), (int) hexPoly.getX(3), (int) hexPoly.getY(3));
-                                if (Math.abs(data.getHexElevation(hexX + j + 1, hexY + i + 1) - thisElevation) > prefs.cliffDiff)
+                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 1, hexY + i + 1) - thisElevation) > prefs.cliffDiff)
                                     g.drawLine((int) hexPoly.getX(3), (int) hexPoly.getY(3), (int) hexPoly.getX(4), (int) hexPoly.getY(4));
-                                if (Math.abs(data.getHexElevation(hexX + j + 1, hexY + i + 0) - thisElevation) > prefs.cliffDiff)
+                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 1, hexY + i + 0) - thisElevation) > prefs.cliffDiff)
                                     g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
                             }
                             else
                             {
                                 // Odd X
-                                if (Math.abs(data.getHexElevation(hexX + j + 0, hexY + i - 1) - thisElevation) > prefs.cliffDiff)
+                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 0, hexY + i - 1) - thisElevation) > prefs.cliffDiff)
                                     g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
-                                if (Math.abs(data.getHexElevation(hexX + j - 1, hexY + i - 1) - thisElevation) > prefs.cliffDiff)
+                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j - 1, hexY + i - 1) - thisElevation) > prefs.cliffDiff)
                                     g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(1), (int) hexPoly.getY(1));
-                                if (Math.abs(data.getHexElevation(hexX + j - 1, hexY + i + 0) - thisElevation) > prefs.cliffDiff)
+                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j - 1, hexY + i + 0) - thisElevation) > prefs.cliffDiff)
                                     g.drawLine((int) hexPoly.getX(1), (int) hexPoly.getY(1), (int) hexPoly.getX(2), (int) hexPoly.getY(2));
-                                if (Math.abs(data.getHexElevation(hexX + j + 0, hexY + i + 1) - thisElevation) > prefs.cliffDiff)
+                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 0, hexY + i + 1) - thisElevation) > prefs.cliffDiff)
                                     g.drawLine((int) hexPoly.getX(2), (int) hexPoly.getY(2), (int) hexPoly.getX(3), (int) hexPoly.getY(3));
-                                if (Math.abs(data.getHexElevation(hexX + j + 1, hexY + i + 0) - thisElevation) > prefs.cliffDiff)
+                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 1, hexY + i + 0) - thisElevation) > prefs.cliffDiff)
                                     g.drawLine((int) hexPoly.getX(3), (int) hexPoly.getY(3), (int) hexPoly.getX(4), (int) hexPoly.getY(4));
-                                if (Math.abs(data.getHexElevation(hexX + j + 1, hexY + i - 1) - thisElevation) > prefs.cliffDiff)
+                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 1, hexY + i - 1) - thisElevation) > prefs.cliffDiff)
                                     g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
                             }
 
