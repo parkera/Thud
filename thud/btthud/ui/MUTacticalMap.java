@@ -57,19 +57,6 @@ public class MUTacticalMap extends JFrame
 
         setSize(prefs.tacSizeX, prefs.tacSizeY);
         setLocation(prefs.tacLoc);
-
-        //addWindowListener(new OnTopHandler());
-        // An attempt at providing "always on top" functionality: doesn't work too great
-        
-        addFocusListener(new FocusListener() {
-            public void focusGained(FocusEvent e) {
-            }
-
-            public void focusLost(FocusEvent e) {
-                ((Window) e.getComponent()).toFront();
-            }
-        });
-        
         
         // Show the window now
         this.show();
@@ -125,22 +112,3 @@ public class MUTacticalMap extends JFrame
         map.newPreferences(prefs);
     }
 }
-
-// Attempt at providing "always on top" functionality.. doesn't work too great
-class OnTopHandler implements java.awt.event.ActionListener, java.awt.event.WindowListener
-{
-    public void actionPerformed(java.awt.event.ActionEvent e) {};
-    public void windowActivated(java.awt.event.WindowEvent e) {};
-    public void windowClosed(java.awt.event.WindowEvent e) {};
-    public void windowClosing(java.awt.event.WindowEvent e) {};
-
-    public void windowDeactivated(java.awt.event.WindowEvent e)
-    {
-        //e.getWindow().toFront();
-    }
-
-    public void windowDeiconified(java.awt.event.WindowEvent e) {};
-    public void windowIconified(java.awt.event.WindowEvent e) {};
-    public void windowOpened(java.awt.event.WindowEvent e) {};
-}
-
