@@ -68,9 +68,9 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     HexShape				hexPoly;
 
     int						h = 40;
-    double					w = h / 2f;
-    static final double		tan30 = Math.tan(toRadians(30.0d)); //0.5773502692;
-    double					l = h / 2d * tan30;
+    float					w = h / 2f;
+    static final float		tan30 = (float) Math.tan(toRadians(30.0f)); //0.5773502692;
+    float					l = h / 2f * tan30;
 
     int						myLocX, myLocY;
 
@@ -81,7 +81,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
     Rectangle				bounds;
     BufferedImage			savedTerrain = null;
-    Point2D					savedTerrainCenter = new Point2D.Double(0,0);
+    Point2D					savedTerrainCenter = new Point2D.Float(0,0);
     Rectangle				savedTerrainBounds = new Rectangle(0, 0, 0, 0);
     
         
@@ -527,7 +527,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         int					halfWidth = (int) (bounds.getWidth() / 2);
         int					halfHeight = (int) (bounds.getHeight() / 2);
         boolean				redraw = false;
-        Point2D				testPt = new Point2D.Double();
+        Point2D				testPt = new Point2D.Float();
         testPt.setLocation(savedTerrainBounds.getWidth() / 2 + savedTerrainCenter.getX() - unitPos.getX(),
                            savedTerrainBounds.getHeight() / 2 + savedTerrainCenter.getY() - unitPos.getY());
 
@@ -622,7 +622,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         int						hexX = myLocX - (numAcross / 2);
         int						hexY = myLocY - (numDown / 2);
 
-        Point2D					realHex = new Point2D.Double();
+        Point2D					realHex = new Point2D.Float();
 
         // Account for offset views by moving the view over
         hexX += prefs.xOffset;
@@ -752,7 +752,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
       */
     protected Point2D realForUnit(MUUnitInfo unit)
     {
-        Point2D		p = new Point2D.Double();
+        Point2D		p = new Point2D.Float();
 
         // Get the centering info
         Point2D		up = offsetsForCentering(unit.bearingToCenter, unit.rangeToCenter);
@@ -1104,7 +1104,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                 if (prefs.tacShowArcs)
                 {
                     AffineTransform			arcXform = new AffineTransform(g.getTransform());
-                    double					headingDeg = -data.myUnit.heading - 180.0;
+                    float					headingDeg = -data.myUnit.heading - 180.0f;
 
                     // Accomodate for rotate torso
                     if (!data.myUnit.canHaveTurret())
@@ -1114,12 +1114,12 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                     g.setTransform(arcXform);
 
                     // This is our own unit. Let's draw the helper 'arcs'
-                    double	r = prefs.arcIndicatorRange * h;			// r = radius
+                    float	r = prefs.arcIndicatorRange * h;			// r = radius
 
-                    Arc2D	frontArc = new Arc2D.Double();
-                    Arc2D	leftArc = new Arc2D.Double();
-                    Arc2D	rightArc = new Arc2D.Double();
-                    Arc2D	rearArc = new Arc2D.Double();
+                    Arc2D	frontArc = new Arc2D.Float();
+                    Arc2D	leftArc = new Arc2D.Float();
+                    Arc2D	rightArc = new Arc2D.Float();
+                    Arc2D	rearArc = new Arc2D.Float();
 
                     frontArc.setArcByCenter(0,
                                             0,
@@ -1185,11 +1185,11 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         AffineTransform		trans = new AffineTransform();
         AffineTransform		oldTrans = g.getTransform();
 
-        double				speedDivisor = 10.75f * prefs.speedIndicatorLength;			// 32.25 = 3 MP, 10.75 = 1 MP
+        float				speedDivisor = 10.75f * prefs.speedIndicatorLength;			// 32.25 = 3 MP, 10.75 = 1 MP
         int					lineLength = h / (int) speedDivisor;
 
         int					whichHeading;
-        double				headingRad;
+        float				headingRad;
 
         if (type == HEADING_NORMAL)
         {
@@ -1217,7 +1217,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         else
             return;			// No heading, or done, or something
             
-        headingRad = ((double) whichHeading / 180) * PI + PI;
+        headingRad = (float) ((whichHeading / 180f) * PI + PI);
         lineLength = (int) (h * ((u.speed == 0 ? speedDivisor : u.speed) / speedDivisor));
         
         // Set up our transformation
@@ -1338,8 +1338,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         g.setTransform(oldTrans);
     }
 
-    static public double toRadians(double a)
+    static public float toRadians(float a)
     {
-        return (a / 180.0d) * Math.PI + Math.PI;
+        return (float) ((a / 180.0f) * Math.PI + Math.PI);
     }
 }

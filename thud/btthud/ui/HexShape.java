@@ -17,32 +17,32 @@ import java.awt.image.*;
 
 public class HexShape implements Shape {
 
-    double		x[] = {0d, 0d, 0d, 0d, 0d, 0d};
-    double		y[] = {0d, 0d, 0d, 0d, 0d, 0d};
+    float		x[] = {0f, 0f, 0f, 0f, 0f, 0f};
+    float		y[] = {0f, 0f, 0f, 0f, 0f, 0f};
 
-    double		h;
-    double		tan30 = Math.tan(MUMapComponent.toRadians(30.0d));
-    double		w;
-    double		l;
+    float		h;
+    float		tan30 = (float) Math.tan(MUMapComponent.toRadians(30.0f));
+    float		w;
+    float		l;
 
     GeneralPath	gp;
 
     public HexShape(float h)
     {
         this.h = h;
-        w = h / 2d;
-        l = h / 2d * tan30;
+        w = h / 2f;
+        l = h / 2f * tan30;
 
         gp = new GeneralPath(GeneralPath.WIND_NON_ZERO, 6);
 
         // Figure out the proper coordinates
         // top left
         x[0] = l;
-        y[0] = 0d;
+        y[0] = 0f;
         
         // leftmost side
-        x[1] = 0d;
-        y[1] = h / 2d;
+        x[1] = 0f;
+        y[1] = h / 2f;
 
         // bottom left
         x[2] = l;
@@ -53,17 +53,17 @@ public class HexShape implements Shape {
         y[3] = h;
 
         // rightmost side
-        x[4] = w + (2d * l);
-        y[4] = h / 2d;
+        x[4] = w + (2f * l);
+        y[4] = h / 2f;
 
         // top right
         x[5] = w + l;
-        y[5] = 0d;
+        y[5] = 0f;
 
-        gp.moveTo((float) x[0], (float) y[0]);
+        gp.moveTo(x[0], y[0]);
         for (int i = 1; i < 6; i++)
-            gp.lineTo((float) x[i], (float) y[i]);
-        gp.lineTo((float) x[0], (float) y[0]);
+            gp.lineTo(x[i], y[i]);
+        gp.lineTo(x[0], y[0]);
     }
 
     public double getX(int i)
@@ -156,38 +156,38 @@ public class HexShape implements Shape {
      */
     public Point2D hexToReal(int x, int y, boolean center)
     {
-        double		xoffset, yoffset;
+        float		xoffset, yoffset;
 
-        xoffset = l + ((double)x * (w + l));			// initial offset of l, then add (w + l) * desired_x_coord...
-        yoffset = ((double)y * h);
+        xoffset = l + ((float)x * (w + l));			// initial offset of l, then add (w + l) * desired_x_coord...
+        yoffset = ((float)y * h);
 
         if (x % 2 == 0)
-            yoffset += (h / 2.0d);
+            yoffset += (h / 2f);
         
         if (center)
         {
-            xoffset += w / 2.0d;
-            yoffset += h / 2.0d;
+            xoffset += w / 2f;
+            yoffset += h / 2f;
         }
 
-        return (new Point2D.Double(xoffset, yoffset));
+        return (new Point2D.Float(xoffset, yoffset));
     }
 
     // For saving memory - use this method and pass in a Point instead of creating a new one
     public void hexToReal(int x, int y, boolean center, Point2D pt)
     {
-        double		xoffset, yoffset;
+        float		xoffset, yoffset;
 
-        xoffset = l + ((double)x * (w + l));			// initial offset of l, then add (w + l) * desired_x_coord...
-        yoffset = ((double)y * h);
+        xoffset = l + ((float)x * (w + l));			// initial offset of l, then add (w + l) * desired_x_coord...
+        yoffset = ((float)y * h);
 
         if (x % 2 == 0)
-            yoffset += (h / 2.0d);
+            yoffset += (h / 2f);
 
         if (center)
         {
-            xoffset += w / 2.0d;
-            yoffset += h / 2.0d;
+            xoffset += w / 2f;
+            yoffset += h / 2f;
         }
 
         pt.setLocation(xoffset, yoffset);
