@@ -1,12 +1,14 @@
 1.1  ---
 New Features/Changes:
  - Selection now uses an easier-to-spot red-black dash instead of just a thick black line
- - Selection now selects multiple hexes by default (you don't need to hold shift down). Control-clicking will deselect all when using the select tool.
+ - Selection now selects multiple hexes by default (you don't need to hold shift down). Control-clicking will deselect all when using the select tool
  - Control/Command-1,2,3,4,5 now select brush size
+ - New 'Export to PNG' feature in the File menu. This will create a .png file of the map at the current zoom level (doing this at a high zoom will result in very large files)
+ - Mouse wheel now zooms in or out
  
 Bug Fixes:
  - Cancel button on 'New Map' dialog box now works
- - All keystrokes are now part of the menu system (new 'Tool' menu). This should make them more robust.
+ - All keystrokes are now part of the menu system (new 'Tool' menu). This should make them more robust
  
 Performance Improvements:
  - Zooming, scrolling, and drawing hexes are all much faster

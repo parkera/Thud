@@ -38,6 +38,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
     protected JMenuItem miClose;
     protected JMenuItem miSave;
     protected JMenuItem miSaveAs;
+    protected JMenuItem miExportToPNG;
     protected JMenuItem miPageSetup;
     protected JMenuItem miPrint;
     protected JMenuItem	miQuit;
@@ -130,6 +131,10 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         fileMenu.add(miSaveAs).setEnabled(true);
         miSaveAs.addActionListener(this);
 
+        miExportToPNG = new JMenuItem("Export to PNG...");
+        fileMenu.add(miExportToPNG).setEnabled(true);
+        miExportToPNG.addActionListener(this);
+        
         fileMenu.addSeparator();
 
         miPageSetup = new JMenuItem("Page Setup...");
@@ -467,6 +472,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
             
             miSave.setEnabled(true);
             miSaveAs.setEnabled(true);
+            miExportToPNG.setEnabled(true);
             miClose.setEnabled(true);
 
             //miPageSetup.setEnabled(true);
@@ -485,6 +491,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
 
             miSave.setEnabled(false);
             miSaveAs.setEnabled(false);
+            miExportToPNG.setEnabled(false);
             miClose.setEnabled(false);
 
             //miPageSetup.setEnabled(false);
@@ -595,6 +602,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         else if (matchesMenu(e, miClose)) doClose();
         else if (matchesMenu(e, miSave)) doSave();
         else if (matchesMenu(e, miSaveAs)) doSaveAs();
+        else if (matchesMenu(e, miExportToPNG)) doExportToPNG();
         else if (matchesMenu(e, miPageSetup)) doPageSetup();
         else if (matchesMenu(e, miPrint)) doPrint();
         else if (matchesMenu(e, miQuit)) doQuit();
@@ -711,6 +719,37 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
             saveFrameAs(topFrame());
     }
 
+    public void doExportToPNG()
+    {
+        if (topFrame() != null)
+        {
+            FileDialog		saveImageDialog = new FileDialog(this, "Save as PNG...", FileDialog.SAVE);
+            String              fileName = topFrame().fileName();
+            
+            saveImageDialog.setFile(fileName.substring(0, fileName.length() - 3) + "png");
+            saveImageDialog.show();
+            
+            if (saveImageDialog.getFile() != null)      // if null, cancelled
+            {
+                try {
+                    
+                    File        imageFile = new File(saveImageDialog.getDirectory() + saveImageDialog.getFile());
+                    
+                    // Create the file
+                    imageFile.createNewFile();
+                    // We're busy
+                    setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                    // Save it
+                    boolean savedOkay = topFrame().saveMapAsImage(imageFile);
+                    // We're not busy
+                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    
+                } catch (Exception e) {
+                    ErrorHandler.displayError("Can't write to file. Maybe it's locked.", ErrorHandler.ERR_SAVE_FAIL);
+                }
+            }
+        }
+    }
     /**
       * Display the page setup dialog box
       */
@@ -807,7 +846,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
     public void doZoom(int z)
     {
         if (topFrame() != null)
-            topFrame().adjustZoom(z);
+            topFrame().adjustZoom(z, new Point(-1, -1));
     }
 
     public void doSetPaintType(int type)

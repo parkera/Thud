@@ -26,37 +26,41 @@ import java.awt.print.*;
 
 import java.io.*;
 
+import javax.imageio.*;
+import java.awt.image.*;
+
+
 public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseMotionListener, MouseWheelListener {
 
-    Thump				mapper;
+    Thump			mapper;
     
-    MUXMap					map;
-    MPrefs					prefs;
+    MUXMap			map;
+    MPrefs			prefs;
     
-    Thread					thread = null;
-    private boolean			go = true;
+    Thread			thread = null;
+    private boolean		go = true;
 
-    MUXMapComponent			mapComponent = null;
-    JScrollPane				scrollPane = null;
+    MUXMapComponent		mapComponent = null;
+    JScrollPane			scrollPane = null;
 
-    File					file;
+    File			file;
 
-    int						h;
+    int				h;
 
-    static int				documentsOpened = 1;		// Only for naming new untitled docs
+    static int			documentsOpened = 1;		// Only for naming new untitled docs
 
-    boolean					newFile;
+    boolean			newFile;
 
-    ToolManager				tools;
+    ToolManager			tools;
 
     static final int		MAX_UNDO = 20;
-    LinkedList				undoableChanges;
+    LinkedList			undoableChanges;
 
-    boolean					dragging = false;					// True when we've detected a drag
-    LinkedList				changedHexes = new LinkedList();	// List of changed hexes this drag or click
+    boolean			dragging = false;					// True when we've detected a drag
+    LinkedList			changedHexes = new LinkedList();	// List of changed hexes this drag or click
     
-    boolean					pasting = false;					// True when we're pasting some hexes
-    LinkedList				pasteHexes;							// List of hexes to paste
+    boolean			pasting = false;					// True when we're pasting some hexes
+    LinkedList			pasteHexes;							// List of hexes to paste
     
     // -----------------
     
@@ -116,10 +120,31 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         yRule.setPreferredHeight(mapComponent.getTotalHeight());
 
         // .. and the scroll pane we put them in
-        scrollPane = new JScrollPane(mapComponent);
+
+        // Create the scroll pane & the view
+        scrollPane = new JScrollPane();
+        
+        // Create our own viewport, instead of the default one
+        scrollPane.setViewport(new JViewport() {
+            public void setViewPosition(Point p) {
+                // Make sure another thread will not gain control
+                // while scrolling the view !!!
+                synchronized (scrollPane.getTreeLock()) {
+                    // Scroll the view now...
+                    super.setViewPosition(p);
+                }
+            }   
+        });
+        
+        // Setup our view in the scroll pane's viewport
+        scrollPane.getViewport().add(mapComponent, null);
+        
+        
+        //scrollPane = new JScrollPane(mapComponent);
         scrollPane.setColumnHeaderView(xRule);
         scrollPane.setRowHeaderView(yRule);
         scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, new Corner());
+        scrollPane.setWheelScrollingEnabled(false);
         scrollPane.doLayout();
 
         setContentPane(scrollPane);
@@ -154,9 +179,16 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
     }
     // --------------------------------------
 
-    public void adjustZoom(int z)
+    public void adjustZoom(int zoom, Point mouseCoords)
     {
-        h += z;
+        // Find the hex currently in the center of the view
+    Rectangle       viewRect = scrollPane.getViewport().getViewRect();
+        Point           p = scrollPane.getViewport().toViewCoordinates(mouseCoords);
+        Point           centerHex = mapComponent.realToHex(p.getX() == -1 ? (int) (viewRect.getX() + viewRect.getWidth() / 2f) : (int) p.getX(), 
+                                                           p.getY() == -1 ? (int) (viewRect.getY() + viewRect.getHeight() / 2f) : (int) p.getY());
+        Point2D         newRealCenterOfHex;
+        
+        h += zoom;
 
         if (h < 5)
             h = 5;
@@ -164,8 +196,14 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
             h = 300;
 
         newPreferences(prefs, h);
-
-        updateUI();
+        //mapComponent.revalidate();
+        
+        newRealCenterOfHex = mapComponent.centerOfHex((int) centerHex.getX(), (int) centerHex.getY());
+      
+        mapComponent.scrollRectToVisible(new Rectangle((int) (newRealCenterOfHex.getX() - viewRect.getWidth() / 2f),
+                                                       (int) (newRealCenterOfHex.getY() - viewRect.getHeight() / 2f),
+                                                       (int) viewRect.getWidth(),
+                                                       (int) viewRect.getHeight()));
     }
     
     public void newPreferences(MPrefs prefs, int hexHeight)
@@ -185,6 +223,8 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         scrollPane.setRowHeaderView(yRule);
         scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, new Corner());
         scrollPane.doLayout();
+        scrollPane.repaint();
+        
     }
 
     /**
@@ -322,6 +362,33 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
             // Change our name
             setTitle(file.getName() + sizeString());
             
+            return true;
+            
+        } catch (Exception e) {
+            ErrorHandler.displayError("Could not write data to map file:\n" + e, ErrorHandler.ERR_SAVE_FAIL);
+            return false;
+        }
+    }
+    
+    public boolean saveMapAsImage(File imageFile)
+    {
+        // This should probably write all the data to a temporary file, then copy it over the old one at the end
+        try {
+            BufferedImage               mapImage = new BufferedImage((int) mapComponent.getPreferredSize().getWidth(),
+                                                                     (int) mapComponent.getPreferredSize().getHeight(),
+                                                                     BufferedImage.TYPE_INT_ARGB);
+            Graphics2D                  mapImageGraphics = mapImage.createGraphics();
+            FileWriter			mapWriter;
+            
+            if (!imageFile.canWrite())
+            {
+                ErrorHandler.displayError("Could not write to image file. Maybe it's locked.", ErrorHandler.ERR_SAVE_FAIL);
+                return false;
+            }
+            
+            mapComponent.paint2d(mapImageGraphics);
+            
+            ImageIO.write(mapImage, "png", imageFile);            
             return true;
             
         } catch (Exception e) {
@@ -749,8 +816,13 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
     {
         int 		rotateAmount = e.getWheelRotation();
         
+        if (rotateAmount > 0) 
+            rotateAmount = -5;
+        else
+            rotateAmount = 5;
+        
         // Negative rotateAmount means up/away from user (zoom in), positive means down/towards user (zoom out)
-        adjustZoom(-rotateAmount * 5);
+        adjustZoom(rotateAmount, e.getPoint());
     }
     
     // ----------------------------

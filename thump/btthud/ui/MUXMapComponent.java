@@ -96,6 +96,11 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
     {
         return getPreferredSize();
     }
+    
+    public Dimension getPreferredSize()
+    {
+        return new Dimension(getTotalWidth(), getTotalHeight());
+    }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction)
     {
@@ -160,7 +165,7 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
         setupFonts();
         changeHeight(hexHeight);
         
-        repaint();
+        //repaint();
     }
 
     /**
@@ -328,6 +333,11 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
     public void paint(Graphics gfx)
     {
         Graphics2D          g = (Graphics2D) gfx;
+        paint2d(g);
+    }
+    
+    public void paint2d(Graphics2D g)
+    {
         AffineTransform     oldTrans = g.getTransform();
         
         g.addRenderingHints(rHints);
@@ -337,7 +347,6 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
         
         // Reset the transform
         g.setTransform(oldTrans);
-        
     }
 
     /**
@@ -349,8 +358,16 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
         Rectangle   clipRect = g.getClipBounds();
         Point       startCoord, endCoord;
         
-        startCoord = hexPoly.realToHex((int) clipRect.getX(), (int) clipRect.getY());
-        endCoord = hexPoly.realToHex((int) clipRect.getX() + (int) clipRect.getWidth(), (int) clipRect.getY() + (int) clipRect.getHeight());
+        if (clipRect == null)
+        {
+            startCoord = new Point(0, 0);
+            endCoord = new Point(map.getSizeX(), map.getSizeY());
+        }
+        else
+        {
+            startCoord = hexPoly.realToHex((int) clipRect.getX(), (int) clipRect.getY());
+            endCoord = hexPoly.realToHex((int) clipRect.getX() + (int) clipRect.getWidth(), (int) clipRect.getY() + (int) clipRect.getHeight());            
+        }
         
         // Make sure we get the edges of other hexes
         startCoord.setLocation(startCoord.getX() - 1, startCoord.getY() - 1);
@@ -617,6 +634,11 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
     public Rectangle2D rectForHex(Point h)
     {
         return hexPoly.hexToRect((int) h.getX(), (int) h.getY());
+    }
+    
+    public Point2D centerOfHex(int hX, int hY)
+    {
+        return hexPoly.hexToReal(hX, hY, HexShape.HEX_CENTER);
     }
     
     public void expandedRectForHex(Point h, Rectangle2D r)
