@@ -202,6 +202,22 @@ public class BulkStyledDocument extends DefaultStyledDocument
         }
     }
 
+    /**
+      * Deletes the entire content of the document.
+      *
+      */
+    public void clearDocument()
+    {
+        try {
+            remove(0, getLength());
+        } catch (Exception e) {
+            System.out.println("Error: clearDocument: " + e);
+        }
+    }
+
+    /**
+      * Clears the document and inserts a set of new strings
+      */
     public void clearAndInsertParsedString(ArrayList es)
     {
         try {            

@@ -473,9 +473,6 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         synchronized (data)
         {
-            // Paint our own unit first
-            paintUnit(g);
-
             // We could sort these by range, so closer units always stay on top... or something
             // But really, who cares
             while (contacts.hasNext())
@@ -495,7 +492,10 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                 // Draw box for contact ID
                 // last 3 bools: friend, expired, target -- should get from contact data
                 drawIDBox(g, unit, conPoint, false, false, null);
-            }            
+            }
+
+            // Paint our own unit first
+            paintUnit(g);
         }
         
         // Reset the transformation
@@ -652,6 +652,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                                                     data.getHexAbsoluteElevation(hexX + j, hexY + i)),
                                     null,
                                     null);
+                        
 
                         // Set our transform for the rest of the info
 
