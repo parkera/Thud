@@ -114,15 +114,17 @@ public class MUUnitInfo extends Object implements Comparable {
     static final int	S7 = 43;
     static final int	S8 = 44;
     static final int	T = 45;
+    static final int	FLL = 46;
+    static final int	FRL = 47;
 
     static final String	sectionNames[] = {
         "NO", "A", "AS", "C", "CT", "CTr", "E", "F", "FLLr", "FLS", "FLRr",
         "FRS", "FS", "H", "Hr", "LA", "LAr", "LL", "LLr", "LRW", "LS",
         "LT", "LTr", "LW", "N", "R", "RA", "RAr", "RL", "RLr", "RLS",
         "RRS", "RRW", "RS", "RT", "RTr", "RW", "S1", "S2", "S3", "S4",
-        "S5", "S6", "S7", "S8", "T"};
+        "S5", "S6", "S7", "S8", "T", "FLL", "FRL"};
 
-    static final int	TOTAL_SECTIONS = 46;
+    static final int	TOTAL_SECTIONS = 48;
 
     static final int	TYPE_UNKNOWN = 0;
     static final int	BIPED = 1;
@@ -799,7 +801,11 @@ public class MUUnitInfo extends Object implements Comparable {
             return S8;
         if (s == "T")
             return T;
-
+        if (s == "FLL")
+            return FLL;
+        if (s == "FRL")
+            return FRL;
+        
         // Default
         return NO_SECTION;
     }
