@@ -162,18 +162,23 @@ public class MUContactList extends JFrame
                             elements.add(new DefaultStyledDocument.ElementSpec(conRegular, DefaultStyledDocument.ElementSpec.EndTagType));
                             elements.add(new DefaultStyledDocument.ElementSpec(conRegular, DefaultStyledDocument.ElementSpec.StartTagType));
 
-                            MutableAttributeSet		whichAttrs;
+                            SimpleAttributeSet		whichAttrs = new SimpleAttributeSet(conRegular);
 
                             if (unit.isOld())
-                                whichAttrs = conExpired;
-                            else if (unit.isFriend())
-                                whichAttrs = conFriend;
-                            else if (!unit.isFriend() && !unit.isTarget())
-                                whichAttrs = conEnemy;
-                            else if (unit.isTarget())
-                                whichAttrs = conLocked;
-                            else
-                                whichAttrs = conRegular;
+                            {
+                                StyleConstants.setForeground(whichAttrs, Color.gray);
+                            }
+
+                            if (!unit.isFriend() && !unit.isTarget())
+                            {
+                                StyleConstants.setForeground(whichAttrs, Color.yellow);
+                                StyleConstants.setBold(whichAttrs, true);
+                            }
+
+                            if (unit.isTarget())
+                            {
+                                StyleConstants.setForeground(whichAttrs, Color.red);
+                            }
 
                             if (unit.isDestroyed())
                             {

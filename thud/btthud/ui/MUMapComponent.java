@@ -285,13 +285,13 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                     g.setColor(MUHex.colorForElevation(colorForTerrain(i), j, prefs.elevationColorMultiplier));
                 else
                     g.setColor(colorForTerrain(i));
-
+                
                 // Fill the hex
                 g.fill(hexPoly);
 
                 // Draw the line around the hex
                 g.setColor(Color.gray);
-                g.draw(hexPoly);
+                g.draw(hexPoly);                    
 
                 // Draw the elevation number (lower right corner)
                 if (prefs.tacShowTerrainElev && h >= 20)
