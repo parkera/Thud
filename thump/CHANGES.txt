@@ -1,3 +1,7 @@
+1.1 January 11, 2004
+Bug Fixes:
+ - Cursor aims properly on Windows now (it was too big previously)
+ 
 1.1b November 15, 2003
 New Features/Changes:
  - Selection now uses an easier-to-spot red-black dash instead of just a thick black line
