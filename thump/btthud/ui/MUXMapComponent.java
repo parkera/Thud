@@ -215,68 +215,73 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
         {
             for (int j = 0; j < 10; j++)
             {
-                BufferedImage	newImage = new BufferedImage(hexPoly.getBounds().width, hexPoly.getBounds().height, BufferedImage.TYPE_INT_ARGB);
-                
-                // Get the graphics context for this BufferedImage
-                Graphics2D		g = (Graphics2D) newImage.getGraphics();
-                
-                g.addRenderingHints(rHints);
-                
-                //g.setColor(alphaColor);
-                //g.fillRect(0, 0, hexPoly.getBounds().width, hexPoly.getBounds().height);
-                // Setup the color
-                if (prefs.tacDarkenElev)
-                    g.setColor(MUXHex.colorForElevation(colorForTerrain(i), j, prefs.elevationColorMultiplier));
-                else
-                    g.setColor(colorForTerrain(i));
-                
-                // Fill the hex
-                g.fill(hexPoly);
-                
-                // Draw the line around the hex
-                g.setColor(Color.gray);
-                g.draw(hexPoly);                    
-                
-                // Draw the elevation number (lower right corner)
-                if (prefs.tacShowTerrainElev && h >= 20)
-                {
-                    // Draw the elevation
-                    g.setColor(Color.black);
-                    g.setFont(elevFont);
-                    
-                    if (j != 0)			// We don't draw zero elevation numbers
-                    {
-                        String		hexElev = Integer.toString(j);
-                        int			width;
-                        
-                        if (j < 0 && Math.abs(j) <= 9)
-                            width = 2 * elevWidth[Math.abs(j)];
-                        else if (j > 0 && j <= 9)
-                            width = elevWidth[j];
-                        else
-                            width = elevWidth[0];
-                        
-                        g.drawString(hexElev,
-                                        (float) (hexPoly.getX(0) + w - width),
-                                        (float) (hexPoly.getY(0) + h - 2));
-                    }
-                }
-                
-                // Draw the terrain type (upper left corner)
-                if (prefs.tacShowTerrainChar && h >= 20)
-                {
-                    if (i != MUXHex.PLAIN)			// we don't draw plain types
-                    {
-                        g.setFont(terrainFont);
-                        g.drawString(String.valueOf(MUXHex.terrainForId(i)), (float) hexPoly.getX(0), (float) (hexPoly.getY(0) + h/2));
-                    }
-                }
-                
-                hexImages[i][j] = newImage;                
+                hexImages[i][j] = null;
             }
         }
     }
 
+    /**
+      * Pre-render one particular type of hex (one elevation, one terrain)
+      */
+    private void setupOneHex(int t, int e)
+    {
+        BufferedImage	newImage = new BufferedImage(hexPoly.getBounds().width, hexPoly.getBounds().height, BufferedImage.TYPE_INT_ARGB);
+        
+        // Get the graphics context for this BufferedImage
+        Graphics2D		g = (Graphics2D) newImage.getGraphics();
+        
+        g.addRenderingHints(rHints);
+        
+        if (prefs.tacDarkenElev)
+            g.setColor(MUXHex.colorForElevation(colorForTerrain(t), e, prefs.elevationColorMultiplier));
+        else
+            g.setColor(colorForTerrain(t));
+        
+        // Fill the hex
+        g.fill(hexPoly);
+        
+        // Draw the line around the hex
+        g.setColor(Color.gray);
+        g.draw(hexPoly);                    
+        
+        // Draw the elevation number (lower right corner)
+        if (prefs.tacShowTerrainElev && h >= 20)
+        {
+            // Draw the elevation
+            g.setColor(Color.black);
+            g.setFont(elevFont);
+            
+            if (e != 0)			// We don't draw zero elevation numbers
+            {
+                String		hexElev = Integer.toString(e);
+                int             width;
+                
+                if (e < 0 && Math.abs(e) <= 9)
+                    width = 2 * elevWidth[Math.abs(e)];
+                else if (e > 0 && e <= 9)
+                    width = elevWidth[e];
+                else
+                    width = elevWidth[0];
+                
+                g.drawString(hexElev,
+                             (float) (hexPoly.getX(0) + w - width),
+                             (float) (hexPoly.getY(0) + h - 2));
+            }
+        }
+        
+        // Draw the terrain type (upper left corner)
+        if (prefs.tacShowTerrainChar && h >= 20)
+        {
+            if (t != MUXHex.PLAIN)			// we don't draw plain types
+            {
+                g.setFont(terrainFont);
+                g.drawString(String.valueOf(MUXHex.terrainForId(t)), (float) hexPoly.getX(0), (float) (hexPoly.getY(0) + h/2));
+            }
+        }
+        
+        hexImages[t][e] = newImage;
+    }
+    
     /**
       * This function sets up the fonts, according to the sizes specified in the preferences. It should be called each time the font size
       * changes.
@@ -579,7 +584,10 @@ public class MUXMapComponent extends JComponent implements Scrollable, Printable
     
     protected BufferedImage imageForTerrain(int terrain, int elevation)
     {
-        return hexImages[terrain][elevation];
+        if (hexImages[terrain][elevation] == null)
+            setupOneHex(terrain, elevation);
+        
+        return hexImages[terrain][elevation];            
     }
 
     // ----------------------
