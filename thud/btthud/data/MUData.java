@@ -32,6 +32,7 @@ public class MUData {
     public static final int		MAX_Y = 1000;
     
     public boolean				hudRunning = false;
+    public boolean				mainWindowMuted = false;
     
     public MUMyInfo				myUnit = null;
 

@@ -44,6 +44,7 @@ public class Thud extends JFrame implements  ActionListener
     protected JMenuItem miSelectAll;
     protected JMenuItem miEraseCommand;
     protected JMenuItem miPreviousCommand;
+    protected JCheckBoxMenuItem	miMuteMainWindow;
 
     JMenu mapMenu;
     protected JMenuItem miZoomIn;
@@ -125,6 +126,7 @@ public class Thud extends JFrame implements  ActionListener
         miSelectAll.addActionListener(l);
         miEraseCommand.addActionListener(l);
         miPreviousCommand.addActionListener(l);
+        miMuteMainWindow.addActionListener(l);
 
         miZoomIn.addActionListener(l);
         miZoomOut.addActionListener(l);
@@ -500,6 +502,15 @@ public class Thud extends JFrame implements  ActionListener
         miEraseCommand = new JMenuItem("Erase Current Command");
         miEraseCommand.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.Event.CTRL_MASK));
         editMenu.add(miEraseCommand).setEnabled(true);
+
+        // ----
+        editMenu.addSeparator();
+
+        miMuteMainWindow = new JCheckBoxMenuItem("Mute Main Window Text");
+        miMuteMainWindow.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SEMICOLON,
+                                                               Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        editMenu.add(miMuteMainWindow).setEnabled(true);
+        miMuteMainWindow.setState(false);		// Main window is never muted on starting up
         
         mainMenuBar.add(editMenu);
     }
@@ -641,9 +652,9 @@ public class Thud extends JFrame implements  ActionListener
         if (buildNumber == null)
             buildNumber = "Unknown";
         
-        bsd.insertPlainString(" *** Thud, (c) 2001-2002 Anthony Parker <asp@mac.com> ***");
+        bsd.insertPlainString(" *** Thud, (c) 2001-2003 Anthony Parker <asp@mac.com> ***");
         bsd.insertPlainString(" *** bt-thud.sourceforge.net                          ***");
-        bsd.insertPlainString(" *** Version: 1.1.2 (beta)                            ***");
+        bsd.insertPlainString(" *** Version: 1.2                                     ***");
         bsd.insertPlainString(" *** Built: " + buildNumber + "              ***");
         bsd.insertPlainString(" *** Contact Tony @ 3030MUX with questions/comments   ***\n");
 
@@ -761,6 +772,7 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miClear.getActionCommand())) doClear();
         else if (newEvent.getActionCommand().equals(miPreviousCommand.getActionCommand())) doPreviousCommand();
         else if (newEvent.getActionCommand().equals(miEraseCommand.getActionCommand())) doEraseCommand();
+        else if (newEvent.getActionCommand().equals(miMuteMainWindow.getActionCommand())) doMuteMainWindow();
         else if (newEvent.getActionCommand().equals(miSelectAll.getActionCommand())) doSelectAll();
         else if (newEvent.getActionCommand().equals(miStartStop.getActionCommand())) doStartStop();
         else if (newEvent.getActionCommand().equals(miZoomIn.getActionCommand())) doZoom(5);
@@ -934,6 +946,19 @@ public class Thud extends JFrame implements  ActionListener
         textField.setText("");
     }
 
+    // -----------------------
+    // Mute the text in the main window
+    public void doMuteMainWindow()
+    {
+        data.mainWindowMuted = !data.mainWindowMuted;
+        miMuteMainWindow.setState(data.mainWindowMuted);
+
+        if (data.mainWindowMuted)
+            parse.messageLine("*** Main Window Text Output Muted ***");
+        else
+            parse.messageLine("*** Main Window Text Output Unmuted ***");
+    }
+    
     // -----------------------
     // Turn the HUD on/off
     public void doStartStop()

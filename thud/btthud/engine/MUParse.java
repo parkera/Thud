@@ -100,7 +100,7 @@ public class MUParse implements Runnable {
             matched = matchHudInfoCommand(l);
             matchForCommandSending(l);
             
-            if (!matched)
+            if (!matched && !data.mainWindowMuted)
             {
                 if (l.length() == 0)
                     doc.insertNewLine();
