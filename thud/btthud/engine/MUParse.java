@@ -129,7 +129,7 @@ public class MUParse implements Runnable {
                 if (l.length() == 0)
                     doc.insertNewLine();
                 
-                doc.parseAndInsertString(l);
+                doc.insertParsedString(doc.parseString(l));
                 textPane.setCaretPosition(doc.getLength());                
             }
         }
