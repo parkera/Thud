@@ -35,10 +35,12 @@ public class MUData {
     
     public MUMyInfo				myUnit = null;
 
-    protected MUHex				map[][] = null;
-
+    // The map
+    MUHex						map[][] = null;
+    boolean						terrainChanged = true;
+    
     // We store the contact data in a ArrayList, because we need to iterate over it efficiently
-    protected ArrayList			contacts = null;
+    ArrayList					contacts = null;
     
     public MUData()
     {
@@ -224,5 +226,21 @@ public class MUData {
         // Clear contacts and our unit, but leave the map alone
         contacts = new ArrayList(20);			// data for our contact list
         myUnit = new MUMyInfo();			// data that represents our own unit
+    }
+
+    /**
+      * Sets the map changed flag.
+      */
+    public void setTerrainChanged(boolean b)
+    {
+        terrainChanged = b;
+    }
+
+    /**
+      * Has the terrain changed?
+      */
+    public boolean terrainChanged()
+    {
+        return terrainChanged;
     }
 }

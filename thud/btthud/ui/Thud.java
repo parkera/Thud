@@ -459,13 +459,44 @@ public class Thud extends JFrame implements  ActionListener
 
     protected void setupNewTextFields()
     {
+        bsd = new BulkStyledDocument(prefs.mainFontSize);
+        
         textField = new JTextField(80);
         textField.addActionListener(this);
         textField.setFont(mFont);
         textField.setEnabled(true);
 
-        bsd = new BulkStyledDocument(prefs.mainFontSize);
+        /*
+        // Add listeners for PageUp, PageDown, Home, End
+        textField.getInputMap().put(KeyStroke.getKeyStroke(java.awt.Event.PGUP, 0), "PageUp");
+        textField.getActionMap().put("PageUp", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                textPane.setCaretPosition(textPane.getCaretPosition() - 100);
+            }
+        });
 
+        textField.getInputMap().put(KeyStroke.getKeyStroke(java.awt.Event.PGDN, 0), "PageDn");
+        textField.getActionMap().put("PageDn", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                textPane.setCaretPosition(textPane.getCaretPosition() + 100);
+            }
+        });
+
+        textField.getInputMap().put(KeyStroke.getKeyStroke(java.awt.Event.HOME, 0), "Home");
+        textField.getActionMap().put("Home", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                textPane.setCaretPosition(0);
+            }
+        });
+
+        textField.getInputMap().put(KeyStroke.getKeyStroke(java.awt.Event.END, 0), "End");
+        textField.getActionMap().put("End", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                textPane.setCaretPosition(bsd.getLength());
+            }
+        });
+         */
+        
         textPane = new JTextPane(bsd);
         textPane.setDocument(bsd);
         textPane.setBackground(Color.black);
@@ -826,7 +857,7 @@ public class Thud extends JFrame implements  ActionListener
         if (prefs.hexHeight > 300)
             prefs.hexHeight = 300;
         
-        tacMap.repaint();
+        tacMap.newPreferences(prefs);
     }
 
     // -----------------------
@@ -834,7 +865,7 @@ public class Thud extends JFrame implements  ActionListener
     public void doChangeXOffset(float mod)
     {
         prefs.xOffset += mod;
-        tacMap.repaint();
+        tacMap.newPreferences(prefs);
     }
 
     // -----------------------
@@ -842,7 +873,7 @@ public class Thud extends JFrame implements  ActionListener
     public void doChangeYOffset(float mod)
     {
         prefs.yOffset += mod;
-        tacMap.repaint();
+        tacMap.newPreferences(prefs);
     }
 
     // -----------------------
@@ -851,7 +882,7 @@ public class Thud extends JFrame implements  ActionListener
     {
         prefs.xOffset = 0f;
         prefs.yOffset = 0f;
-        tacMap.repaint();
+        tacMap.newPreferences(prefs);
     }
 
     // -----------------------

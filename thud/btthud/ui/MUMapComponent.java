@@ -37,7 +37,7 @@ import javax.swing.text.*;
 import java.lang.*;
 import java.util.*;
 
-public class MUMapComponent extends JComponent implements MouseListener
+public class MUMapComponent extends JComponent implements MouseListener, ComponentListener
 {
     MUData					data;
     MUPrefs					prefs;
@@ -52,10 +52,10 @@ public class MUMapComponent extends JComponent implements MouseListener
 
     FontRenderContext		frc;
     
-    private int				numAcross = 20;
-    private int				numDown = 20;
+    int						numAcross = 20;
+    int						numDown = 20;
 
-    private int				elevWidth[] = new int[10]; 	// Stores width of each elevation number glyph, 0 - 9
+    int						elevWidth[] = new int[10]; 	// Stores width of each elevation number glyph, 0 - 9
 
     static final int		UNKNOWN = 0;
     static final int		PLAIN = 1;
@@ -80,25 +80,28 @@ public class MUMapComponent extends JComponent implements MouseListener
     static final int		HEADING_TURRET = 3;
     
     // There should be the same number of items in this array as TOTAL_TERRAIN
-    private	char			terrainTypes[] = {'?', '.', '~', '`', '"', '^', '%', '@', '#', '&', '=', ':', '-', '+'};
-    private BufferedImage	hexImages[][] = new BufferedImage[TOTAL_TERRAIN][10];			// One for each hex type and elevation
+    char					terrainTypes[] = {'?', '.', '~', '`', '"', '^', '%', '@', '#', '&', '=', ':', '-', '+'};
+    BufferedImage			hexImages[][] = new BufferedImage[TOTAL_TERRAIN][10];			// One for each hex type and elevation
 
     GeneralPath				gp = new GeneralPath();
     HexShape				hexPoly;
 
-    private int					h = 40;
-    private float				w = h / 2f;
-    private static final float	tan30 = (float) Math.tan(toRadians(30.0d)); //0.5773502692f;
-    private float				l = h / 2f * tan30;
+    int						h = 40;
+    float					w = h / 2f;
+    static final float		tan30 = (float) Math.tan(toRadians(30.0d)); //0.5773502692f;
+    float					l = h / 2f * tan30;
 
-    private int					myLocX, myLocY;
+    int						myLocX, myLocY;
 
-    private int					barHeight = 15;
-    private int					heatBarMaxLength = 50;
+    int						barHeight = 15;
+    int						heatBarMaxLength = 50;
 
-    RenderingHints				rHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    RenderingHints			rHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-    Rectangle					bounds;
+    Rectangle				bounds;
+    BufferedImage			savedTerrain = null;
+    Point2D					savedTerrainCenter = new Point2D.Double(0,0);
+    Rectangle				savedTerrainBounds = new Rectangle(0, 0, 0, 0);
         
     public MUMapComponent(MUData data, MUPrefs prefs)
     {
@@ -112,6 +115,7 @@ public class MUMapComponent extends JComponent implements MouseListener
         setDoubleBuffered(true);
 
         addMouseListener(this);
+        addComponentListener(this);
         
         // Do some initial setup
         changeHeight(prefs.hexHeight);
@@ -132,7 +136,7 @@ public class MUMapComponent extends JComponent implements MouseListener
      */
     public void mouseClicked(MouseEvent e)
     {
-        getBounds(bounds);
+        //getBounds(bounds);
 
         // Check to see if the click is in our status bar...
         if (e.getY() > bounds.height - barHeight)
@@ -180,7 +184,53 @@ public class MUMapComponent extends JComponent implements MouseListener
     {
 
     }
+
+    // --------------
+    
+    public void componentHidden(ComponentEvent e)
+    {
+        
+    }
+
+    public void componentMoved(ComponentEvent e)
+    {
+
+    }
+
+    public void componentResized(ComponentEvent e)
+    {
+        bounds = getBounds();
+
+        newPreferences(prefs);
+    }
+
+    public void componentShown(ComponentEvent e)
+    {
+
+    }
+    
     /* ---------------------- */
+
+    /**
+      * Creates a new BufferedImage for the terrain.
+      */
+
+    protected void createNewSavedTerrain()
+    {
+        int		newWidth = (int) (bounds.width * 2);
+        int		newHeight = (int) (bounds.height * 2);
+
+        // We only need to allocate this massive thing when the bounds have actually changed
+        if (savedTerrainBounds.getWidth() != newWidth || savedTerrainBounds.getHeight() != newHeight)
+        {
+            savedTerrain = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+            savedTerrainBounds = new Rectangle(0, 0, newWidth, newHeight);            
+        }
+        
+        savedTerrainCenter = realForUnit(data.myUnit);
+
+        data.setTerrainChanged(true);
+    }
     
     /**
       * The purpose of this function is to take some CPU-intensive stuff that mostly stays the same and move it outside
@@ -206,8 +256,11 @@ public class MUMapComponent extends JComponent implements MouseListener
     public void newPreferences(MUPrefs prefs)
     {
         this.prefs = prefs;
+
         setupFonts();
         changeHeight(prefs.hexHeight);
+        createNewSavedTerrain();
+        
         repaint();
     }
     /**
@@ -322,20 +375,16 @@ public class MUMapComponent extends JComponent implements MouseListener
         // Why bother? We're going to draw over it in a minute anyway...
         //super.paint(gfx);
         // -----------
-
-        getBounds(bounds);
         
-        //Graphics2D			g = (Graphics2D) (gfx.create(0, 0, bounds.width, bounds.height));
+        getBounds(bounds);
+
+        if (savedTerrain == null)
+            createNewSavedTerrain();
+        
         Graphics2D			g = (Graphics2D) gfx;
         AffineTransform		oldTrans = g.getTransform();
 
         //g.addRenderingHints(rHints);
-        
-        // Now we go through and draw everything we need. 'Lower' items should be drawn first,
-        // ie hexes and terrain
-        
-        // We use the offsets and the total width and height of each hex to find out how many can fit on our
-        // window exactly
 
         if (prefs.hexHeight != h)
             changeHeight(prefs.hexHeight);
@@ -344,32 +393,32 @@ public class MUMapComponent extends JComponent implements MouseListener
         myLocY = data.myUnit.y;
         
         // First, let's do some initial setup on our tactical map area
-        g.setColor(Color.black);
+        g.setColor(Color.blue);
         g.fill(bounds);
 
         // How many hexes to draw?
-        numAcross = (int) ((bounds.width / (w + l)) + 3);
-        numDown = (int) ((bounds.height / h) + 3);
+        numAcross = (int) ((bounds.width / (w + l)) + 3) * 2;
+        numDown = (int) ((bounds.height / h) + 3) * 2;
 
         // ----
 
         synchronized (data)
         {
+            // Paint the terrain
+            paintTerrain(g);
+            
             // Set the transform that translates everything so as to make our own unit the center of the display
             if (prefs.xOffset != 0 || prefs.yOffset != 0)
             {
-                AffineTransform			xform = g.getTransform();
+                AffineTransform			xform = new AffineTransform(oldTrans);
                 xform.translate(-prefs.xOffset * (w + l), -prefs.yOffset * h);
-                g.setTransform(setupStandardTransform(xform));
+                g.setTransform(setupStandardTransform(xform, bounds));
             }
             else
             {
-                g.setTransform(setupStandardTransform(oldTrans));
+                g.setTransform(setupStandardTransform(oldTrans, bounds));
             }
             
-            // Paint the terrain
-            paintTerrain(g);
-
             // Paint other contacts on the map
             paintContacts(g);
 
@@ -382,13 +431,14 @@ public class MUMapComponent extends JComponent implements MouseListener
             // ----
 
             // Paint hex numbers
+            /* 
             if (h >= 20)
                 paintNumbers(g);
-
+             */
             // ----
             
             // Finally, draw our status bar at the bottom of the screen
-            paintStatusBar(g);            
+            paintStatusBar(g);
         }
         
         // Reset the transform
@@ -430,10 +480,6 @@ public class MUMapComponent extends JComponent implements MouseListener
         
         MUUnitInfo				unit;
         Point2D					conPoint = new Point2D.Float();
-
-        int						hexX = myLocX - (numAcross / 2);
-        int						hexY = myLocY - (numDown / 2);
-
         Iterator				contacts = data.getContactsIterator(false);		// we don't care if it's sorted here
         
         // We could sort these by range, so closer units always stay on top... or something
@@ -446,7 +492,7 @@ public class MUMapComponent extends JComponent implements MouseListener
             // Figure out where it is supposed to be drawn
             conPoint = realForUnit(unit);
 
-            // DRaw it
+            // Draw it
             drawHeading(g, conPoint, unit, HEADING_NORMAL);
             if (unit.isJumping())
                 drawHeading(g, conPoint, unit, HEADING_JUMP);
@@ -464,9 +510,97 @@ public class MUMapComponent extends JComponent implements MouseListener
     /**
      * Paint terrain for the hexes on the map. 
      * @param g The graphics context into which we are drawing.
+     * @param firstTrans The transform before all the transforms for drawing contacts, etc
      */
-    
     public void paintTerrain(Graphics2D g)
+    {
+        Graphics2D			g2 = savedTerrain.createGraphics();
+        AffineTransform		g2oldTrans = g2.getTransform();
+        AffineTransform		gOldTrans = g.getTransform();
+        AffineTransform		winTrans = new AffineTransform(gOldTrans);
+        Point2D				unitPos = realForUnit(data.myUnit);
+
+        // This code is all to detect if our display section is going to go outside our cached image
+        // If it is, we have to redraw the map
+        // Generally we have to draw more often the closer we are zoomed in... however, since zoomed in means less
+        // hexes to draw, the speed hit sort of takes care of itself.
+        int					halfWidth = (int) (bounds.getWidth() / 2);
+        int					halfHeight = (int) (bounds.getHeight() / 2);
+        boolean				redraw = false;
+        Point2D				testPt = new Point2D.Double();
+        testPt.setLocation(savedTerrainBounds.getWidth() / 2 + savedTerrainCenter.getX() - unitPos.getX(),
+                           savedTerrainBounds.getHeight() / 2 + savedTerrainCenter.getY() - unitPos.getY());
+
+        
+        if (testPt.getX() + halfWidth > savedTerrainBounds.getWidth())
+            redraw = true;
+        else if (testPt.getX() - halfWidth < savedTerrainBounds.getX())
+            redraw = true;
+        else if (testPt.getY() + halfHeight > savedTerrainBounds.getHeight())
+            redraw = true;
+        else if (testPt.getY() - halfHeight < savedTerrainBounds.getY())
+            redraw = true;
+
+        // Do we need to redraw our image?
+        if (data.terrainChanged() || redraw)
+        {
+            // Clear out the picture
+            g2.setColor(Color.black);
+            g2.fill(savedTerrainBounds);
+            
+            // Set a transform
+            if (prefs.xOffset != 0 || prefs.yOffset != 0)
+            {
+                AffineTransform			xform = new AffineTransform(g2oldTrans);
+                xform.translate(-prefs.xOffset * (w + l), -prefs.yOffset * h);
+                g2.setTransform(setupStandardTransform(xform, savedTerrainBounds));
+            }
+            else
+            {
+                g2.setTransform(setupStandardTransform(g2oldTrans, savedTerrainBounds));
+            }
+
+            // Paint the terrain
+            paintTerrainGraphics(g2);
+
+            // Note the center of this picture
+            savedTerrainCenter = realForUnit(data.myUnit);
+
+            // Clear the changed flag
+            data.setTerrainChanged(false);
+
+            // Reset the transform
+            g2.setTransform(g2oldTrans);
+
+            /*
+            g2.setColor(Color.red);
+            for (int i = 1; i < 5; i++)
+            {
+                g2.drawRect(0, 0, (int) bounds.getWidth() / i - 1, (int) bounds.getHeight() / i - 1);
+            }
+            g2.setColor(Color.blue);
+            g2.drawLine(0, 0, (int) savedTerrainBounds.getWidth(), (int) savedTerrainBounds.getHeight());
+            g2.drawLine((int) savedTerrainBounds.getWidth(), 0, 0, (int) savedTerrainBounds.getHeight());
+             */
+        }
+
+        // Translate the corner of our window to the center of our window
+        winTrans.translate(bounds.getWidth() / 2, bounds.getHeight() / 2);
+        // Translate the corner of our window to the center of the savedTerrain
+        winTrans.translate(-savedTerrainBounds.getWidth() / 2, -savedTerrainBounds.getHeight() / 2);
+        // Translate the difference between where we are now and where we were when the image was drawn
+        winTrans.translate(savedTerrainCenter.getX() - unitPos.getX(), savedTerrainCenter.getY() - unitPos.getY());
+
+        g.setTransform(winTrans);
+        g.drawImage(savedTerrain, null, null);
+        g.setTransform(gOldTrans);
+    }
+
+    /**
+      * Do the dirty work of drawing terrain into a graphics object.
+      * @param g The graphics context into which we are drawing.
+      */
+    public void paintTerrainGraphics(Graphics2D g)
     {
         /*
          
@@ -616,19 +750,15 @@ public class MUMapComponent extends JComponent implements MouseListener
       * Setup the transformation that recenters tactical, contacts, and our own unit in the main window.
       * @param base The current transform that we want to modify
       */
-    protected AffineTransform setupStandardTransform(AffineTransform base)
+    protected AffineTransform setupStandardTransform(AffineTransform base, Rectangle whichBounds)
     {
         AffineTransform			newTrans = new AffineTransform(base);
-        
-        int						hexX = myLocX - (numAcross / 2);
-        int						hexY = myLocY - (numDown / 2);
-
         Point2D					unitDraw = realForUnit(data.myUnit);
 	
         // Do some translation magic so that our unit is always in the exact center of the screen
         // Translate our own unit to (0,0), then translate out to the middle of the window
-        newTrans.translate(-unitDraw.getX() + bounds.width/2,
-                           -unitDraw.getY() + bounds.height/2);
+        newTrans.translate(-unitDraw.getX() + whichBounds.width/2,
+                           -unitDraw.getY() + whichBounds.height/2);
 
         return newTrans;
     }
@@ -667,26 +797,26 @@ public class MUMapComponent extends JComponent implements MouseListener
         
         if (btc >= 0 && btc <= 90)
         {
-            fcOffsetX =  (rtc * (h) * Math.sin(toRadians(btc)));
-            fcOffsetY = -(rtc * (h) * Math.cos(toRadians(btc)));
+            fcOffsetX =  (rtc * h * Math.sin(toRadians(btc)));
+            fcOffsetY = -(rtc * h * Math.cos(toRadians(btc)));
         }
         else if (btc >= 91 && btc <= 180)
         {
             btc -= 90;
-            fcOffsetX =  (rtc * (h) * Math.cos(toRadians(btc)));
-            fcOffsetY =  (rtc * (h) * Math.sin(toRadians(btc)));
+            fcOffsetX =  (rtc * h * Math.cos(toRadians(btc)));
+            fcOffsetY =  (rtc * h * Math.sin(toRadians(btc)));
         }
         else if (btc >= 181 && btc <= 270)
         {
             btc -= 180;
-            fcOffsetX = -(rtc * (h) * Math.sin(toRadians(btc)));
-            fcOffsetY =  (rtc * (h) * Math.cos(toRadians(btc)));
+            fcOffsetX = -(rtc * h * Math.sin(toRadians(btc)));
+            fcOffsetY =  (rtc * h * Math.cos(toRadians(btc)));
         }
         else if (btc >= 271 && btc <= 359)
         {
             btc -= 270;
-            fcOffsetX = -(rtc * (h) * Math.cos(toRadians(btc)));
-            fcOffsetY = -(rtc * (h) * Math.sin(toRadians(btc)));
+            fcOffsetX = -(rtc * h * Math.cos(toRadians(btc)));
+            fcOffsetY = -(rtc * h * Math.sin(toRadians(btc)));
         }
         
         return new Point2D.Double(fcOffsetX, fcOffsetY);
@@ -782,27 +912,30 @@ public class MUMapComponent extends JComponent implements MouseListener
     public void paintNumbers(Graphics2D g)
     {
         AffineTransform			oldTrans = g.getTransform();
+        AffineTransform			winTrans;
         AffineTransform			trans = new AffineTransform();
-
-        int						hexX = myLocX - (numAcross / 2);
-        int						hexY = myLocY - (numDown / 2);
-
+        
         Point2D					offset = offsetsForCentering(data.myUnit.bearingToCenter, data.myUnit.rangeToCenter);
         Rectangle				barRect;
-
+        Rectangle2D 			stringRect;
+        Point2D					realHex;
+        Point2D					unitPos = realForUnit(data.myUnit);
+        
+        int						startX = myLocX - (numAcross / 2);
+        int						startY = myLocY - (numDown / 2);
+        
         // Account for shifted view
-        hexX += prefs.xOffset;
-        hexY += prefs.yOffset;
+        startX += prefs.xOffset;
+        startY += prefs.yOffset;
+
+        int						endX = startX + numAcross;
+        int						endY = startY + numDown;
         
         if (data.myUnit.x % 2 == 0)
             offset.setLocation(offset.getX(), offset.getY() + h/2);
-
+        
         // Set the proper font
         g.setFont(hexNumberFont);
-
-        // Should be doing something like this with the max number we're drawing right now
-        // To get the right height black bar
-        // Rectangle2D 		stringRect = infoFont.getStringBounds(textString, frc);
         
         // Bar along side
         barRect = new Rectangle(0, 0, barHeight, bounds.height - barHeight);
@@ -810,28 +943,55 @@ public class MUMapComponent extends JComponent implements MouseListener
         g.fill(barRect);
         g.setColor(Color.lightGray);
         g.drawLine(barRect.width, 0, barRect.width, barRect.height);
-        
+
+        // Set the proper window transform
+        winTrans = new AffineTransform(oldTrans);
+        winTrans.translate(0, -unitPos.getY());
+        g.setTransform(winTrans);
+                           
+        // Numbers along the side
+        for (int i = startY; i <= endY; i++)
+        {
+            if (i % 2 == 0)
+                g.setColor(Color.white);
+            else
+                g.setColor(Color.lightGray);
+
+            trans.setTransform(winTrans);
+            realHex = hexPoly.hexToReal(0, i, false);
+            trans.translate(-realHex.getX() + 4, realHex.getY() - offset.getY());
+            //trans.rotate(PI / 2);
+            g.setTransform(trans);
+            g.drawString(Integer.toString(i), 0, 0);
+        }
+
+        /*
         // Numbers along the side
         for (int i = 1; i < numDown; i++)
         {
             if (hexY + i >= 0)
             {
+                int			normY = 0;
                 if ((hexY + i) % 2 == 0)
                     g.setColor(Color.white);
                 else
                     g.setColor(Color.lightGray);
                 
                 trans.setTransform(oldTrans);
-                trans.translate(4, (i * h) - h - (offset.getY()));
+                realHex = hexPoly.hexToReal(0, i, true);
+                normY = i * h;
+                trans.translate(-realHex.getX() + 4, realHex.getY() - offset.getY());
                 trans.rotate(PI / 2);
                 g.setTransform(trans);
 
                 g.drawString(Integer.toString(hexY + i), 0, 0);
             }
         }
-
+        */
+        
         // Reset transform
         g.setTransform(oldTrans);
+
         
         // Bar along top
         barRect = new Rectangle(0, 0, bounds.width, barHeight);
@@ -839,7 +999,27 @@ public class MUMapComponent extends JComponent implements MouseListener
         g.fill(barRect);
         g.setColor(Color.lightGray);
         g.drawLine(barRect.x, barRect.height, barRect.width, barRect.height);
-        
+
+        // Set the proper window transform
+        winTrans = new AffineTransform(oldTrans);
+        winTrans.translate(-unitPos.getX(), 0);
+        g.setTransform(winTrans);
+
+        // Numbers along the top
+        for (int i = startX; i <= endX; i++)
+        {
+            if (i % 2 == 0)
+                g.setColor(Color.white);
+            else
+                g.setColor(Color.lightGray);
+
+            trans.setTransform(winTrans);
+            realHex = hexPoly.hexToReal(i, 0, false);
+            trans.translate(realHex.getX() - offset.getX(), -realHex.getY() + 10);
+            g.setTransform(trans);
+            g.drawString(Integer.toString(i), 0, 0);
+        }
+        /*
         // Numbers across the top
         for (int i = 1; i < numAcross; i++)
         {
@@ -851,13 +1031,13 @@ public class MUMapComponent extends JComponent implements MouseListener
                     g.setColor(Color.lightGray);
 
                 trans.setTransform(oldTrans);
-                trans.translate((i * (w + l) - 2*w) - offset.getX(), 10);
+                trans.translate((i * (w + l)) - offset.getX(), 10);
                 g.setTransform(trans);
 
                 g.drawString(Integer.toString(hexX + i), 0, 0);
             }
         }
-        
+         */
         g.setTransform(oldTrans);
     }
 

@@ -72,7 +72,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
     public ArrayList parseString(String l)
     {        
         StringBuffer				thisStr = new StringBuffer();
-        int							numChars = l.length();
+        int							numChars;
         int							i = 0;
         int							start = 0;
         int							parsePos = 0;
@@ -80,6 +80,11 @@ public class BulkStyledDocument extends DefaultStyledDocument
 
         ArrayList					elements = new ArrayList();	// we could specify an initial capacity here
 
+        if (l == null)
+            return elements;
+
+        numChars = l.length();
+        
         // The document is structured like a tree. There is a root element, which has as its branches
         // each line of the document. Each line of the document has leaf nodes which represent each of the types
         // that are in that lines text.

@@ -108,7 +108,9 @@ public class MUParse implements Runnable {
     public void queueLine(String l)
     {
         // Add it to the end of the list, so strings come in order
-        queue.addLast(l);
+        synchronized (queue) {
+            queue.addLast(l);
+        }
     }
     
     /**
@@ -118,23 +120,26 @@ public class MUParse implements Runnable {
     protected void parseLine(String l)
     {
         // Don't output if we get a match
-        boolean							matched = false;
+        boolean		matched = false;
+        
+        ArrayList	es = doc.parseString(l);
 
-        if (l.length() == 0)
-            doc.insertNewLine();
+        if (l == null)
+            return;
         
         try
         {
-            ArrayList		es = doc.parseString(l);
-
             matched = matchHudInfoCommand(l);
             matchForCommandSending(l);
             
             if (!matched)
             {
+                if (l.length() == 0)
+                    doc.insertNewLine();
+                
                 doc.insertParsedString(es);
-                // Move the cursor to where it belongs
-                textPane.setCaretPosition(doc.getLength());
+
+                textPane.setCaretPosition(doc.getLength());                
             }
         }
         catch (Exception e)
@@ -571,12 +576,12 @@ public class MUParse implements Runnable {
     }
 
     /**
-        * Parse a string which represents tactical information. (TD = tactical done)
-     * @param l A single line of the tactical info.
-     */
+      * Parse a string which represents tactical information. (TD = tactical done)
+      * @param l A single line of the tactical info.
+      */
     public void parseHudInfoTD(String l)
     {
-        // Not much to do here
+        data.setTerrainChanged(true);
     }
     
     /**
@@ -748,12 +753,20 @@ public class MUParse implements Runnable {
     {
         while (go)
         {
-            if (queue.size() != 0)
+            String			l = null;
+            
+            synchronized (queue)
             {
-                // Parse our line, then remove it from the queue
-                parseLine((String) queue.getFirst());
-                queue.removeFirst();
+                if (queue.size() != 0)
+                {
+                    // Parse our line, then remove it from the queue
+                    l = (String) queue.getFirst();
+                    queue.removeFirst();
+                }
             }
+
+            if (l != null)
+                parseLine(l);
         }
     }
 
