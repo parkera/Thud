@@ -53,7 +53,7 @@ public class MUCommandsTask extends TimerTask {
                     data.lastDataTime = System.currentTimeMillis();
                 }
 
-                System.out.println("-> Lag: " + (System.currentTimeMillis() - data.lastDataTime));
+                // System.out.println("-> Lag: " + (System.currentTimeMillis() - data.lastDataTime));
             }
             else
             {
