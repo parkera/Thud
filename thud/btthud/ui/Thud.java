@@ -476,8 +476,6 @@ public class Thud extends JFrame implements  ActionListener
         bsd.insertPlainString(" *** Version: 1.0b6 (Beta)                            ***");
         bsd.insertPlainString(" *** Contact Tony @ 3030MUX with questions/comments   ***\n");
         setVisible(true);
-
-        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
     }
     
     // -----------------

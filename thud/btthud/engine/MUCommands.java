@@ -53,7 +53,6 @@ public class MUCommands
     
     public void startTimers()
     {
-        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         sendCommands = true;
         
         // Send some initial commands

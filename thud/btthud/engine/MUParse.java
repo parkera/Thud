@@ -111,7 +111,6 @@ public class MUParse {
             if (!matched)
             {
                 doc.insertParsedString(es);
-                doc.insertNewLine();			// Not sure why, but we need an extra \n in here
                 // Move the cursor to where it belongs
                 textPane.setCaretPosition(doc.getLength());
             }
@@ -282,6 +281,8 @@ public class MUParse {
                     parseHudInfoTS(restOfCommand);
                 else if (subCommand.equals("L#"))
                     parseHudInfoTL(restOfCommand);
+                else if (subCommand.equals("D#"))
+                    parseHudInfoTD(restOfCommand);
             }
             else if (whichCommand.equals("SGI"))	// static general information
                 parseHudInfoSGI(restOfCommand);
@@ -544,6 +545,16 @@ public class MUParse {
         tacEY = Integer.parseInt(st.nextToken());
     }
 
+    /**
+        * Parse a string which represents tactical information. (TD = tactical done)
+     * @param l A single line of the tactical info.
+     */
+    public void parseHudInfoTD(String l)
+    {
+        // Just need to notify our data object that some map data has changed
+        data.setMapChanged(true);
+    }
+    
     /**
      * Parse a string which represents armor status.
      * @param l A single line of the armor status.
