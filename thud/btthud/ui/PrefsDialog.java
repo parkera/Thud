@@ -109,7 +109,7 @@ public class PrefsDialog extends javax.swing.JDialog {
         });
         GeneralOptionsTab.add(echoCheckBox);
 
-        highlightMyHexCheckBox = new javax.swing.JCheckBox("Highlight My Hex", null, prefs.echoCommands);
+        highlightMyHexCheckBox = new javax.swing.JCheckBox("Highlight My Hex", null, prefs.highlightMyHex);
         highlightMyHexCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 highlightMyHexCheckBoxActionPerformed(evt);
