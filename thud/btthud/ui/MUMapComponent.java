@@ -81,7 +81,7 @@ public class MUMapComponent extends JComponent implements MouseListener
     GeneralPath				gp = new GeneralPath();
     HexShape				hexPoly;
 
-    private int					h = 0;
+    private int					h = 40;
     private float				w = h / 2f;
     private static final float	tan30 = (float) Math.tan(toRadians(30.0d)); //0.5773502692f;
     private float				l = h / 2f * tan30;
@@ -212,7 +212,11 @@ public class MUMapComponent extends JComponent implements MouseListener
     private void changeHeight(int newHeight)
     {
         // Set some variables
-        h = newHeight;
+        if (newHeight < 5)
+            h = 5;
+        else
+            h = newHeight;
+        
         w = h / 2f;
         l = h / 2f * tan30;
 
