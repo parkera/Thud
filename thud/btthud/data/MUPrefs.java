@@ -161,11 +161,11 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         maxScrollbackSize = 2000;
         
         MUHost bt3030 = new MUHost("btech.dhs.org", 3030);
-        //MUHost bt3049 = new MUHost("btech.no-ip.com", 3049);
+        MUHost bt3049 = new MUHost("btech.no-ip.com", 3049);
         MUHost bt3029 = new MUHost("exile.betterbox.net", 3029);
 
         hosts.add(bt3030);
-        //hosts.add(bt3049);
+        hosts.add(bt3049);
         hosts.add(bt3029);
     }
 
