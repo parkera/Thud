@@ -720,8 +720,8 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miEraseCommand.getActionCommand())) doEraseCommand();
         else if (newEvent.getActionCommand().equals(miSelectAll.getActionCommand())) doSelectAll();
         else if (newEvent.getActionCommand().equals(miStartStop.getActionCommand())) doStartStop();
-        else if (newEvent.getActionCommand().equals(miZoomIn.getActionCommand())) doZoom(5);
-        else if (newEvent.getActionCommand().equals(miZoomOut.getActionCommand())) doZoom(-5);
+        else if (newEvent.getActionCommand().equals(miZoomIn.getActionCommand())) doZoom(6);
+        else if (newEvent.getActionCommand().equals(miZoomOut.getActionCommand())) doZoom(-6);
         else if (newEvent.getActionCommand().equals(miMakeArcsWeaponRange.getActionCommand())) doMakeArcsWeaponRange();
         else if (newEvent.getActionCommand().equals(miArcRetract.getActionCommand())) doChangeArc(-1);
         else if (newEvent.getActionCommand().equals(miArcExtend.getActionCommand())) doChangeArc(1);
@@ -932,9 +932,10 @@ public class Thud extends JFrame implements  ActionListener
     // Set the zoom level on the map
     public void doZoom(int z)
     {
+        // Let's try to keep the hex height even, since there are a lot of places that divide it by 2 - and it's an int
         prefs.hexHeight += z;
-        if (prefs.hexHeight < 5)
-            prefs.hexHeight = 5;
+        if (prefs.hexHeight < 6)
+            prefs.hexHeight = 6;
         if (prefs.hexHeight > 300)
             prefs.hexHeight = 300;
         

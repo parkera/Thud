@@ -68,9 +68,9 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     HexShape				hexPoly;
 
     int						h = 40;
-    float					w = h / 2f;
-    static final float		tan30 = (float) Math.tan(toRadians(30.0d)); //0.5773502692f;
-    float					l = h / 2f * tan30;
+    double					w = h / 2f;
+    static final double		tan30 = Math.tan(toRadians(30.0d)); //0.5773502692;
+    double					l = h / 2d * tan30;
 
     int						myLocX, myLocY;
 
@@ -322,7 +322,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                     if (i != MUHex.PLAIN)			// we don't draw plain types
                     {
                         g.setFont(terrainFont);
-                        g.drawString(String.valueOf(MUHex.terrainForId(i)), hexPoly.getX(0), hexPoly.getY(0) + h/2);
+                        g.drawString(String.valueOf(MUHex.terrainForId(i)), (float) hexPoly.getX(0), (float) (hexPoly.getY(0) + h/2));
                     }
                 }
                 
@@ -382,6 +382,13 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         numAcross = (int) ((bounds.width / (w + l)) + 3) * 2;
         numDown = (int) ((bounds.height / h) + 3) * 2;
 
+        // Keep numAcross and numDown even
+        if (numAcross % 2 != 0)
+            numAcross++;
+
+        if (numDown % 2 != 0)
+            numDown++;
+        
         // ----
 
         synchronized (data)
@@ -611,12 +618,11 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         
         AffineTransform			oldTrans = g.getTransform();
-        AffineTransform			baseTrans; // = g.getTransform();
 
         int						hexX = myLocX - (numAcross / 2);
         int						hexY = myLocY - (numDown / 2);
 
-        Point2D					realHex = new Point2D.Float();
+        Point2D					realHex = new Point2D.Double();
 
         // Account for offset views by moving the view over
         hexX += prefs.xOffset;
@@ -662,11 +668,12 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                             AffineTransform			baseTrans2 = g.getTransform();
                             String					hexString = (hexX + j) + "," + (hexY + i);
                             baseTrans2.rotate(-PI / 2, hexPoly.getX(2), hexPoly.getY(2));
-                            g.setColor(new Color((float) 0.0, (float) 0.0, (float) 0.0, (float) 0.25));
+                            g.setColor(new Color(0.0f, 0.0f, 0.0f, 0.25f));
                             g.setFont(hexNumberFont);
                             g.setTransform(baseTrans2);
-                            g.drawString(hexString, hexPoly.getX(2) + 2,
-                                         hexPoly.getY(2) + (hexNumberFont.getLineMetrics(hexString, frc)).getAscent());
+                            g.drawString(hexString,
+                                         (float) (hexPoly.getX(2) + 2),
+                                         (float) (hexPoly.getY(2) + (hexNumberFont.getLineMetrics(hexString, frc)).getAscent()));
                             g.setTransform(beforeNumberRot);
                         }
                         
@@ -1005,9 +1012,9 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                 if (!unit.isDestroyed())
                 {
                     if (unit.isFriend())
-                        g.setColor(new Color((float) 1.0, (float) 1.0, (float) 1.0, (float) 0.5));
+                        g.setColor(new Color(1.0f, 1.0f, 1.0f, 0.5f));
                     else
-                        g.setColor(new Color((float) 0.0, (float) 0.0, (float) 0.0, (float) 0.5));
+                        g.setColor(new Color(0.0f, 0.0f, 0.0f, 0.5f));
 
                     g.fill(backingBox);
                     g.setColor(Color.black);
@@ -1107,7 +1114,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                     g.setTransform(arcXform);
 
                     // This is our own unit. Let's draw the helper 'arcs'
-                    float	r = prefs.arcIndicatorRange * h;			// r = radius
+                    double	r = prefs.arcIndicatorRange * h;			// r = radius
 
                     Arc2D	frontArc = new Arc2D.Double();
                     Arc2D	leftArc = new Arc2D.Double();
@@ -1178,7 +1185,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         AffineTransform		trans = new AffineTransform();
         AffineTransform		oldTrans = g.getTransform();
 
-        float				speedDivisor = 10.75f * prefs.speedIndicatorLength;			// 32.25 = 3 MP, 10.75 = 1 MP
+        double				speedDivisor = 10.75f * prefs.speedIndicatorLength;			// 32.25 = 3 MP, 10.75 = 1 MP
         int					lineLength = h / (int) speedDivisor;
 
         int					whichHeading;
@@ -1210,7 +1217,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         else
             return;			// No heading, or done, or something
             
-        headingRad = ((float) whichHeading / 180) * PI + PI;
+        headingRad = ((double) whichHeading / 180) * PI + PI;
         lineLength = (int) (h * ((u.speed == 0 ? speedDivisor : u.speed) / speedDivisor));
         
         // Set up our transformation
@@ -1242,7 +1249,6 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         // Perhaps keep a counter of where the next 'item' should be placed, and add to it the length of whatever we just drew plus some spacing
         
         AffineTransform			oldTrans = g.getTransform();
-        AffineTransform			baseTrans = g.getTransform();
         Rectangle				barRect = new Rectangle(0, bounds.height - barHeight, bounds.width, barHeight);
         String					tempString;
         Rectangle2D				tempRect;

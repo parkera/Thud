@@ -17,32 +17,32 @@ import java.awt.image.*;
 
 public class HexShape implements Shape {
 
-    float		x[] = {0f, 0f, 0f, 0f, 0f, 0f};
-    float		y[] = {0f, 0f, 0f, 0f, 0f, 0f};
+    double		x[] = {0d, 0d, 0d, 0d, 0d, 0d};
+    double		y[] = {0d, 0d, 0d, 0d, 0d, 0d};
 
-    float		h;
-    float		tan30 = (float) (Math.tan(MUMapComponent.toRadians(30.0f)));
-    float		w;
-    float		l;
+    double		h;
+    double		tan30 = Math.tan(MUMapComponent.toRadians(30.0d));
+    double		w;
+    double		l;
 
     GeneralPath	gp;
 
     public HexShape(float h)
     {
         this.h = h;
-        w = h / 2f;
-        l = h / 2f * tan30;
+        w = h / 2d;
+        l = h / 2d * tan30;
 
         gp = new GeneralPath(GeneralPath.WIND_NON_ZERO, 6);
 
         // Figure out the proper coordinates
         // top left
         x[0] = l;
-        y[0] = 0f;
+        y[0] = 0d;
         
         // leftmost side
-        x[1] = 0f;
-        y[1] = h / 2f;
+        x[1] = 0d;
+        y[1] = h / 2d;
 
         // bottom left
         x[2] = l;
@@ -53,20 +53,20 @@ public class HexShape implements Shape {
         y[3] = h;
 
         // rightmost side
-        x[4] = w + (2f * l);
-        y[4] = h / 2f;
+        x[4] = w + (2d * l);
+        y[4] = h / 2d;
 
         // top right
         x[5] = w + l;
-        y[5] = 0f;
+        y[5] = 0d;
 
-        gp.moveTo(x[0], y[0]);
+        gp.moveTo((float) x[0], (float) y[0]);
         for (int i = 1; i < 6; i++)
-            gp.lineTo(x[i], y[i]);
-        gp.lineTo(x[0], y[0]);
+            gp.lineTo((float) x[i], (float) y[i]);
+        gp.lineTo((float) x[0], (float) y[0]);
     }
 
-    public float getX(int i)
+    public double getX(int i)
     {
         if (i < 0 || i > 5)
             return 0;
@@ -74,7 +74,7 @@ public class HexShape implements Shape {
             return x[i];
     }
 
-    public float getY(int i)
+    public double getY(int i)
     {
         if (i < 0 || i > 5)
             return 0;
@@ -156,21 +156,21 @@ public class HexShape implements Shape {
      */
     public Point2D hexToReal(int x, int y, boolean center)
     {
-        float		xoffset, yoffset;
+        double		xoffset, yoffset;
 
-        xoffset = l + ((float)x * (w + l));			// initial offset of l, then add (w + l) * desired_x_coord...
-        yoffset = ((float)y * h);
+        xoffset = l + ((double)x * (w + l));			// initial offset of l, then add (w + l) * desired_x_coord...
+        yoffset = ((double)y * h);
 
         if (x % 2 == 0)
-            yoffset += (h / 2.0f);
+            yoffset += (h / 2.0d);
         
         if (center)
         {
-            xoffset += w / 2.0f;
-            yoffset += h / 2.0f;
+            xoffset += w / 2.0d;
+            yoffset += h / 2.0d;
         }
 
-        return (new Point2D.Float((int) xoffset, (int) yoffset));
+        return (new Point2D.Double(xoffset, yoffset));
     }
 
     // For saving memory - use this method and pass in a Point instead of creating a new one
@@ -178,19 +178,19 @@ public class HexShape implements Shape {
     {
         double		xoffset, yoffset;
 
-        xoffset = l + ((float)x * (w + l));			// initial offset of l, then add (w + l) * desired_x_coord...
-        yoffset = ((float)y * h);
+        xoffset = l + ((double)x * (w + l));			// initial offset of l, then add (w + l) * desired_x_coord...
+        yoffset = ((double)y * h);
 
         if (x % 2 == 0)
-            yoffset += (h / 2.0f);
+            yoffset += (h / 2.0d);
 
         if (center)
         {
-            xoffset += w / 2.0f;
-            yoffset += h / 2.0f;
+            xoffset += w / 2.0d;
+            yoffset += h / 2.0d;
         }
 
-        pt.setLocation((int) xoffset, (int) yoffset);
+        pt.setLocation(xoffset, yoffset);
     }
 
     // ----------------
