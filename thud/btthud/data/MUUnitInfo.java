@@ -55,9 +55,11 @@ public class MUUnitInfo extends Object implements Comparable {
     public boolean		jumping = false;
     
     public boolean		primarySensor = false, secondarySensor = false;
-    
-    int					expired = 5;
-    static final int	oldThreshold = 3;
+
+    // After 'expired - oldThreshold' cycles they will turn grey
+    // After 'expired' cycles, they will disappear from the contacts screen
+    int					expired = 10;
+    static final int	oldThreshold = 6;
 
     static public MUWeapon		weapons[] = new MUWeapon[200];		// data that stores info on /all/ weapons ... assume 200 of them for now
     
