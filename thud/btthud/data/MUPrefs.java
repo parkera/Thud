@@ -43,6 +43,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public int					arcIndicatorRange;
     public boolean				tacShowArcs;
     public boolean				tacShowCliffs;
+    public boolean 				tacShowIndicators;
     public int					cliffDiff;
     
     public Color				backgroundColor;
@@ -110,6 +111,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         tacShowUnitNames = true;
         tacDarkenElev = true;
         tacShowCliffs = false;
+        tacShowIndicators = false;      // Floating Heat/Armor/Internal bar on tactical map
         highlightMyHex = false;
         cliffDiff = 2;
 

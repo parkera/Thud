@@ -83,6 +83,8 @@ public class MUCommands
                         conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight);
                     else
                         cancel();
+
+                    yield();
                 }
                 catch (Exception e) {
                     System.out.println("Error: send hudinfo t: " + e);

@@ -151,6 +151,30 @@ public class MUUnitInfo extends Object implements Comparable {
                 " Friend:" + String.valueOf(friend));
     }
 
+    public boolean isMech()
+    {
+        if (type.equals("B") || type.equals("Q"))
+            return true;
+        else
+            return false;
+    }
+
+    public boolean isAero()
+    {
+        if (type.equals("F"))
+            return true;
+        else
+            return false;
+    }
+
+    public boolean hasHeat()
+    {
+        if (isMech() || isAero())
+            return true;
+        else
+            return false;
+    }
+
     public boolean isExpired()
     {
         if (expired <= 0)

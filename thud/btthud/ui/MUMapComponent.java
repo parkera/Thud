@@ -939,6 +939,55 @@ public class MUMapComponent extends JComponent implements MouseListener
             }
             else
             {
+                // Floating Indicators
+                if (prefs.tacShowIndicators)
+                {
+                    int indOffset = h;
+                    // Heat indicator
+                    if (unit.hasHeat())
+                    {
+                        int heatLength = data.myUnit.heat / 10;
+                        if (heatLength > 50)
+                            heatLength = 50;
+
+                        Rectangle heatRect = new Rectangle(-(heatBarMaxLength - h/2)/2, indOffset, heatLength, 8);
+
+                        if (data.myUnit.heat - data.myUnit.heatDissipation >= 200)
+                            g.setColor(Color.red);
+                        //g.setColor(new Color(255, 0, 0, 30));
+                        else if (data.myUnit.heat - data.myUnit.heatDissipation >= 140)
+                            g.setColor(Color.yellow);
+                        else
+                            g.setColor(Color.green);
+
+                        g.fill(heatRect);
+                        g.setColor(Color.black);
+                        g.drawRect(-(heatBarMaxLength - h/2)/2, indOffset, heatBarMaxLength, 8);
+                        indOffset += 10;
+
+                    }
+
+                    // Armor status
+                    float armorLeft = data.myUnit.percentArmorLeft();
+                    Rectangle armorRect = new Rectangle(-(heatBarMaxLength - h/2)/2,
+                                                        indOffset, (int) (armorLeft * heatBarMaxLength /100), 8);
+                    g.setColor(data.myUnit.colorForPercent(armorLeft));
+                    g.fill(armorRect);
+                    g.setColor(Color.black);
+                    g.drawRect(-(heatBarMaxLength - h/2)/2, indOffset, heatBarMaxLength, 8);
+                    indOffset += 10;
+
+                    // Internal status
+                    float               internalLeft = data.myUnit.percentInternalLeft();
+                    Rectangle       internalRect = new Rectangle(-(heatBarMaxLength - h/2)/2,
+                                                                 indOffset, (int) (internalLeft * heatBarMaxLength /100), 8);
+                    g.setColor(data.myUnit.colorForPercent(internalLeft));
+                    g.fill(internalRect);
+                    g.setColor(Color.black);
+                    g.drawRect(-(heatBarMaxLength - h/2)/2, indOffset, heatBarMaxLength, 8);
+                    indOffset += 10;
+                }
+                
                 if (prefs.tacShowArcs)
                 {
                     AffineTransform arcXform = new AffineTransform(oldTrans);

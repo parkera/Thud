@@ -69,6 +69,7 @@ public class Thud extends JFrame implements  ActionListener
     protected JCheckBoxMenuItem miDarkenElevations;
 
     protected JCheckBoxMenuItem	miShowCliffs;
+    protected JCheckBoxMenuItem miShowIndicators;
 
     protected JMenuItem	miMoveRight, miMoveLeft, miMoveDown, miMoveUp, miResetOffsets;
 
@@ -321,6 +322,13 @@ public class Thud extends JFrame implements  ActionListener
         mapMenu.add(miShowCliffs).setEnabled(true);
         miShowCliffs.addActionListener(this);
         miShowCliffs.setState(prefs.tacShowCliffs);
+        
+        miShowIndicators = new JCheckBoxMenuItem("Show Heat/Armor on Tactical", prefs.tacShowIndicators);
+        miShowIndicators.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I,
+                                                           Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        mapMenu.add(miShowIndicators).setEnabled(true);
+        miShowIndicators.addActionListener(this);
+        miShowIndicators.setState(prefs.tacShowIndicators);
         
         mainMenuBar.add(mapMenu);
     }
@@ -584,6 +592,7 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miShowArcs.getActionCommand())) doShowArcs();
         else if (newEvent.getActionCommand().equals(miDarkenElevations.getActionCommand())) doDarkenElevations();
         else if (newEvent.getActionCommand().equals(miShowCliffs.getActionCommand())) doShowCliffs();
+        else if (newEvent.getActionCommand().equals(miShowIndicators.getActionCommand())) doShowIndicators();
         else if (newEvent.getActionCommand().equals(miMoveLeft.getActionCommand())) doChangeXOffset(-1f);
         else if (newEvent.getActionCommand().equals(miMoveRight.getActionCommand())) doChangeXOffset(1f);
         else if (newEvent.getActionCommand().equals(miMoveUp.getActionCommand())) doChangeYOffset(-1f);
@@ -811,6 +820,13 @@ public class Thud extends JFrame implements  ActionListener
     {
         prefs.tacShowCliffs = !prefs.tacShowCliffs;
         miShowCliffs.setState(prefs.tacShowCliffs);
+        tacMap.repaint();
+    }
+
+    public void doShowIndicators()
+    {
+        prefs.tacShowIndicators = !prefs.tacShowIndicators;
+        miShowIndicators.setState(prefs.tacShowIndicators);
         tacMap.repaint();
     }
 
