@@ -493,7 +493,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         while (it.hasNext())
         {
             h = (Point) it.next();
-            if (map.getHexElevation(h) != selectedTerrain || map.getHexTerrain(h) != selectedElevation)
+            if (map.getHexElevation(h) != selectedElevation || map.getHexTerrain(h) != selectedTerrain)
             {
                 // This is a hex we will change
                 if (!hexAlreadyChanged(h))
