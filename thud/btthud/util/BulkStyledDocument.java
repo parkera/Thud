@@ -32,18 +32,21 @@ public class BulkStyledDocument extends DefaultStyledDocument
 
     HashMap					cachedAttributes = new HashMap();
 
+    int						maxLines = 1000;
+
     // ---------------
     
-    public BulkStyledDocument(int fontSize)
+    public BulkStyledDocument(int fontSize, int maxLines)
     {
         super();
 
         this.fontSize = fontSize;
-
-        newFontSize(fontSize);
+        this.maxLines = maxLines;
+        
+        setFontSize(fontSize);
     }
 
-    public void newFontSize(int fontSize)
+    public void setFontSize(int fontSize)
     {
         this.fontSize = fontSize;
 
@@ -66,6 +69,11 @@ public class BulkStyledDocument extends DefaultStyledDocument
         StyleConstants.setForeground(attrCommand, Color.blue);
         StyleConstants.setForeground(attrHudMessage, Color.black);
         StyleConstants.setBackground(attrHudMessage, Color.white);
+    }
+
+    public void setMaxLines(int maxLines)
+    {
+        this.maxLines = maxLines;
     }
 
     // -----------------------
@@ -152,7 +160,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
 
                         if (ANSIParser.normalEscapeCode(charCode1))	// go back to our base attribute set
                         {
-                            thisAttrSet = new SimpleAttributeSet();
+                            thisAttrSet.removeAttributes(thisAttrSet.getAttributeNames());
                             thisAttrSet.setResolveParent(attrBase);
                         }
                         else										// merge our current attributes with what these escape codes say
@@ -216,6 +224,16 @@ public class BulkStyledDocument extends DefaultStyledDocument
             ElementSpec[]		list = (ElementSpec[]) es.toArray(new ElementSpec[0]);
             
             insert(getLength(), list);
+
+            // Remove a line if our document is too long
+            Element				element = getDefaultRootElement();
+            
+            if (element.getElementCount() >= maxLines)
+            {
+                element = element.getElement(0);		// Get the first element
+
+                remove(0, element.getEndOffset());                
+            }
         }
         catch (Exception e)
         {

@@ -58,7 +58,8 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     //public Color				cBuilding, cRoad, cPlains, cWater, cLightForest, cHeavyForest, cWall, cMountain, cRough, cFire, cSmoke, cIce, cSmokeOnWater, cUnknown;
 
     public int					mainFontSize, smallFontSize, hexNumberFontSize, infoFontSize, elevationFontSize, contactFontSize;
-
+    public int					maxScrollbackSize;
+    
     public ArrayList			hosts = new ArrayList();
     
     public MUPrefs()
@@ -148,6 +149,8 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         infoFontSize = 9;
         elevationFontSize = 10;
 
+        maxScrollbackSize = 2000;
+        
         MUHost bt3030 = new MUHost("btech.dhs.org", 3030);
         MUHost bt3049 = new MUHost("btech.no-ip.com", 3049);
 

@@ -53,7 +53,7 @@ public class MUContactList extends JFrame
         this.prefs = prefs;
 
         // Setup our new contact list pane
-        BulkStyledDocument	bsd = new BulkStyledDocument(prefs.contactFontSize);        
+        BulkStyledDocument	bsd = new BulkStyledDocument(prefs.contactFontSize, 1000);        // Yes, max of 1000 contacts. So sue me.
         contactPane = new JTextPane(bsd);
         contactPane.setBackground(Color.black);
         contactPane.setEditable(false);

@@ -259,7 +259,7 @@ public class Thud extends JFrame implements  ActionListener
         debugMenu.add(miDumpDocument).setEnabled(true);
 
         // Debug off for now
-        // mainMenuBar.add(debugMenu);
+        mainMenuBar.add(debugMenu);
     }
 
     // -----------------------
@@ -516,7 +516,7 @@ public class Thud extends JFrame implements  ActionListener
 
     protected void setupNewTextFields()
     {
-        bsd = new BulkStyledDocument(prefs.mainFontSize);
+        bsd = new BulkStyledDocument(prefs.mainFontSize, prefs.maxScrollbackSize);
         
         textField = new JTextField(80);
         textField.addActionListener(this);
@@ -820,6 +820,7 @@ public class Thud extends JFrame implements  ActionListener
             conList.newPreferences(prefs);
         
         mainFontChanged();
+        bsd.setMaxLines(prefs.maxScrollbackSize);
 
         // Why not write the prefs to disk right now? Save ourselves some grief
         writePrefs();
@@ -1108,7 +1109,7 @@ public class Thud extends JFrame implements  ActionListener
         mFont = new Font("Monospaced", Font.PLAIN, prefs.mainFontSize);
 
         if (bsd != null)
-            bsd.newFontSize(prefs.mainFontSize);
+            bsd.setFontSize(prefs.mainFontSize);
         if (textField != null)
             textField.setFont(mFont);
     }

@@ -29,6 +29,8 @@ public class PrefsDialog extends javax.swing.JDialog {
     private javax.swing.JComboBox 		cliffDistanceBox;
     private javax.swing.JLabel 			speedLengthLabel;
     private javax.swing.JComboBox 		speedLengthBox;
+    private javax.swing.JLabel 			scrollbackSizeLabel;
+    private javax.swing.JComboBox 		scrollbackSizeBox;
 
     private javax.swing.JPanel 			MapColorsTab;
     private javax.swing.JButton 		bTerrainColors[] = new javax.swing.JButton[MUHex.TOTAL_TERRAIN];
@@ -75,6 +77,8 @@ public class PrefsDialog extends javax.swing.JDialog {
         cliffDistanceBox = new javax.swing.JComboBox();
         speedLengthLabel = new javax.swing.JLabel();
         speedLengthBox = new javax.swing.JComboBox();
+        scrollbackSizeLabel = new javax.swing.JLabel();
+        scrollbackSizeBox = new javax.swing.JComboBox();
 
         MapColorsTab = new javax.swing.JPanel();
         for (int i = 0; i < MUHex.TOTAL_TERRAIN; i++)
@@ -111,7 +115,7 @@ public class PrefsDialog extends javax.swing.JDialog {
         });
         
         // --- GENERAL OPTIONS ---
-        GeneralOptionsTab.setLayout(new java.awt.GridLayout(3, 2));
+        GeneralOptionsTab.setLayout(new java.awt.GridLayout(4, 2));
         
         echoCheckBox = new javax.swing.JCheckBox("Echo Commands", null, prefs.echoCommands);
         echoCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -147,6 +151,18 @@ public class PrefsDialog extends javax.swing.JDialog {
         speedLengthBox.addItem(new Float(4.0));
         speedLengthBox.setSelectedItem(new Float(prefs.speedIndicatorLength));
         GeneralOptionsTab.add(speedLengthBox);
+
+        scrollbackSizeLabel.setText("Lines of Text in Scrollback");
+        GeneralOptionsTab.add(scrollbackSizeLabel);
+        scrollbackSizeBox.addItem(new Integer(500));
+        scrollbackSizeBox.addItem(new Integer(1000));
+        scrollbackSizeBox.addItem(new Integer(2000));
+        scrollbackSizeBox.addItem(new Integer(5000));
+        scrollbackSizeBox.addItem(new Integer(7500));
+        scrollbackSizeBox.addItem(new Integer(10000));
+        scrollbackSizeBox.addItem(new Integer(20000));
+        scrollbackSizeBox.setSelectedItem(new Integer(prefs.maxScrollbackSize));
+        GeneralOptionsTab.add(scrollbackSizeBox);
         
         TabbedPane.addTab("General", GeneralOptionsTab);
 
@@ -237,7 +253,8 @@ public class PrefsDialog extends javax.swing.JDialog {
 
         prefs.cliffDiff = ((Integer) cliffDistanceBox.getSelectedItem()).intValue();
         prefs.speedIndicatorLength = ((Float) speedLengthBox.getSelectedItem()).floatValue();
-
+        prefs.maxScrollbackSize = ((Integer) scrollbackSizeBox.getSelectedItem()).intValue();
+        
         thudClass.prefs = prefs;
         
         closeDialog(null);
