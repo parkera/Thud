@@ -155,7 +155,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         contactFontSize = 10;
         smallFontSize = 9;
         hexNumberFontSize = 9;
-        infoFontSize = 9;
+        infoFontSize = 10;
         elevationFontSize = 10;
 
         maxScrollbackSize = 2000;

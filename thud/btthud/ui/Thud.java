@@ -81,7 +81,7 @@ public class Thud extends JFrame implements  ActionListener
     
     // ------------------
     
-    JTextField 				textField;
+    OptionTextField			textField;
     OptionTextPane			textPane;
     BulkStyledDocument		bsd;
 
@@ -536,7 +536,7 @@ public class Thud extends JFrame implements  ActionListener
     {
         bsd = new BulkStyledDocument(prefs.mainFontSize, prefs.maxScrollbackSize);
         
-        textField = new JTextField(80);
+        textField = new OptionTextField(80, prefs.antiAliasText);
         textField.addActionListener(this);
         textField.setFont(mFont);
         textField.setEnabled(true);

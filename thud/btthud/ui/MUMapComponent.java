@@ -106,7 +106,9 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         bounds = getBounds();
         
         //rHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        //rHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+
+        rHints.put(RenderingHints.KEY_TEXT_ANTIALIASING,
+                   prefs.antiAliasText ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         
     }
     
@@ -221,7 +223,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
       */
     private void precalculateNumbers()
     {
-        frc = new FontRenderContext(new AffineTransform(), true, true);			//((Graphics2D) getGraphics()).getFontRenderContext();
+        frc = new FontRenderContext(new AffineTransform(), true, prefs.antiAliasText);
+        			//((Graphics2D) getGraphics()).getFontRenderContext();
         
         Rectangle2D	elevRect;
         
@@ -343,6 +346,9 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         terrainFont = new Font("Monospaced", Font.PLAIN, 10);		// this changes dynamically anyway. based on size of hex
         elevFont = new Font("Monospaced", Font.PLAIN, prefs.elevationFontSize);
 
+        rHints.put(RenderingHints.KEY_TEXT_ANTIALIASING,
+                   prefs.antiAliasText ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        
         // need to recalculate font widths
         precalculateNumbers();
     }
@@ -366,7 +372,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         Graphics2D			g = (Graphics2D) gfx;
         AffineTransform		oldTrans = g.getTransform();
 
-        //g.addRenderingHints(rHints);
+        g.addRenderingHints(rHints);
 
         if (prefs.hexHeight != h)
             changeHeight(prefs.hexHeight);
@@ -960,14 +966,14 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         
             AffineTransform		oldTrans = g.getTransform();
             Stroke				oldStroke = g.getStroke();
-            int					borderWidth = 4;
-            int					borderHeight = 4;
-            int					spacing = 5;		// Distance between icon and name
+            float				borderWidth = 4f;
+            float				borderHeight = 4f;
+            float				spacing = 5f;		// Distance between icon and name
 
             // Setup this transform
 
             AffineTransform		contactMove = new AffineTransform(oldTrans);
-            contactMove.translate(pt.getX() - h/4, pt.getY() - h/4);
+            contactMove.translate(pt.getX() - h/4f, pt.getY() - h/4f);
             g.setTransform(contactMove);
 
             // Draw icon
@@ -978,7 +984,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             else
                 g.setColor(Color.red);			// or yellow
 
-            Rectangle			iconBounds = new Rectangle(0, 0, h/2, h/2);
+            Rectangle2D			iconBounds = new Rectangle2D.Float(0, 0, h/2, h/2);
 
             if (self)
                 g.setStroke(new BasicStroke(2));
@@ -991,8 +997,9 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             if (!self || (self && debug))		// note, turning on debug output for own unit disables weapon arcs
             {
                 // Draw text box
-                Rectangle			backingBox = null;
+                Rectangle2D			backingBox;
                 String				textString;
+                
                 if (prefs.tacShowUnitNames)
                     textString = "[" + unit.id + "] " + unit.name;
                 else
@@ -1003,10 +1010,10 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
                 Rectangle2D 		stringRect = infoFont.getStringBounds(textString, frc);
     
-                backingBox = new Rectangle((int) (iconBounds.width / 2 + spacing + borderWidth / 2),
-                                        (int) (-stringRect.getHeight() / 2 - borderHeight / 2),
-                                        (int) (stringRect.getWidth() + borderWidth),
-                                        (int) (stringRect.getHeight() + borderHeight));
+                backingBox = new Rectangle2D.Float((float) (iconBounds.getWidth() / 2 + spacing + borderWidth / 2),
+                                                   (float) (-stringRect.getHeight() / 2 - borderHeight / 2),
+                                                   (float) (stringRect.getWidth() + borderWidth),
+                                                   (float) (stringRect.getHeight() + borderHeight));
                 
                 
                 if (!unit.isDestroyed())
@@ -1023,7 +1030,20 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                 else
                 {
                     g.setColor(Color.lightGray);
-                    g.draw(backingBox);                    
+                    g.draw(backingBox);
+
+                    Line2D		line1 = new Line2D.Float((float) backingBox.getX(),
+                                                     (float) backingBox.getY(),
+                                                     (float) (backingBox.getX() + backingBox.getWidth()),
+                                                     (float) (backingBox.getY() + backingBox.getHeight()));
+                    Line2D		line2 = new Line2D.Float((float) backingBox.getX(),
+                                                     (float) (backingBox.getY() + backingBox.getHeight()),
+                                                     (float) (backingBox.getX() + backingBox.getWidth()),
+                                                     (float) backingBox.getY());
+                    
+                    g.setColor(new Color(255, 0, 0, 80));
+                    g.draw(line1);
+                    g.draw(line2);
                 }
                         
                 // Draw contact's ID string
@@ -1038,17 +1058,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                 
                 g.setFont(infoFont);
                 g.drawString(textString,
-                            (float) (iconBounds.width / 2 + spacing + borderWidth),
-                            (float) (stringRect.getHeight() / 2 + ((infoFont.getLineMetrics(textString, frc)).getDescent()) - 2) - borderHeight);
-    
-                // If it's destroyed, draw a red X through the box
-                if (unit.isDestroyed())
-                {
-                    g.setColor(new Color(255, 0, 0, 80));
-                    g.drawLine(backingBox.x, backingBox.y, backingBox.x + backingBox.width, backingBox.y + backingBox.height);
-                    g.drawLine(backingBox.x, backingBox.y + backingBox.height, backingBox.x + backingBox.width, backingBox.y);
-                }
-
+                            (float) (iconBounds.getWidth() / 2 + spacing + borderWidth),
+                            (float) (stringRect.getHeight() / 2 + (infoFont.getLineMetrics(textString, frc)).getDescent()) - borderHeight);
             }
             else
             {
