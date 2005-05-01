@@ -1,6 +1,9 @@
 1.3
+Note: Now requires at least Java 1.4
+
 New Features/Changes:
  - Added Desert terrain type
+ - Uses Java-standard preferences for better future compatibility (and it's just cleaner)
 
 1.2
 New Features/Changes:

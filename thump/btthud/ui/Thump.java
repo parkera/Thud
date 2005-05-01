@@ -858,7 +858,9 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
 
         JInternalFrame		allFrames[] = desktop.getAllFramesInLayer(JLayeredPane.DEFAULT_LAYER.intValue());
         // Reset cursors in top frame
-        topFrame().resetCursor();
+		if (topFrame() != null) {
+			topFrame().resetCursor();
+		}
         /* // don't need to do it for EVERY frame
         for (int i = 0; i < allFrames.length; i++)
             ((MUXMapFrame) allFrames[i]).resetCursor();
@@ -1104,28 +1106,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
     {
         // Create some prefs
         prefs = new MPrefs();
-        
-        try
-        {
-            File	prefsFile = new File(MPrefs.PREFS_FILE_NAME);
-    
-            if (prefsFile.createNewFile())
-                prefs.defaultPrefs();
-            else
-            {
-                FileInputStream		fis = new FileInputStream(prefsFile);
-                ObjectInputStream 	ois = new ObjectInputStream(fis);
-    
-                prefs = (MPrefs) ois.readObject();
-                fis.close();
-            }
-        }
-        catch (Exception e)
-        {
-            // Maybe the file format changed. Let's just create some new prefs
-            prefs.defaultPrefs();
-        }
-        
+		prefs.readPrefs();
     }
 
     // Write our prefs to disk
@@ -1139,22 +1120,8 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         tools.updatePaletteLocs();
 
         // Write it
-        try
-        {
-            File	prefsFile = new File(MPrefs.PREFS_FILE_NAME);
-            prefsFile.createNewFile();
-            FileOutputStream	fis = new FileOutputStream(prefsFile);
-            ObjectOutputStream 	oos = new ObjectOutputStream(fis);
+        prefs.writePrefs();
 
-            oos.writeObject(prefs);
-            oos.flush();
-
-            fis.close();
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error: writePrefs: " + e);
-        }
     }
 
     // Can we paste?
