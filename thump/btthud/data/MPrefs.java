@@ -52,7 +52,7 @@ public class MPrefs extends Object implements Serializable, Cloneable
 	 * Read the preferences from the backing store.
 	 */
 	public void readPrefs() {
-		Preferences p = Preferences.userNodeForPackage(MPrefs.class);
+		Preferences p = Preferences.userNodeForPackage(MPrefs.class).node("Thump");
 		
 		try {
 			p.sync();
@@ -69,8 +69,8 @@ public class MPrefs extends Object implements Serializable, Cloneable
 		toolsLoc = readPrefPoint(p, "toolsLoc", 8, 10);
         terrainToolsLoc = readPrefPoint(p, "terrainToolsLoc", 8, 87);
         elevationToolsLoc = readPrefPoint(p, "elevationToolsLoc", 89, 10);
-        brushToolsLoc = readPrefPoint(p, "brushToolsLoc", 354, 10);
-        inspectorLoc = readPrefPoint(p, "inspectorLoc", 91, 10);
+        brushToolsLoc = readPrefPoint(p, "brushToolsLoc", 360, 10);
+        inspectorLoc = readPrefPoint(p, "inspectorLoc", 640, 10);
         mapFrameLoc = readPrefPoint(p, "mapFrameLoc", 89, 87);
 		
 		showTools = p.getBoolean("showTools", true);
@@ -151,7 +151,7 @@ public class MPrefs extends Object implements Serializable, Cloneable
 	 * Write the preferences to the backing store.
 	 */
 	public void writePrefs() {
-		Preferences p = Preferences.userNodeForPackage(MPrefs.class);
+		Preferences p = Preferences.userNodeForPackage(MPrefs.class).node("Thump");
 		
 		p.putBoolean("antiAliasText", antiAliasText);
 		
