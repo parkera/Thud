@@ -103,6 +103,7 @@ public class MPrefs extends Object implements Serializable, Cloneable
         terrainColors[MUXHex.ROAD] = Color.lightGray;
         terrainColors[MUXHex.BRIDGE] = Color.lightGray;
         terrainColors[MUXHex.FIRE] = Color.red;
+		terrainColors[MUXHex.DESERT] = Color.pink;
         terrainColors[MUXHex.WALL] = Color.orange;
         terrainColors[MUXHex.ICE] = Color.white;
         terrainColors[MUXHex.SMOKE] = Color.lightGray;

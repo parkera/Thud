@@ -25,17 +25,18 @@ public class MUXHex
     public static final int		WATER = 8;
     public static final int		MOUNTAIN = 9;
     public static final int		FIRE = 10;
-    public static final int		SMOKE = 11;
-    public static final int		SMOKE_OVER_WATER = 12;
-    public static final int		ICE = 13;
-    public static final int		UNKNOWN = 14;
+	public static final int		DESERT = 11;
+    public static final int		SMOKE = 12;
+    public static final int		SMOKE_OVER_WATER = 13;
+    public static final int		ICE = 14;
+    public static final int		UNKNOWN = 15;
     
-    public static final int		TOTAL_TERRAIN = 15;
-    public static final int		TOTAL_PAINTABLE_TERRAIN = 11;
+    public static final int		TOTAL_TERRAIN = 16;
+    public static final int		TOTAL_PAINTABLE_TERRAIN = 12;
     
     // There should be the same number of items in this array as TOTAL_TERRAIN
-    public static final char	TERRAIN_TYPES[] = {'%', '.', '"', '`', '/', '#', '=', '@', '~', '^', '&', ':', '+', '-', '?'};
-    public static final char	PAINTABLE_TERRAIN_TYPES [] = {'%', '.', '"', '`', '/', '#', '=', '@', '~', '^', '&'};
+    public static final char	TERRAIN_TYPES[] = {'%', '.', '"', '`', '/', '#', '=', '@', '~', '^', '&', '}', ':', '+', '-', '?'};
+    public static final char	PAINTABLE_TERRAIN_TYPES [] = {'%', '.', '"', '`', '/', '#', '=', '@', '~', '^', '&', '}'};
     
     // Variables
     int							terrain;
@@ -124,6 +125,8 @@ public class MUXHex
                 return BRIDGE;
             case '&':							// fire
                 return FIRE;
+			case '}':							// desert
+                return DESERT;
             case '=':							// wall
                 return WALL;
             case ':':							// smoke
@@ -164,6 +167,8 @@ public class MUXHex
                 return "Bridge";
             case FIRE:						
                 return "Fire";
+			case DESERT:						
+                return "Desert";
             case WALL:						
                 return "Wall";
             case SMOKE:						
