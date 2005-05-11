@@ -54,6 +54,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
     protected JMenu mapMenu;
     protected JMenuItem miZoomIn;
     protected JMenuItem miZoomOut;
+	protected JCheckBoxMenuItem miToggleSmallView;
 
     protected JMenu paintMenu;
     protected JCheckBoxMenuItem miTerrainAndElevation;
@@ -218,6 +219,12 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         mapMenu.add(miZoomOut).setEnabled(true);
         miZoomOut.addActionListener(this);
 
+		miToggleSmallView = new JCheckBoxMenuItem("Small Map View", false);
+		miToggleSmallView.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M,
+                                                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		mapMenu.add(miToggleSmallView).setEnabled(true);
+		miToggleSmallView.addActionListener(this);
+		
         // ---
         
         mainMenuBar.add(mapMenu);
@@ -480,6 +487,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
 
             miZoomIn.setEnabled(true);
             miZoomOut.setEnabled(true);
+			miToggleSmallView.setEnabled(true);
         }
         else
         {
@@ -499,6 +507,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
 
             miZoomIn.setEnabled(false);
             miZoomOut.setEnabled(false);
+			miToggleSmallView.setEnabled(false);
         }
         
         resetToolMenu();
@@ -517,7 +526,7 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         
         miElevations[tools.selectedElevation()].setEnabled(true);
         miTerrains[tools.selectedTerrain()].setEnabled(true);
-        miBrushSizes[tools.selectedBrushSize() + 1].setEnabled(true);
+        miBrushSizes[tools.selectedBrushSize()].setEnabled(true);
 
         if (tools != null && topFrame() != null)
             topFrame().resetCursor();
@@ -612,7 +621,8 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         else if (matchesMenu(e, miPaste)) doPaste();
         else if (matchesMenu(e, miDeselectAll)) doDeselectAll();
         else if (matchesMenu(e, miZoomIn)) doZoom(5);
-        else if (matchesMenu(e, miZoomOut)) doZoom(-5);
+        else if (matchesMenu(e, miZoomOut)) doZoom(-5);		
+        else if (matchesMenu(e, miToggleSmallView)) doToggleSmallView();
         else if (matchesMenu(e, miTerrainAndElevation)) doSetPaintType(ToolManager.TERRAIN_AND_ELEVATION);
         else if (matchesMenu(e, miTerrainOnly)) doSetPaintType(ToolManager.TERRAIN_ONLY);
         else if (matchesMenu(e, miElevationOnly)) doSetPaintType(ToolManager.ELEVATION_ONLY);
@@ -848,6 +858,12 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
         if (topFrame() != null)
             topFrame().adjustZoom(z, new Point(-1, -1));
     }
+	
+	public void doToggleSmallView() {
+		if (topFrame() != null) {
+			topFrame().doToggleSmallMapView(miToggleSmallView.getState());
+		}
+	}
 
     public void doSetPaintType(int type)
     {

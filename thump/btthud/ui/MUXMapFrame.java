@@ -62,6 +62,9 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
     boolean			pasting = false;					// True when we're pasting some hexes
     LinkedList			pasteHexes;							// List of hexes to paste
     
+	int				lastVerticalScrollBarValue = 0;
+	int				lastHorizontalScrollBarValue = 0;
+	
     // -----------------
     
     public MUXMapFrame(Thump mapper, File file, int mapSize, MPrefs prefs, int hexHeight, ToolManager tools)
@@ -106,7 +109,7 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         // Setup the map component
         mapComponent = new MUXMapComponent(map, prefs, h);
         mapComponent.setPreferredSize(new Dimension(mapComponent.getTotalWidth(), mapComponent.getTotalHeight()));
-        
+		
         mapComponent.addMouseListener(this);
         mapComponent.addMouseMotionListener(this);
         mapComponent.addMouseWheelListener(this);
@@ -206,25 +209,33 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
                                                        (int) viewRect.getHeight()));
     }
     
+	public void adjustScrollbars(boolean displayRulers) {
+        mapComponent.setPreferredSize(new Dimension(mapComponent.getTotalWidth(), mapComponent.getTotalHeight()));
+		
+		if (displayRulers) {
+			Rule 	xRule = new Rule(Rule.HORIZONTAL, h, map.getSizeX(), prefs.hexNumberFontSize);
+			Rule	yRule = new Rule(Rule.VERTICAL, h, map.getSizeY(), prefs.hexNumberFontSize);
+			xRule.setPreferredWidth(mapComponent.getTotalWidth());
+			yRule.setPreferredHeight(mapComponent.getTotalHeight());
+			
+			scrollPane.setColumnHeaderView(xRule);
+			scrollPane.setRowHeaderView(yRule);
+			scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, new Corner());
+		} else {
+			scrollPane.setColumnHeaderView(null);
+			scrollPane.setRowHeaderView(null);
+		}
+		
+        scrollPane.doLayout();
+        scrollPane.repaint();	
+	}
+	
     public void newPreferences(MPrefs prefs, int hexHeight)
     {
-        // Send the new prefs to our component
-        mapComponent.newPreferences(prefs, hexHeight);
+		mapComponent.newPreferences(prefs, hexHeight);
         h = hexHeight;
-
-        mapComponent.setPreferredSize(new Dimension(mapComponent.getTotalWidth(), mapComponent.getTotalHeight()));
-
-        Rule 	xRule = new Rule(Rule.HORIZONTAL, h, map.getSizeX(), prefs.hexNumberFontSize);
-        Rule	yRule = new Rule(Rule.VERTICAL, h, map.getSizeY(), prefs.hexNumberFontSize);
-        xRule.setPreferredWidth(mapComponent.getTotalWidth());
-        yRule.setPreferredHeight(mapComponent.getTotalHeight());
-
-        scrollPane.setColumnHeaderView(xRule);
-        scrollPane.setRowHeaderView(yRule);
-        scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, new Corner());
-        scrollPane.doLayout();
-        scrollPane.repaint();
-        
+		
+        adjustScrollbars(!mapComponent.getDrawOverview());
     }
 
     /**
@@ -888,6 +899,35 @@ public class MUXMapFrame extends JInternalFrame implements MouseListener, MouseM
         }
     }
 
+	public void doToggleSmallMapView(boolean smallOn) {
+		if (smallOn) {
+			// Get the scroll bar values and keep them
+			if (scrollPane.getVerticalScrollBar() != null) {
+				lastVerticalScrollBarValue = scrollPane.getVerticalScrollBar().getValue();
+			}
+			
+			if (scrollPane.getHorizontalScrollBar() != null) {
+				lastHorizontalScrollBarValue = scrollPane.getHorizontalScrollBar().getValue();
+			}
+		}
+		
+		mapComponent.setDrawOverview(smallOn);
+		adjustScrollbars(!smallOn);
+		
+		if (!smallOn) {
+			// Restore the scroll bar values
+			if (scrollPane.getVerticalScrollBar() != null) {
+				scrollPane.getVerticalScrollBar().setValue(lastVerticalScrollBarValue);
+			}
+			
+			if (scrollPane.getHorizontalScrollBar() != null) {
+				scrollPane.getHorizontalScrollBar().setValue(lastHorizontalScrollBarValue);
+			}
+			
+			scrollPane.validate();
+		}
+	}
+	
     // -----------------------------
     
     /**

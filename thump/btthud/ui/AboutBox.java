@@ -27,7 +27,7 @@ public class AboutBox extends JFrame
         //treeButton.setEnabled(false);
         treeButton.setPreferredSize(new Dimension(128, 128));
         topPanel.add(treeButton);
-        topPanel.add(new JLabel("Thump 1.2a, (c) 2003-2004 Anthony Parker <asp@mac.com>"));
+        topPanel.add(new JLabel("Thump 1.3a, (c) 2003-2005 Anthony Parker <asp@mac.com>"));
 
         this.getContentPane().add(topPanel, BorderLayout.NORTH);
 		

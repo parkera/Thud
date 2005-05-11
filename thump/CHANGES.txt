@@ -4,6 +4,12 @@ Note: Now requires at least Java 1.4
 New Features/Changes:
  - Added Desert terrain type
  - Uses Java-standard preferences for better future compatibility (and it's just cleaner)
+ 
+Bug Fixes:
+ - Fixed exception related to picking a brush size of 5
+ 
+Known Issues:
+ - Updating the brush size on the tool palette doesn't update the menu
 
 1.2
 New Features/Changes:
