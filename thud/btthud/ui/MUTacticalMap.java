@@ -98,6 +98,7 @@ public class MUTacticalMap extends JFrame
     public void pleaseStop()
     {
         go = false;
+        this.dispose();
     }
 
     

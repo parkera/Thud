@@ -116,7 +116,6 @@ public class MUContactList extends JFrame
         MUUnitInfo								unit = new MUUnitInfo();
         BulkStyledDocument 						doc = (BulkStyledDocument) contactPane.getDocument();
         ArrayList								elements = new ArrayList();
-        DefaultStyledDocument.ElementSpec[]		list;
         
         while (go)
         {
@@ -129,7 +128,7 @@ public class MUContactList extends JFrame
                     synchronized (data)
                     {
                         Iterator		contacts = data.getContactsIterator(true);		// Sorted list
-                        
+                                                
                         while (contacts.hasNext())
                         {
                             unit = (MUUnitInfo) contacts.next();
@@ -167,6 +166,7 @@ public class MUContactList extends JFrame
                                                                                0,
                                                                                unit.makeContactString().length()));
                         }
+                        
 
                     }
 
@@ -194,6 +194,7 @@ public class MUContactList extends JFrame
     public void pleaseStop()
     {
         go = false;
+        this.dispose();
     }
 
     /* ---------------------- */

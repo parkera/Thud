@@ -407,8 +407,14 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             // Paint hex numbers
             paintNumbers(g);
 
-            // Finally, draw our status bar at the bottom of the screen
-            paintStatusBar(g);            
+            // Draw our status bar at the bottom of the screen
+            paintStatusBar(g);
+            
+            // Draw armor diagram
+            if(data.hudRunning && prefs.tacShowArmorDiagram) {
+            	paintArmorDiagram(g);
+            }
+            
         }
 
         // ----
@@ -694,39 +700,82 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                             g.setColor(Color.red);
                             g.setStroke(new BasicStroke(2.0f));		// Make the red line wider
                             
-                            // We are at: hexX + j, hexY + i
-                            if ((hexX + j) % 2 == 0)
-                            {
-                                // Even X
-                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 0, hexY + i - 1) - thisElevation) > prefs.cliffDiff)
-                                    g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
-                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j - 1, hexY + i + 0) - thisElevation) > prefs.cliffDiff)
-                                    g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(1), (int) hexPoly.getY(1));
-                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j - 1, hexY + i + 1) - thisElevation) > prefs.cliffDiff)
-                                    g.drawLine((int) hexPoly.getX(1), (int) hexPoly.getY(1), (int) hexPoly.getX(2), (int) hexPoly.getY(2));
-                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 0, hexY + i + 1) - thisElevation) > prefs.cliffDiff)
-                                    g.drawLine((int) hexPoly.getX(2), (int) hexPoly.getY(2), (int) hexPoly.getX(3), (int) hexPoly.getY(3));
-                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 1, hexY + i + 1) - thisElevation) > prefs.cliffDiff)
-                                    g.drawLine((int) hexPoly.getX(3), (int) hexPoly.getY(3), (int) hexPoly.getX(4), (int) hexPoly.getY(4));
-                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 1, hexY + i + 0) - thisElevation) > prefs.cliffDiff)
-                                    g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
+                            int myElevation;
+                            int cliffDiff = data.myUnit.cliffDiff();
+                            if(data.myUnit.isFlying()) { // Airborne unit type cliffing                            	
+                            	myElevation = data.myUnit.z;
+                                // We are at: hexX + j, hexY + i
+                                if ((hexX + j) % 2 == 0)
+                                {
+                                    // Even X
+                                    if (data.getHexAbsoluteElevation(hexX + j + 0, hexY + i - 1) > myElevation)
+                                        g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
+                                    if (data.getHexAbsoluteElevation(hexX + j - 1, hexY + i + 0) > myElevation)
+                                        g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(1), (int) hexPoly.getY(1));
+                                    if (data.getHexAbsoluteElevation(hexX + j - 1, hexY + i + 1) > myElevation)
+                                        g.drawLine((int) hexPoly.getX(1), (int) hexPoly.getY(1), (int) hexPoly.getX(2), (int) hexPoly.getY(2));
+                                    if (data.getHexAbsoluteElevation(hexX + j + 0, hexY + i + 1) > myElevation)
+                                        g.drawLine((int) hexPoly.getX(2), (int) hexPoly.getY(2), (int) hexPoly.getX(3), (int) hexPoly.getY(3));
+                                    if (data.getHexAbsoluteElevation(hexX + j + 1, hexY + i + 1) > myElevation)
+                                        g.drawLine((int) hexPoly.getX(3), (int) hexPoly.getY(3), (int) hexPoly.getX(4), (int) hexPoly.getY(4));
+                                    if (data.getHexAbsoluteElevation(hexX + j + 1, hexY + i + 0) > myElevation)
+                                        g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
+                                }
+                                else
+                                {
+                                    // Odd X
+                                    if (data.getHexAbsoluteElevation(hexX + j + 0, hexY + i - 1) > myElevation)
+                                        g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
+                                    if (data.getHexAbsoluteElevation(hexX + j - 1, hexY + i - 1) > myElevation)
+                                        g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(1), (int) hexPoly.getY(1));
+                                    if (data.getHexAbsoluteElevation(hexX + j - 1, hexY + i + 0) > myElevation)
+                                        g.drawLine((int) hexPoly.getX(1), (int) hexPoly.getY(1), (int) hexPoly.getX(2), (int) hexPoly.getY(2));
+                                    if (data.getHexAbsoluteElevation(hexX + j + 0, hexY + i + 1) > myElevation)
+                                        g.drawLine((int) hexPoly.getX(2), (int) hexPoly.getY(2), (int) hexPoly.getX(3), (int) hexPoly.getY(3));
+                                    if (data.getHexAbsoluteElevation(hexX + j + 1, hexY + i + 0) > myElevation)
+                                        g.drawLine((int) hexPoly.getX(3), (int) hexPoly.getY(3), (int) hexPoly.getX(4), (int) hexPoly.getY(4));
+                                    if (data.getHexAbsoluteElevation(hexX + j + 1, hexY + i - 1) > myElevation)
+                                        g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
+                                }
+                            } else { // Ground unit type cliffing
+                            	
+                            	myElevation = thisElevation;
+                                // We are at: hexX + j, hexY + i
+                                if ((hexX + j) % 2 == 0)
+                                {
+                                    // Even X
+                                    if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 0, hexY + i - 1) - myElevation) > cliffDiff)
+                                        g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
+                                    if (Math.abs(data.getHexAbsoluteElevation(hexX + j - 1, hexY + i + 0) - myElevation) > cliffDiff)
+                                        g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(1), (int) hexPoly.getY(1));
+                                    if (Math.abs(data.getHexAbsoluteElevation(hexX + j - 1, hexY + i + 1) - myElevation) > cliffDiff)
+                                        g.drawLine((int) hexPoly.getX(1), (int) hexPoly.getY(1), (int) hexPoly.getX(2), (int) hexPoly.getY(2));
+                                    if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 0, hexY + i + 1) - myElevation) > cliffDiff)
+                                        g.drawLine((int) hexPoly.getX(2), (int) hexPoly.getY(2), (int) hexPoly.getX(3), (int) hexPoly.getY(3));
+                                    if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 1, hexY + i + 1) - myElevation) > cliffDiff)
+                                        g.drawLine((int) hexPoly.getX(3), (int) hexPoly.getY(3), (int) hexPoly.getX(4), (int) hexPoly.getY(4));
+                                    if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 1, hexY + i + 0) - myElevation) > cliffDiff)
+                                        g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
+                                }
+                                else
+                                {
+                                    // Odd X
+                                    if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 0, hexY + i - 1) - myElevation) > cliffDiff)
+                                        g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
+                                    if (Math.abs(data.getHexAbsoluteElevation(hexX + j - 1, hexY + i - 1) - myElevation) > cliffDiff)
+                                        g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(1), (int) hexPoly.getY(1));
+                                    if (Math.abs(data.getHexAbsoluteElevation(hexX + j - 1, hexY + i + 0) - myElevation) > cliffDiff)
+                                        g.drawLine((int) hexPoly.getX(1), (int) hexPoly.getY(1), (int) hexPoly.getX(2), (int) hexPoly.getY(2));
+                                    if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 0, hexY + i + 1) - myElevation) > cliffDiff)
+                                        g.drawLine((int) hexPoly.getX(2), (int) hexPoly.getY(2), (int) hexPoly.getX(3), (int) hexPoly.getY(3));
+                                    if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 1, hexY + i + 0) - myElevation) > cliffDiff)
+                                        g.drawLine((int) hexPoly.getX(3), (int) hexPoly.getY(3), (int) hexPoly.getX(4), (int) hexPoly.getY(4));
+                                    if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 1, hexY + i - 1) - myElevation) > cliffDiff)
+                                        g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
+                                }
                             }
-                            else
-                            {
-                                // Odd X
-                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 0, hexY + i - 1) - thisElevation) > prefs.cliffDiff)
-                                    g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
-                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j - 1, hexY + i - 1) - thisElevation) > prefs.cliffDiff)
-                                    g.drawLine((int) hexPoly.getX(0), (int) hexPoly.getY(0), (int) hexPoly.getX(1), (int) hexPoly.getY(1));
-                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j - 1, hexY + i + 0) - thisElevation) > prefs.cliffDiff)
-                                    g.drawLine((int) hexPoly.getX(1), (int) hexPoly.getY(1), (int) hexPoly.getX(2), (int) hexPoly.getY(2));
-                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 0, hexY + i + 1) - thisElevation) > prefs.cliffDiff)
-                                    g.drawLine((int) hexPoly.getX(2), (int) hexPoly.getY(2), (int) hexPoly.getX(3), (int) hexPoly.getY(3));
-                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 1, hexY + i + 0) - thisElevation) > prefs.cliffDiff)
-                                    g.drawLine((int) hexPoly.getX(3), (int) hexPoly.getY(3), (int) hexPoly.getX(4), (int) hexPoly.getY(4));
-                                if (Math.abs(data.getHexAbsoluteElevation(hexX + j + 1, hexY + i - 1) - thisElevation) > prefs.cliffDiff)
-                                    g.drawLine((int) hexPoly.getX(4), (int) hexPoly.getY(4), (int) hexPoly.getX(5), (int) hexPoly.getY(5));
-                            }
+                            
+
 
                             g.setStroke(saveStroke);				// Restore the old stroke
                         }
@@ -1102,7 +1151,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                     float armorLeft = data.myUnit.percentArmorLeft();
                     Rectangle armorRect = new Rectangle(-(heatBarMaxLength - h/2)/2,
                                                         indOffset, (int) (armorLeft * heatBarMaxLength /100), 8);
-                    g.setColor(data.myUnit.colorForPercent(armorLeft));
+                    g.setColor(MUUnitInfo.colorForPercent(armorLeft));
                     g.fill(armorRect);
                     g.setColor(Color.black);
                     g.drawRect(-(heatBarMaxLength - h/2)/2, indOffset, heatBarMaxLength, 8);
@@ -1370,7 +1419,695 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         // Reset transform
         g.setTransform(oldTrans);
     }
+    
+    /**
+     * Draws the armor diagram.
+     * @param g The graphics context.
+     */
+    public void paintArmorDiagram(Graphics2D g)
+    {
+/*        AffineTransform			oldTrans = g.getTransform();
+        Rectangle				barRect = new Rectangle(0, 40, 0, 40);
+        
+        g.setFont(smallFont);
+        
+        g.setColor(new Color(128, 128, 128, 128));
+        g.setColor(Color.red);
+        g.fill(barRect);
+        g.setColor(Color.lightGray);
+        g.drawLine(barRect.x, barRect.y, barRect.width, barRect.y);
+       
+        // Reset transform
+        g.setTransform(oldTrans);
+        */
+        AffineTransform xform = g.getTransform();
+        int armorScale = 2;	// Size of the armor/internal indicators
+        xform.translate(barHeight, bounds.height - 2*barHeight - armorScale * 20);	// Scale of mech drawing is 0-20 pixels
+        xform.scale(armorScale,armorScale);	// resize the picture
+        g.setTransform(xform);
 
+
+        int armorTransparency = 185;
+
+        // Determine what type of diagram to show.
+        // Presently unsupported: F=AeroFighter, A=AeroDyne Dropship, D=Spheroid Dropship, S=BattleSuit, I=Infantry
+        
+    	if(data.myUnit.type.equals("B")) { // biped
+    		armorBiped(g, armorTransparency);
+    	} else if (data.myUnit.type.equals("Q")) { // quad
+    		armorQuad(g, armorTransparency);
+    	} else if (data.myUnit.type.equals("T") || // tracked
+    				data.myUnit.type.equals("H") || // hover
+    				data.myUnit.type.equals("W") || // wheeled
+    				data.myUnit.type.equals("N") || // Naval surface displacement
+    				data.myUnit.type.equals("Y") || // Naval hydrofoil
+    				data.myUnit.type.equals("U") || // Naval submarine
+    				data.myUnit.type.equals("i")) { // Installation 
+    		armorGround(g, armorTransparency);
+    	} else if (data.myUnit.type.equals("V")) { // VTOL
+    		armorVTOL(g, armorTransparency);
+    	}
+
+    }
+    
+    /** Paint a biped armor diagram.
+     * 
+     * @param g Graphics context.
+     * @param armorTransparency Alpha of diagram.
+     */
+    private void armorBiped(Graphics2D g, int armorTransparency) {
+    	AffineTransform xform = g.getTransform();
+        float armorLeft;
+        // Draw Head Armor
+        GeneralPath hOutline = new GeneralPath();
+        hOutline.moveTo( 9, 0);
+        hOutline.lineTo( 8, 3);
+        hOutline.lineTo(12, 3);
+        hOutline.lineTo(11, 0);
+        hOutline.lineTo( 9, 0);
+
+        g.setColor(Color.darkGray);
+        g.draw(hOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("H"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(hOutline);
+
+        // Draw Center Torso Armor
+        GeneralPath ctOutline = new GeneralPath();
+        ctOutline.moveTo( 8, 3);
+        ctOutline.lineTo(10,12);
+        ctOutline.lineTo(12, 3);
+        ctOutline.lineTo( 8, 3);
+
+        g.setColor(Color.darkGray);
+        g.draw(ctOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("CT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(ctOutline);
+
+        // Draw Right Torso Armor
+        GeneralPath rtOutline = new GeneralPath();
+        rtOutline.moveTo(12, 3);
+        rtOutline.lineTo(15, 3);
+        rtOutline.lineTo(13, 11);
+        rtOutline.lineTo(10, 12);
+        rtOutline.lineTo(12,  3);
+
+        g.setColor(Color.darkGray);
+        g.draw(rtOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rtOutline);
+
+        // Draw Left Torso Armor
+        GeneralPath ltOutline = new GeneralPath();
+        ltOutline.moveTo( 5, 3);
+        ltOutline.lineTo( 7,11);
+        ltOutline.lineTo(10,12);
+        ltOutline.lineTo( 8, 3);
+        ltOutline.lineTo( 5, 3);
+
+        g.setColor(Color.darkGray);
+        g.draw(ltOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("LT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(ltOutline);
+
+        // Draw Left Arm Armor
+        GeneralPath laOutline = new GeneralPath();
+        laOutline.moveTo( 5, 3);
+        laOutline.lineTo( 1, 8);
+        laOutline.lineTo( 4,10);
+        laOutline.lineTo( 6, 7);
+        laOutline.lineTo( 5, 3);
+
+        g.setColor(Color.darkGray);
+        g.draw(laOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("LA"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(laOutline);
+
+        // Draw Right Arm Armor
+        GeneralPath raOutline = new GeneralPath();
+        raOutline.moveTo(15, 3);
+        raOutline.lineTo(14, 7);
+        raOutline.lineTo(16,10);
+        raOutline.lineTo(19, 8);
+        raOutline.lineTo(15, 3);
+
+        g.setColor(Color.darkGray);
+        g.draw(raOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RA"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(raOutline);
+
+        // Draw Left Leg Armor
+        GeneralPath llOutline = new GeneralPath();
+        llOutline.moveTo( 7,11);
+        llOutline.lineTo( 4,20);
+        llOutline.lineTo( 8,20);
+        llOutline.lineTo(10,12);
+        llOutline.lineTo( 7,11);
+
+        g.setColor(Color.darkGray);
+        g.draw(llOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("LL"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(llOutline);
+
+        // Draw Right Leg Armor
+        GeneralPath rlOutline = new GeneralPath();
+        rlOutline.moveTo(10,12);
+        rlOutline.lineTo(12,20);
+        rlOutline.lineTo(16,20);
+        rlOutline.lineTo(13,11);
+        rlOutline.lineTo(10,12);
+
+        g.setColor(Color.darkGray);
+        g.draw(rlOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RL"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rlOutline);
+
+        // Draw Rear armor
+        // ***************
+        xform.translate(15, 0);
+        g.setTransform(xform);
+
+        // Draw Center Torso Armor
+        g.setColor(Color.darkGray);
+        g.draw(ctOutline);
+        armorLeft = data.myUnit.percentRearArmorLeft(data.myUnit.indexForSection("CT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(ctOutline);	// ctOutline points already defined above
+
+        // Draw Right Torso Armor Rear
+        g.setColor(Color.darkGray);
+        g.draw(rtOutline);
+        armorLeft = data.myUnit.percentRearArmorLeft(data.myUnit.indexForSection("RT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rtOutline);
+
+        // Draw Left Torso Armor Rear
+        g.setColor(Color.darkGray);
+        g.draw(ltOutline);
+        armorLeft = data.myUnit.percentRearArmorLeft(data.myUnit.indexForSection("LT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(ltOutline);
+
+        // Draw Internals
+        // **************
+        xform.translate(15, 0);
+        g.setTransform(xform);
+
+        // Draw Head Internals
+        g.setColor(Color.darkGray);
+        g.draw(hOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("H"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(hOutline);
+
+        // Draw Center Torso Internals
+        g.setColor(Color.darkGray);
+        g.draw(ctOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("CT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(ctOutline);	// ctOutline points already defined above
+
+        // Draw Right Torso Armor Internals
+        g.setColor(Color.darkGray);
+        g.draw(rtOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rtOutline);
+
+        // Draw Left Torso Armor Internals
+        g.setColor(Color.darkGray);
+        g.draw(ltOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("LT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(ltOutline);
+
+        // Draw Left Arm Internals
+        g.setColor(Color.darkGray);
+        g.draw(laOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("LA"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(laOutline);
+
+        // Draw Right Arm Internals
+        g.setColor(Color.darkGray);
+        g.draw(raOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RA"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(raOutline);
+
+        // Draw Left Leg Internals
+        g.setColor(Color.darkGray);
+        g.draw(llOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("LL"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(llOutline);
+
+        // Draw Right Leg Internals
+        g.setColor(Color.darkGray);
+        g.draw(rlOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RL"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rlOutline);	    
+    }
+    
+    private void armorQuad(Graphics2D g, int armorTransparency) { 
+    	AffineTransform xform = g.getTransform();
+        float armorLeft;
+        // Draw Head Armor
+        GeneralPath hOutline = new GeneralPath();
+        hOutline.moveTo( 9, 5);
+        hOutline.lineTo( 8, 8);
+        hOutline.lineTo(12, 8);
+        hOutline.lineTo(11, 5);
+        hOutline.lineTo( 9, 5);
+
+        g.setColor(Color.darkGray);
+        g.draw(hOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("H"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(hOutline);
+
+        // Draw Center Torso Armor
+        GeneralPath ctOutline = new GeneralPath();
+        ctOutline.moveTo( 8, 8);
+        ctOutline.lineTo(10, 12);
+        ctOutline.lineTo(12, 8);
+        ctOutline.lineTo( 8, 8);
+
+        g.setColor(Color.darkGray);
+        g.draw(ctOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("CT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(ctOutline);
+
+        // Draw Right Torso Armor
+        GeneralPath rtOutline = new GeneralPath();
+        rtOutline.moveTo(12, 8);
+        rtOutline.lineTo(15, 8);
+        rtOutline.lineTo(13, 11);
+        rtOutline.lineTo(10, 12);
+        rtOutline.lineTo(12,  8);
+
+        g.setColor(Color.darkGray);
+        g.draw(rtOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rtOutline);
+
+        // Draw Left Torso Armor
+        GeneralPath ltOutline = new GeneralPath();
+        ltOutline.moveTo( 5, 8);
+        ltOutline.lineTo( 7, 11);
+        ltOutline.lineTo(10, 12);
+        ltOutline.lineTo( 8, 8);
+        ltOutline.lineTo( 5, 8);
+
+        g.setColor(Color.darkGray);
+        g.draw(ltOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("LT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(ltOutline);
+
+        // Draw Rear Left Leg Armor
+        GeneralPath rllOutline = new GeneralPath();
+        rllOutline.moveTo( 5, 8);
+        rllOutline.lineTo( 1, 20);
+        rllOutline.lineTo( 5, 20);
+        rllOutline.lineTo( 7, 11);
+        rllOutline.lineTo( 5, 8);
+
+        g.setColor(Color.darkGray);
+        g.draw(rllOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RLL"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rllOutline);
+
+        // Draw Rear Right Leg Armor
+        GeneralPath rrlOutline = new GeneralPath();
+        rrlOutline.moveTo(15, 8);
+        rrlOutline.lineTo(13, 11);
+        rrlOutline.lineTo(15, 20);
+        rrlOutline.lineTo(19, 20);
+        rrlOutline.lineTo(15, 8);
+
+        g.setColor(Color.darkGray);
+        g.draw(rrlOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RRL"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rrlOutline);
+
+        // Draw Front Left Leg Armor
+        GeneralPath fllOutline = new GeneralPath();
+        fllOutline.moveTo( 7,11);
+        fllOutline.lineTo( 5,20);
+        fllOutline.lineTo( 9,20);
+        fllOutline.lineTo(10,12);
+        fllOutline.lineTo( 7,11);
+
+        g.setColor(Color.darkGray);
+        g.draw(fllOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("FLL"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(fllOutline);
+
+        // Draw Front Right Leg Armor
+        GeneralPath frlOutline = new GeneralPath();
+        frlOutline.moveTo(10,12);
+        frlOutline.lineTo(11,20);
+        frlOutline.lineTo(15,20);
+        frlOutline.lineTo(13,11);
+        frlOutline.lineTo(10,12);
+
+        g.setColor(Color.darkGray);
+        g.draw(frlOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("FRL"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(frlOutline);
+
+        // Draw Rear armor
+        // ***************
+        xform.translate(15, 0);
+        g.setTransform(xform);
+
+        // Draw Center Torso Armor
+        g.setColor(Color.darkGray);
+        g.draw(ctOutline);
+        armorLeft = data.myUnit.percentRearArmorLeft(data.myUnit.indexForSection("CT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(ctOutline);	// ctOutline points already defined above
+
+        // Draw Right Torso Armor Rear
+        g.setColor(Color.darkGray);
+        g.draw(rtOutline);
+        armorLeft = data.myUnit.percentRearArmorLeft(data.myUnit.indexForSection("RT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rtOutline);
+
+        // Draw Left Torso Armor Rear
+        g.setColor(Color.darkGray);
+        g.draw(ltOutline);
+        armorLeft = data.myUnit.percentRearArmorLeft(data.myUnit.indexForSection("LT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(ltOutline);
+
+        // Draw Internals
+        // **************
+        xform.translate(15, 0);
+        g.setTransform(xform);
+
+        // Draw Head Internals
+        g.setColor(Color.darkGray);
+        g.draw(hOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("H"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(hOutline);
+
+        // Draw Center Torso Internals
+        g.setColor(Color.darkGray);
+        g.draw(ctOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("CT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(ctOutline);	// ctOutline points already defined above
+
+        // Draw Right Torso Armor Internals
+        g.setColor(Color.darkGray);
+        g.draw(rtOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rtOutline);
+
+        // Draw Left Torso Armor Internals
+        g.setColor(Color.darkGray);
+        g.draw(ltOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("LT"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(ltOutline);
+
+        // Draw Rear Left Leg Internals
+        g.setColor(Color.darkGray);
+        g.draw(rllOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RLL"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rllOutline);
+
+        // Draw Rear Right Leg Internals
+        g.setColor(Color.darkGray);
+        g.draw(rrlOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RRL"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rrlOutline);
+
+        // Draw Front Left Leg Internals
+        g.setColor(Color.darkGray);
+        g.draw(fllOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("FLL"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(fllOutline);
+
+        // Draw Front Right Leg Internals
+        g.setColor(Color.darkGray);
+        g.draw(frlOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("FRL"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(frlOutline);	    
+    }
+    
+    private void armorGround(Graphics2D g, int armorTransparency) { 
+    	AffineTransform xform = g.getTransform();
+        float armorLeft;
+        // Draw Front Side Armor
+        GeneralPath fsOutline = new GeneralPath();
+        fsOutline.moveTo( 1, 0);
+        fsOutline.lineTo(14, 0);
+        fsOutline.lineTo(11, 5);
+        fsOutline.lineTo( 4, 5);
+        fsOutline.lineTo( 1, 0);
+
+        g.setColor(Color.darkGray);
+        g.draw(fsOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("FS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(fsOutline);
+
+        // Draw Turret Armor
+        GeneralPath tOutline = new GeneralPath();
+        tOutline.moveTo( 4,  5);
+        tOutline.lineTo(11,  5);
+        tOutline.lineTo(11, 16);
+        tOutline.lineTo( 4, 16);
+        tOutline.lineTo( 4,  5);
+
+        g.setColor(Color.darkGray);
+        g.draw(tOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("T"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(tOutline);
+        
+        // Draw Left Side Armor
+        GeneralPath lsOutline = new GeneralPath();
+        lsOutline.moveTo( 1,  0);
+        lsOutline.lineTo( 4,  5);
+        lsOutline.lineTo( 4, 16);
+        lsOutline.lineTo( 1, 20);
+        lsOutline.lineTo( 1,  0);
+
+        g.setColor(Color.darkGray);
+        g.draw(lsOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("LS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(lsOutline);
+        
+        // Draw Right Side Armor
+        GeneralPath rsOutline = new GeneralPath();
+        rsOutline.moveTo( 14,  0);
+        rsOutline.lineTo( 11,  5);
+        rsOutline.lineTo( 11, 16);
+        rsOutline.lineTo( 14, 20);
+        rsOutline.lineTo( 14,  0);
+        
+        g.setColor(Color.darkGray);
+        g.draw(rsOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rsOutline); 
+        
+        // Draw Aft Side Armor
+        GeneralPath asOutline = new GeneralPath();
+        asOutline.moveTo( 4, 16);
+        asOutline.lineTo(11, 16);
+        asOutline.lineTo(14, 20);
+        asOutline.lineTo( 1, 20);
+        asOutline.lineTo( 4, 16);
+        
+        g.setColor(Color.darkGray);
+        g.draw(asOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("AS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(asOutline);
+        
+
+        // Draw Internals
+        // **************
+        xform.translate(20, 0);
+        g.setTransform(xform);
+
+        // Draw Front Side Internals
+        g.setColor(Color.darkGray);
+        g.draw(fsOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("FS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(fsOutline);
+
+        // Draw Turret Internals
+        g.setColor(Color.darkGray);
+        g.draw(tOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("T"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(tOutline);
+        
+        // Draw Left Side Internals
+        g.setColor(Color.darkGray);
+        g.draw(lsOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("LS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(lsOutline);	
+        
+        // Draw Right Side Internals
+        g.setColor(Color.darkGray);
+        g.draw(rsOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rsOutline);
+        
+        // Draw Aft Side Internals
+        g.setColor(Color.darkGray);
+        g.draw(asOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("AS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(asOutline);	
+    }
+    
+    private void armorVTOL(Graphics2D g, int armorTransparency) { 
+    	AffineTransform xform = g.getTransform();
+        float armorLeft;
+        // Draw Front Side Armor
+        GeneralPath fsOutline = new GeneralPath();
+        fsOutline.moveTo( 1, 0);
+        fsOutline.lineTo(14, 0);
+        fsOutline.lineTo(11, 5);
+        fsOutline.lineTo( 4, 5);
+        fsOutline.lineTo( 1, 0);
+
+        g.setColor(Color.darkGray);
+        g.draw(fsOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("FS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(fsOutline);
+
+        // Draw Rotor Armor
+        GeneralPath rOutline = new GeneralPath();
+        rOutline.moveTo( 4,  5);
+        rOutline.lineTo(11,  5);
+        rOutline.lineTo(11, 16);
+        rOutline.lineTo( 4, 16);
+        rOutline.lineTo( 4,  5);
+
+        g.setColor(Color.darkGray);
+        g.draw(rOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("R"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rOutline);
+        
+        // Draw Left Side Armor
+        GeneralPath lsOutline = new GeneralPath();
+        lsOutline.moveTo( 1,  0);
+        lsOutline.lineTo( 4,  5);
+        lsOutline.lineTo( 4, 16);
+        lsOutline.lineTo( 1, 20);
+        lsOutline.lineTo( 1,  0);
+
+        g.setColor(Color.darkGray);
+        g.draw(lsOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("LS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(lsOutline);
+        
+        // Draw Right Side Armor
+        GeneralPath rsOutline = new GeneralPath();
+        rsOutline.moveTo( 14,  0);
+        rsOutline.lineTo( 11,  5);
+        rsOutline.lineTo( 11, 16);
+        rsOutline.lineTo( 14, 20);
+        rsOutline.lineTo( 14,  0);
+        
+        g.setColor(Color.darkGray);
+        g.draw(rsOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rsOutline); 
+        
+        // Draw Aft Side Armor
+        GeneralPath asOutline = new GeneralPath();
+        asOutline.moveTo( 4, 16);
+        asOutline.lineTo(11, 16);
+        asOutline.lineTo(14, 20);
+        asOutline.lineTo( 1, 20);
+        asOutline.lineTo( 4, 16);
+        
+        g.setColor(Color.darkGray);
+        g.draw(asOutline);
+        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("AS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(asOutline);
+        
+
+        // Draw Internals
+        // **************
+        xform.translate(20, 0);
+        g.setTransform(xform);
+
+        // Draw Front Side Internals
+        g.setColor(Color.darkGray);
+        g.draw(fsOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("FS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(fsOutline);
+
+        // Draw Rotor Internals
+        g.setColor(Color.darkGray);
+        g.draw(rOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("R"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rOutline);
+        
+        // Draw Left Side Internals
+        g.setColor(Color.darkGray);
+        g.draw(lsOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("LS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(lsOutline);	
+        
+        // Draw Right Side Internals
+        g.setColor(Color.darkGray);
+        g.draw(rsOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(rsOutline);
+        
+        // Draw Aft Side Internals
+        g.setColor(Color.darkGray);
+        g.draw(asOutline);
+        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("AS"));
+        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        g.fill(asOutline);	
+    }
     static public float toRadians(float a)
     {
         return (float) ((a / 180.0f) * Math.PI + Math.PI);

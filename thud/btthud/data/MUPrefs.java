@@ -20,8 +20,8 @@ public class MUPrefs extends Object implements Serializable, Cloneable
 {
     public boolean				showTacMap, showContacts;
 
-    public Point				mainLoc, tacLoc, contactsLoc, armorLoc;
-    public int					mainSizeX, mainSizeY, tacSizeX, tacSizeY, contactsSizeX, contactsSizeY;
+    public Point				mainLoc, tacLoc, contactsLoc, armorLoc, statusLoc;
+    public int					mainSizeX, mainSizeY, tacSizeX, tacSizeY, contactsSizeX, contactsSizeY, statusSizeX, statusSizeY;
     public int					armorSizeX, armorSizeY;
     
     public int					commandHistory;
@@ -36,7 +36,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public int					hudinfoTacHeight;
     
     // For the tactical map display
-    public boolean				tacShowHexNumbers, tacShowTerrainChar, tacShowTerrainElev, tacShowUnitNames, tacDarkenElev;
+    public boolean				tacShowHexNumbers, tacShowTerrainChar, tacShowTerrainElev, tacShowUnitNames, tacDarkenElev, tacShowArmorDiagram;
     public boolean				makeArcsWeaponRange;
     public boolean				highlightMyHex;
     public int					hexHeight;
@@ -47,7 +47,6 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public boolean				tacShowArcs;
     public boolean				tacShowCliffs;
     public boolean 				tacShowIndicators;
-    public int					cliffDiff;
     public float				speedIndicatorLength;
     
     public Color				backgroundColor;
@@ -84,7 +83,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
 
         antiAliasText = false;
         
-        mainSizeX = 560;
+        mainSizeX = 580;
         mainSizeY = 580;
 
         tacSizeX = 560;
@@ -92,13 +91,17 @@ public class MUPrefs extends Object implements Serializable, Cloneable
 
         contactsSizeX = 560;
         contactsSizeY = 250;
-
+        
+        statusSizeX = 530;
+        statusSizeY = 250;
+        
         armorSizeX = 200;
         armorSizeY = 250;
 
         mainLoc = new Point(10, 10);
         tacLoc = new Point(20 + mainSizeX, 10);
         contactsLoc = new Point(10, 30 + mainSizeY);
+        statusLoc = new Point(10,60 + mainSizeY);
         armorLoc = new Point(20 + mainSizeX, 30 + tacSizeY);
         
         commandHistory = 20;
@@ -120,8 +123,8 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         tacDarkenElev = true;
         tacShowCliffs = false;
         tacShowIndicators = false;      // Floating Heat/Armor/Internal bar on tactical map
+        tacShowArmorDiagram = false;
         highlightMyHex = false;
-        cliffDiff = 2;
         speedIndicatorLength = 3.0f;
         overwriteWithUnknown = true;	// Ie, don't save terrain we already know about in the underground
         
@@ -161,14 +164,10 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         maxScrollbackSize = 2000;
         
         MUHost bt3030 = new MUHost("btech.dhs.org", 3030);
-        MUHost bt3049 = new MUHost("btech.no-ip.com", 3049);
-        MUHost bt3029 = new MUHost("exile.betterbox.net", 3029);
-        MUHost bt5555 = new MUHost("btech-online.net", 5555);
+        MUHost frontiers = new MUHost("btmux.com", 5555);
 
         hosts.add(bt3030);
-        hosts.add(bt3049);
-        hosts.add(bt3029);
-        hosts.add(bt5555);
+        hosts.add(frontiers);
     }
 
     public void addHost(String newHost, int newPort)

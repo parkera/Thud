@@ -27,8 +27,6 @@ public class PrefsDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox		antiAliasTextCheckBox;
     private javax.swing.JCheckBox 		highlightMyHexCheckBox;
     private javax.swing.JCheckBox		overwriteWithUnknownCheckBox;
-    private javax.swing.JLabel 			cliffDistanceLabel;
-    private javax.swing.JComboBox 		cliffDistanceBox;
     private javax.swing.JLabel 			speedLengthLabel;
     private javax.swing.JComboBox 		speedLengthBox;
     private javax.swing.JLabel 			scrollbackSizeLabel;
@@ -77,8 +75,6 @@ public class PrefsDialog extends javax.swing.JDialog {
         TabbedPane = new javax.swing.JTabbedPane();
         
         GeneralOptionsTab = new javax.swing.JPanel();
-        cliffDistanceLabel = new javax.swing.JLabel();
-        cliffDistanceBox = new javax.swing.JComboBox();
         speedLengthLabel = new javax.swing.JLabel();
         speedLengthBox = new javax.swing.JComboBox();
         scrollbackSizeLabel = new javax.swing.JLabel();
@@ -155,14 +151,6 @@ public class PrefsDialog extends javax.swing.JDialog {
             }
         });
         GeneralOptionsTab.add(overwriteWithUnknownCheckBox);
-
-        
-        cliffDistanceLabel.setText("Cliff Detection Threshold");
-        GeneralOptionsTab.add(cliffDistanceLabel);
-        cliffDistanceBox.addItem(new Integer(1));
-        cliffDistanceBox.addItem(new Integer(2));
-        cliffDistanceBox.setSelectedItem(new Integer(prefs.cliffDiff));
-        GeneralOptionsTab.add(cliffDistanceBox);
 
         speedLengthLabel.setText("Speed Indicator Divisor");
         GeneralOptionsTab.add(speedLengthLabel);
@@ -275,7 +263,6 @@ public class PrefsDialog extends javax.swing.JDialog {
         prefs.elevationFontSize = ((Integer) elevationsSizeBox.getSelectedItem()).intValue();
         prefs.hexNumberFontSize = ((Integer) hexNumberSizeBox.getSelectedItem()).intValue();
 
-        prefs.cliffDiff = ((Integer) cliffDistanceBox.getSelectedItem()).intValue();
         prefs.speedIndicatorLength = ((Float) speedLengthBox.getSelectedItem()).floatValue();
         prefs.maxScrollbackSize = ((Integer) scrollbackSizeBox.getSelectedItem()).intValue();
         

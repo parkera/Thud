@@ -58,9 +58,10 @@ public class Thud extends JFrame implements  ActionListener
     protected JCheckBoxMenuItem miShowHexNumbers;
     protected JCheckBoxMenuItem miShowUnitNames;
     protected JCheckBoxMenuItem miDarkenElevations;
+    protected JCheckBoxMenuItem miShowArmorDiagrams;
 
     protected JCheckBoxMenuItem	miShowCliffs;
-    protected JCheckBoxMenuItem miShowIndicators;
+//    protected JCheckBoxMenuItem miShowIndicators;
 
     protected JMenuItem	miMoveRight, miMoveLeft, miMoveDown, miMoveUp, miCenterMap;
 
@@ -95,6 +96,7 @@ public class Thud extends JFrame implements  ActionListener
     
     MUData					data = null;
     MUContactList			conList = null;
+    MUStatus				status = null;
     MUTacticalMap			tacMap = null;
     MUPrefs					prefs = null;
     MUCommands				commands = null;
@@ -139,9 +141,10 @@ public class Thud extends JFrame implements  ActionListener
         miShowHexNumbers.addActionListener(l);
         miShowUnitNames.addActionListener(l);
         miDarkenElevations.addActionListener(l);
+        miShowArmorDiagrams.addActionListener(l);
 
         miShowCliffs.addActionListener(l);
-        miShowIndicators.addActionListener(l);
+//        miShowIndicators.addActionListener(l);
 
         miMoveRight.addActionListener(l);
         miMoveLeft.addActionListener(l);
@@ -163,6 +166,11 @@ public class Thud extends JFrame implements  ActionListener
         miSendTacticalUpdate.addActionListener(l);
         
         miDumpDocument.addActionListener(l);
+        
+        // Create a listener that does a graceful shutdown of the whole shebang when this window is closed.
+        addWindowListener(new WindowAdapter(){//<-----------
+            public void windowClosing(WindowEvent we){
+              doQuit();}});
     }
     
     // -----------------------
@@ -403,6 +411,10 @@ public class Thud extends JFrame implements  ActionListener
         mapMenu.add(miDarkenElevations).setEnabled(true);
         miDarkenElevations.setState(prefs.tacDarkenElev);
 
+        miShowArmorDiagrams = new JCheckBoxMenuItem("Show Armor Diagram",prefs.tacShowArmorDiagram);
+        mapMenu.add(miShowArmorDiagrams).setEnabled(true);
+        miShowArmorDiagrams.setState(prefs.tacShowArmorDiagram);
+        
         // ---
         mapMenu.addSeparator();
 
@@ -440,12 +452,12 @@ public class Thud extends JFrame implements  ActionListener
         mapMenu.add(miShowCliffs).setEnabled(true);
         miShowCliffs.setState(prefs.tacShowCliffs);
         
-        miShowIndicators = new JCheckBoxMenuItem("Show Heat/Armor on Tactical", prefs.tacShowIndicators);
+/*        miShowIndicators = new JCheckBoxMenuItem("Show Heat/Armor on Tactical", prefs.tacShowIndicators);
         miShowIndicators.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I,
                                                            Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         mapMenu.add(miShowIndicators).setEnabled(true);
         miShowIndicators.setState(prefs.tacShowIndicators);
-
+*/
         // Disable the map menu until we're actually connected
         mapMenu.setEnabled(false);
         mainMenuBar.add(mapMenu);
@@ -628,9 +640,6 @@ public class Thud extends JFrame implements  ActionListener
         
         this.getContentPane().setLayout(null);
 
-        // Only works for Java 1.4
-        //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
         // Add all of our menus
         addMenus();
 
@@ -653,11 +662,9 @@ public class Thud extends JFrame implements  ActionListener
         if (buildNumber == null)
             buildNumber = "Unknown";
         
-        bsd.insertPlainString(" *** Thud, (c) 2001-2003 Anthony Parker <asp@mac.com> ***");
-        bsd.insertPlainString(" *** bt-thud.sourceforge.net                          ***");
-        bsd.insertPlainString(" *** Version: 1.2.1                                   ***");
-        bsd.insertPlainString(" *** Built: " + buildNumber + "              ***");
-        bsd.insertPlainString(" *** Contact Tony @ 3030MUX with questions/comments   ***\n");
+        bsd.insertPlainString(" *** Thud, (c) 2001-2006 Anthony Parker & the THUD team   ***");
+        bsd.insertPlainString(" *** bt-thud.sourceforge.net                              ***");
+        bsd.insertPlainString(" *** Version: 1.3.0 Beta                                  ***\n");        
 
         // Show ourselves
         setVisible(true);
@@ -690,7 +697,9 @@ public class Thud extends JFrame implements  ActionListener
             conn = new MUConnection(lh, host, port, this);
 
             // Setup the rest of the helper classes
+            status = new MUStatus(conn, data, prefs);
             conList = new MUContactList(conn, data, prefs);
+            
             tacMap = new MUTacticalMap(conn, data, prefs);
             commands = new MUCommands(conn, data, prefs);
             
@@ -729,6 +738,9 @@ public class Thud extends JFrame implements  ActionListener
 
             if (conList != null)
                 conList.pleaseStop();
+
+            if (status != null)
+                status.pleaseStop();
 
             if (tacMap != null)
                 tacMap.pleaseStop();
@@ -788,8 +800,9 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miShowUnitNames.getActionCommand())) doShowUnitNames();
         else if (newEvent.getActionCommand().equals(miShowArcs.getActionCommand())) doShowArcs();
         else if (newEvent.getActionCommand().equals(miDarkenElevations.getActionCommand())) doDarkenElevations();
+        else if (newEvent.getActionCommand().equals(miShowArmorDiagrams.getActionCommand())) doShowArmorDiagrams();
         else if (newEvent.getActionCommand().equals(miShowCliffs.getActionCommand())) doShowCliffs();
-        else if (newEvent.getActionCommand().equals(miShowIndicators.getActionCommand())) doShowIndicators();
+//        else if (newEvent.getActionCommand().equals(miShowIndicators.getActionCommand())) doShowIndicators();
         else if (newEvent.getActionCommand().equals(miMoveLeft.getActionCommand())) doChangeXOffset(-1);
         else if (newEvent.getActionCommand().equals(miMoveRight.getActionCommand())) doChangeXOffset(1);
         else if (newEvent.getActionCommand().equals(miMoveUp.getActionCommand())) doChangeYOffset(-1);
@@ -810,7 +823,7 @@ public class Thud extends JFrame implements  ActionListener
             String text = textField.getText();
             try
             {
-                if (conn != null && text != null)
+            	if (conn != null && text != null && conn.connected)
                 {
                     if (prefs.echoCommands)
                         parse.commandLine("> " + text); 
@@ -830,6 +843,9 @@ public class Thud extends JFrame implements  ActionListener
 
                     // Reset our history location counter
                     historyLoc = 1;
+                } else {
+                	// Trying to talk while not connected
+                	bsd.insertMessageString("*** Can't Send Text: Not Connected ***");            	
                 }
             }
             catch (Exception e)
@@ -889,6 +905,8 @@ public class Thud extends JFrame implements  ActionListener
             tacMap.newPreferences(prefs);
         if (conList != null)
             conList.newPreferences(prefs);
+        if (status != null)
+            status.newPreferences(prefs);
         
         mainFontChanged();
         bsd.setMaxLines(prefs.maxScrollbackSize);
@@ -966,51 +984,92 @@ public class Thud extends JFrame implements  ActionListener
         }
     }
     
-    // -----------------------
-    // Turn the HUD on/off
+    /** Toggle HUD status */
     public void doStartStop()
-    {
-        // Only turn the HUD on if we're connected
-        if (connected)
-        {
-            data.hudRunning = !data.hudRunning;		// turn the HUD actions on/off
-            data.lastDataTime = System.currentTimeMillis();
-            
-            if (data.hudRunning)
-            {
-                parse.messageLine("*** Display Started ***");
+    {       
+        if (data.hudRunning) {
+           doStop();
+        } else {
+            doStart();
+        }                    
+    }
+    
+    /** Starts the HUD. */
+    public void doStart() {
+    	if(connected && !data.hudStarted) { // only start if we're connected and not already started
+    		data.hudStarted = true;
+    		data.lastDataTime = System.currentTimeMillis();
+    		
+    		 parse.messageLine("*** Display Started ***");
 
-                // Set our session key to something not too easily duplicated
-                String	sessionKey = String.valueOf(Calendar.getInstance().get(Calendar.MILLISECOND));
-                parse.setSessionKey(sessionKey);
+             // Set our session key to something not too easily duplicated
+             String	sessionKey = String.valueOf(Calendar.getInstance().get(Calendar.MILLISECOND));
+             parse.setSessionKey(sessionKey);
 
-                try
-                {
-                    // Set the key
-                    conn.sendCommand("hudinfo key=" + sessionKey);
-                }
-                catch (Exception e)
-                {
-                    System.out.println("Error: hudinfo key set: " + e);
-                }
+             try
+             {
+                 // Set the HUDINFO key
+                 conn.sendCommand("hudinfo key=" + sessionKey);
+             }
+             catch (Exception e)
+             {
+                 System.out.println("Error: hudinfo key set: " + e);
+             }
 
-                data.clearData();
-                
-                // Start sending commands
-                commands.startTimers();
+             data.clearData();
+             
+             // Start sending commands
+             commands.startTimers();
 
-                miSendTacticalUpdate.setEnabled(true);
-            }
-            else
-            {
-                parse.messageLine("*** Display Stopped ***");
-                commands.endTimers();
-                
-                miSendTacticalUpdate.setEnabled(false);
-            }            
-        }
+             miSendTacticalUpdate.setEnabled(true);    		
+    	}    	
+    }
+    
+    /** Stops the HUD. */
+    public void doStop() {
+    	if(data.hudStarted) {//only stop if we're started
+    		data.hudStarted = false;
+            parse.messageLine("*** Display Stopped ***");
+            data.hudRunning = false;
+            commands.endTimers();            
+            miSendTacticalUpdate.setEnabled(false);
+    	}
+    }
+    
+    /** Resume the HUD */
+    public void doResume() {
+    	if(conn.connected && !data.hudRunning) { // only resume if connected and not already running
+    		data.hudRunning = true;
+    		commands.forceTactical();    		
+    	}
+    }
+    
+    /** Resume the HUD, with an optional 'Resumed' message.
+     * 
+     * @param display If true, display '*** Display Resumed ***' in console
+     */
+    public void doResume(boolean display) {
+    	doResume();
+    	if(display) 
+    		parse.messageLine("*** Display Resumed ***");    
     }
 
+    /** Suspend the HUD */
+    public void doSuspend() {
+    	if(data.hudRunning)
+    		data.hudRunning = false;
+    }
+    
+    /** Suspend the HUD
+     * 
+     * @param display If true, display '*** Display Suspended***' in console
+     */
+    public void doSuspend(boolean display) {
+    	doSuspend();
+    	if(display)
+    		parse.messageLine("*** Display Suspended ***");
+    }
+    
     // ----------------------
     // Set the zoom level on the map
     public void doZoom(int z)
@@ -1113,6 +1172,14 @@ public class Thud extends JFrame implements  ActionListener
         miDarkenElevations.setState(prefs.tacDarkenElev);
         tacMap.newPreferences(prefs);
     }
+    
+    // -----------------------
+    public void doShowArmorDiagrams()
+    {
+    	prefs.tacShowArmorDiagram = !prefs.tacShowArmorDiagram;
+    	miShowArmorDiagrams.setState(prefs.tacShowArmorDiagram);
+    	tacMap.newPreferences(prefs);
+    }
 
     // -----------------------
     // Show cliffs on the map?
@@ -1125,12 +1192,12 @@ public class Thud extends JFrame implements  ActionListener
 
     // -----------------------
     // Show indicators on the map?
-    public void doShowIndicators()
+/*    public void doShowIndicators()
     {
         prefs.tacShowIndicators = !prefs.tacShowIndicators;
         miShowIndicators.setState(prefs.tacShowIndicators);
         tacMap.newPreferences(prefs);
-    }
+    } */
 
     // -----------------------
     public void doDumpDocumentStructure()
@@ -1309,6 +1376,13 @@ public class Thud extends JFrame implements  ActionListener
                 prefs.contactsLoc = conList.getLocation();
                 prefs.contactsSizeX = conList.getSize().width;
                 prefs.contactsSizeY = conList.getSize().height;
+            }
+            
+            if(status != null)
+            {
+            	prefs.statusLoc = status.getLocation();
+            	prefs.statusSizeX = status.getSize().width;
+            	prefs.statusSizeY = status.getSize().height;
             }
 
             FileOutputStream	fis = new FileOutputStream(prefsFile);

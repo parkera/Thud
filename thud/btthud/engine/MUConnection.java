@@ -38,7 +38,7 @@ public class MUConnection extends Thread {
     BufferedReader	rd;
     InputStream		is;
     BufferedWriter	wr;
-    
+    public boolean	connected = false;
     boolean			go = true;
     
     private Thread	connThread = null;
@@ -69,7 +69,7 @@ public class MUConnection extends Thread {
 
             rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             wr = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
-            
+            this.connected = true;
             start();
         }
         catch (Exception e)
@@ -101,6 +101,15 @@ public class MUConnection extends Thread {
             wr.write(command);
             wr.newLine();
             wr.flush();
+        }
+        catch (SocketException e) {
+        	// If we get a socket exception - disconnect.
+        	// This is kinda hacked up - ideally the thread communication would work a little better.
+        	// But, it prevents a bug where if the remote connection is closed, THUD goes to 100% cpu and throws
+        	// SocketExceptions all the livelong day :)
+        	System.out.println("Lost connection - aborting");
+        	errorHandler.doStop();
+        	errorHandler.stopConnection();        	
         }
         catch (Exception e)
         {
@@ -136,6 +145,7 @@ public class MUConnection extends Thread {
         try
         {
             conn.close();			// close the socket
+            this.connected = false;
         }
         catch (Exception e)
         {

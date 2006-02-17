@@ -244,14 +244,18 @@ public class MUParse implements Runnable {
                 }
 
                 String			restOfCommand = restOfCommandBuf.toString().intern();
-                
-                if (whichCommand == "???" || restOfCommand == "Not in a BattleTech unit" ||
-                    restOfCommand == "You are destroyed!" || restOfCommand == "Reactor is not online")
+                                
+                if (data.hudStarted && data.hudRunning && (whichCommand == "???" || restOfCommand == "Not in a BattleTech unit"))
                 {
-                    //data.hudRunning = false;
-                    //commands.endTimers();
-                    //messageLine("> Please stop display... Reason: " + restOfCommand);
-                    return true;
+                    data.hudRunning = false;                    
+                    messageLine("*** Display suspended: " + restOfCommand + " ****");                	                	
+                }
+                
+                if(data.hudStarted && data.hudRunning && (restOfCommand == "You are destroyed!")) {
+                	data.hudRunning = false;
+                	data.hudStarted = false;
+                	commands.endTimers();
+                	messageLine("*** Display Stopped: Unit Destroyed ***");
                 }
                 
                 // Now we check it against everything
@@ -284,6 +288,8 @@ public class MUParse implements Runnable {
                     parseHudInfoWL(restOfCommand);
                 else if (whichCommand == "WE")		// Our own weapons
                     parseHudInfoWE(restOfCommand);
+                else if (whichCommand == "AM")		// Our own ammo
+                	parseHudInfoAM(restOfCommand);
                 else
                     messageLine("> Unrecognized HUDINFO data: " + whichCommand);
 
@@ -370,7 +376,7 @@ public class MUParse implements Runnable {
                 info.status = st.nextToken();
             else
                 info.status = "";
-
+            
             if (data.hiSupportsOwnJumpInfo())
             {
                 // We have our jump target code now
@@ -423,23 +429,34 @@ public class MUParse implements Runnable {
         else
             prefs.hudinfoTacHeight = 40;
         
-        info.ref = st.nextToken();
-        info.name = st.nextToken();
+        if(st.hasMoreTokens()) {
+            info.ref = st.nextToken();
+            info.name = st.nextToken();
 
-        info.walkSpeed = Float.parseFloat(st.nextToken());
-        info.runSpeed = Float.parseFloat(st.nextToken());
-        info.backSpeed = Float.parseFloat(st.nextToken());
-        info.verticalSpeed = Float.parseFloat(st.nextToken());
+            info.walkSpeed = Float.parseFloat(st.nextToken());
+            info.runSpeed = Float.parseFloat(st.nextToken());
+            info.backSpeed = Float.parseFloat(st.nextToken());
+            info.verticalSpeed = Float.parseFloat(st.nextToken());
 
-        tempStr = st.nextToken().intern();
-        if (tempStr != "-")
-            info.fuel = Integer.parseInt(tempStr);
+            tempStr = st.nextToken().intern();
+            if (tempStr != "-")
+                info.fuel = Integer.parseInt(tempStr);
 
-        info.heatSinks = Integer.parseInt(st.nextToken());
+            info.heatSinks = Integer.parseInt(st.nextToken());
 
-        if (st.hasMoreTokens())
-            info.advTech = st.nextToken();
-        
+            if (st.hasMoreTokens())
+                info.advTech = st.nextToken();
+            
+            /* Since we were able to succesfully do a sgi, let's see if we the hud was suspended.
+             * If so, restart
+             */
+            if(data.hudRunning == false) {
+            	messageLine("*** Display Resumed ***");
+            	data.hudRunning = true;
+            	commands.forceTactical();
+            	data.lastDataTime = 0;
+            }
+        } 
     }
     
     /**
@@ -790,12 +807,35 @@ public class MUParse implements Runnable {
         w.typeNumber = Integer.parseInt(st.nextToken());
         w.quality = Integer.parseInt(st.nextToken());
         w.loc = st.nextToken();
+        w.status = st.nextToken();
+        w.fireMode = st.nextToken();
+        w.ammoType = st.nextToken();
 
-        // Skip status, firemode, ammo type
         data.myUnit.newUnitWeapon(w);
     }
+    
+    /**
+     * Parse a string which represents our unit's ammo status
+     * @param l A single line of the ammo info.
+     */
+    public void parseHudInfoAM(String l)
+    {
+        if (l == "Done")
+            return;
 
-         /**
+        StringTokenizer st = new StringTokenizer(l, ",");
+        MUUnitAmmo	a = new MUUnitAmmo();
+
+        a.number = Integer.parseInt(st.nextToken());
+        a.weaponTypeNumber = Integer.parseInt(st.nextToken());
+        a.ammoMode = st.nextToken();
+        a.roundsRemaining = Integer.parseInt(st.nextToken());
+        a.roundsOriginal = Integer.parseInt(st.nextToken());
+
+        data.myUnit.newUnitAmmo(a);
+    }
+
+     /**
          * Parse a string which represents a weapon information string (not a particular unit's weapon)
      * @param l A single line of the weapon info.
      */

@@ -116,15 +116,17 @@ public class MUUnitInfo extends Object implements Comparable {
     static final int	T = 45;
     static final int	FLL = 46;
     static final int	FRL = 47;
+    static final int	RLL = 48;
+    static final int	RRL = 49;
 
     static final String	sectionNames[] = {
         "NO", "A", "AS", "C", "CT", "CTr", "E", "F", "FLLr", "FLS", "FLRr",
         "FRS", "FS", "H", "Hr", "LA", "LAr", "LL", "LLr", "LRW", "LS",
         "LT", "LTr", "LW", "N", "R", "RA", "RAr", "RL", "RLr", "RLS",
         "RRS", "RRW", "RS", "RT", "RTr", "RW", "S1", "S2", "S3", "S4",
-        "S5", "S6", "S7", "S8", "T", "FLL", "FRL"};
+        "S5", "S6", "S7", "S8", "T", "FLL", "FRL", "RLL", "RRL"};
 
-    static final int	TOTAL_SECTIONS = 48;
+    static final int	TOTAL_SECTIONS = 50;
 
     static final int	TYPE_UNKNOWN = 0;
     static final int	BIPED = 1;
@@ -188,6 +190,17 @@ public class MUUnitInfo extends Object implements Comparable {
         else
             return false;
     }
+    
+    public boolean isFlying() {
+    	if(type.equals("V") ||
+    	   type.equals("F") ||
+    	   type.equals("A") ||
+    	   type.equals("D")) {
+    		return true;
+    	} else {
+    		return false;
+    	}
+    }
 
     public boolean hasHeat()
     {
@@ -231,6 +244,15 @@ public class MUUnitInfo extends Object implements Comparable {
     public void expireMore()
     {
         cyclesLeft--;
+    }
+    
+    /** Returns the cliff differential for this unit. */
+    public int cliffDiff() {
+    	if(this.isMech()) { 
+    		return 2;
+    	} else {
+    		return 1;
+    	}    		
     }
     
     /**
@@ -633,21 +655,20 @@ public class MUUnitInfo extends Object implements Comparable {
 
     /**
       * Return a color for displaying an armor percentage (green is minty, etc).
+      * 
       */
     static public Color colorForPercent(float p)
     {
-        if (p >= 99)
-            return new Color(0, 200, 0);			// Bright green
+        if (p >= 90)
+            return new Color(0, 255, 0);			// Bright green
         else if (p > 70)
-            return new Color(0, 150, 0);			// Darker green
-        else if (p > 50)
-            return new Color(150, 150, 0);			// Darker yellow
-        else if (p > 34)
-            return new Color(200, 200, 0);			// Bright yellow
-        else if (p >= 1)
-            return new Color(200, 0, 0);			// Bright red
+            return new Color(0, 160, 0);			// Darker green
+        else if (p > 45)
+            return new Color(255, 255, 0);			// Bright yellow
+        else if (p > 1)
+            return new Color(160, 0, 0);			// Dark red
         else
-            return new Color(0, 0, 0);
+            return new Color(128, 128, 128);		// (visible) "Black"
     }
 
     /**
@@ -655,18 +676,16 @@ public class MUUnitInfo extends Object implements Comparable {
       */
     static public Color colorForPercent(float p, int a)
     {
-        if (p >= 99)
+        if (p >= 90)
             return new Color(0, 255, 0, a);			// Bright green
         else if (p > 70)
-            return new Color(0, 175, 0, a);			// Darker green
-        else if (p > 50)
-            return new Color(150, 175, 0, a);			// Darker yellow
-        else if (p > 34)
-            return new Color(255, 255, 0, a);			// Bright yellow
+            return new Color(0, 160, 0, a);			// Darker green
+        else if (p > 45)
+            return new Color(255, 255, 0, a);		// Bright yellow
         else if (p >= 1)
-            return new Color(255, 0, 0, a);			// Bright red
+            return new Color(160, 0, 0, a);			// Dark red
         else
-            return new Color(0, 0, 0, a);
+            return new Color(128, 128, 128, a);		// (visible) "black"
     }
 
     /**
@@ -807,6 +826,10 @@ public class MUUnitInfo extends Object implements Comparable {
             return FLL;
         if (s == "FRL")
             return FRL;
+        if (s == "RLL")
+        	return RLL;
+        if (s == "RRL")
+        	return RRL;
         
         // Default
         return NO_SECTION;

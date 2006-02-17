@@ -57,15 +57,21 @@ public class MUCommandsTask extends TimerTask {
             }
             else
             {
-                // Do we send general status?
-                if (forceGeneralStatus || (count % (4 * prefs.fastCommandUpdate) == 0))
+            	// Do we send a static general info? (See if we've changed units)
+                if (data.hudStarted && conn != null && count % (4 * prefs.fastCommandUpdate) == 0)
+                {
+                    conn.sendCommand("hudinfo sgi");
+                }
+            	
+            	// Do we send general status?
+                if (data.hudRunning && (forceGeneralStatus || (count % (4 * prefs.fastCommandUpdate) == 0)))
                 {
                     conn.sendCommand("hudinfo gs");
                     forceGeneralStatus = false;
                 }
 
                 // Do we send a contacts?
-                if (forceContacts || (count % (4 * prefs.fastCommandUpdate) == 0))
+                if (!data.myUnit.status.matches("S|s") && data.hudRunning && (forceContacts || (count % (4 * prefs.fastCommandUpdate) == 0)))
                 {
                     conn.sendCommand("hudinfo c");
                     if (data.hiSupportsBuildingContacts())
@@ -80,24 +86,27 @@ public class MUCommandsTask extends TimerTask {
 
                 // Do we send a tactical?
                 // If we know we're on an LOS-only map, send it at a faster pace
-                if (forceTactical || (count % (4 * (data.mapLOSOnly ? prefs.mediumCommandUpdate : prefs.slugCommandUpdate)) == 0))
+                if (data.hudRunning && (forceTactical || (count % (4 * (data.mapLOSOnly ? prefs.mediumCommandUpdate : prefs.slugCommandUpdate)) == 0)))
                 {
                     conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight);
                     forceTactical = false;
                 }
 
                 // Do we send an armor status?
-                if (forceArmorStatus || (count % (4 * prefs.mediumCommandUpdate) == 0))
+                if (data.hudRunning && (forceArmorStatus || (count % (4 * prefs.mediumCommandUpdate) == 0)))
                 {
                     conn.sendCommand("hudinfo as");
+                    // Also send weapon & ammo status at this time
+                    conn.sendCommand("hudinfo we");
+                    conn.sendCommand("hudinfo am");
                     forceArmorStatus = false;
                 }
-
-                // Do we send a static general info? (See if we've turned into a MW or vice-versa)
-                if (count % (4 * prefs.slugCommandUpdate) == 0)
-                {
-                    conn.sendCommand("hudinfo sgi");
+                
+                // Do we send an original armor status? Only do this on startup (or if reset by auto leave/enter code)
+                if(conn != null && data.lastDataTime == 0) {
+                	conn.sendCommand("hudinfo oas");
                 }
+                                
             }           
         }
         catch (Exception e)

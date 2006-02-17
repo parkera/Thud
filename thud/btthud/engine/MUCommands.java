@@ -71,7 +71,12 @@ public class MUCommands
 
     public void endTimers()
     {
-        if (timer != null)
-            timer.cancel();
+    	/* We no longer want to cancel the timers, as 'hudinfo sgi' 
+    	 * should run continually to check if we're still in a unit.
+    	 */
+    	
+        /*if (timer != null)
+            timer.cancel(); */
+    	
     }
 }

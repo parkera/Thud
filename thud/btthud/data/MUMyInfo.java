@@ -27,6 +27,7 @@ public class MUMyInfo extends MUUnitInfo {
 
     public static final int		MAX_UNIT_WEAPONS = 50;
     public MUUnitWeapon[]		unitWeapons = new MUUnitWeapon[MAX_UNIT_WEAPONS];		// List of our own weapons.. asssume 50 for now (bad)
+    public MUUnitAmmo[]			unitAmmo = new MUUnitAmmo[MAX_UNIT_WEAPONS];			// List of our own ammunition
 
     public float				longRangeFront, longRangeLeft, longRangeRight, longRangeRear, longRangeTurret;
 
@@ -91,6 +92,18 @@ public class MUMyInfo extends MUUnitInfo {
         catch (Exception e) {
             System.out.println("Error: newWeapon: " + e);
         }
+    }
+    
+    /*
+     * Adds a new ammo bin to our unit-specific list of ammobins.
+     */
+    public void newUnitAmmo(MUUnitAmmo a) {
+    	try {
+    		unitAmmo[a.number] = a;
+    	} catch (Exception e) {
+    		System.out.println("Error: newAmmo: " + a);
+    	}
+    	
     }
     
     /**

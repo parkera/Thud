@@ -31,7 +31,7 @@ public class MUData {
     public static final int		MAX_X = 1000;
     public static final int		MAX_Y = 1000;
     
-    public boolean				hudRunning = false;
+    public boolean				hudRunning = false, hudStarted = false;
     public boolean				mainWindowMuted = false;
     
     public MUMyInfo				myUnit = null;
@@ -142,6 +142,14 @@ public class MUData {
         return -1;
     }
 
+    /**
+     * Returns a specific contact
+     * @param id Map-id of unit to return
+     */
+    public MUUnitInfo getContact(String id) {
+    	return (MUUnitInfo) contacts.get(indexForId(id));    	
+    }
+    
     /**
       * Returns an Iterator for the contact list. Used for looping on contacts when drawing the map, for example
       * @param sorted True if we want a sorted list
