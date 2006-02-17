@@ -1,16 +1,27 @@
 Hi there!
 
-This README is here in case you have some sudden urge to build Thud from scratch. I've included a couple of shell scripts which should get our UNIX/Linux friends going (and of course, it works on Mac OS X as well). Just type this at the command line after you've navigated to the 'thud' directory:
+Post-1.2.1, compiling THUD has switched to use Apache ant, a sophisticated
+compilation tool.
 
-sh build.sh
+If ant is installed, you should be able to just run 'ant' from the directory 
+this file's in to compile THUD to a .jar file.
 
-If you're not on one of those systems, you can still take a look at the scripts to see what steps are needed in order to build Thud. Esentially, you need to compile all of the .java files and make sure they are packaged properly.
+If you want to edit the source files, a Java-specific integrated development 
+environment (IDE) such as Eclipse is highly recommended.
 
-Note about MANIFEST.MF:
+To set up the project to edit and compile under Eclipse:
+1) File -> New -> Other...
+2) Select 'Java Project from Existing Ant Buildfile'
+3) Enter a descriptive project name and in the 'Ant buildfile' box, navigate to
+   the 'build.xml' file located in this directory
+4) Hit 'Finish' and you're all set!
 
-Don't forget it! You'll need it in order for the .jar file to operate properly. At the very minimum, it should contain this one line followed by a blank line:
+If you are interested in working on the THUD client, join our developer's
+mailing list and introduce yourself! We can always use the help.
 
-Main-Class: btthud.ui.Thud
+Thanks,
+--The THUD Team
+http://bt-thud.sourceforge.net/thud/
 
-Okay that's all for now. I'll probably update this file with more detail later.
-- Tony, 3030MUX
+Get Ant: http://ant.apache.org/
+Get Eclipse: http://www.eclipse.org/

@@ -1,0 +1,21 @@
+<project default="package">	
+	<target name="compile">
+		<mkdir dir="bin/btthud"/>
+		<javac srcdir="btthud" destdir="bin"/>
+	</target>
+	<target name="package" depends="compile">
+		<copy file="CHANGES.RTF" todir="bin"/>
+		<jar destfile="Thud.jar" basedir="bin">	
+			<manifest>
+			    <attribute name="Built-By" value="${user.name}"/>
+			    <attribute name="Main-Class" value="btthud.ui.Thud"/>
+			    <section name="common">
+			      <attribute name="Specification-Title" value="btthud"/>
+			      <attribute name="Specification-Version" value="${version} ${TODAY}"/>
+			      <attribute name="Specification-Vendor" value="The THUD Team"/>
+			    </section>
+			</manifest>
+		</jar>
+		<delete file="MANIFEST.MF"/>
+	</target>
+</project>
