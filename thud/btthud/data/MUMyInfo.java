@@ -3,9 +3,8 @@
 //  Thud
 //
 //  Created by asp on Wed Nov 21 2001.
-//  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
-//  Please see LICENSE.TXT for more information.
-//
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.data;
 
@@ -64,7 +63,7 @@ public class MUMyInfo extends MUUnitInfo {
     }
 
     /**
-      * Adds a new weapon to our unit-specific list of weapons, or updates an existing one
+     * Adds a new weapon to our unit-specific list of weapons, or updates an existing one
      */
     public void newUnitWeapon(MUUnitWeapon w)
     {
@@ -94,7 +93,7 @@ public class MUMyInfo extends MUUnitInfo {
         }
     }
     
-    /*
+    /**
      * Adds a new ammo bin to our unit-specific list of ammobins.
      */
     public void newUnitAmmo(MUUnitAmmo a) {
@@ -107,15 +106,15 @@ public class MUMyInfo extends MUUnitInfo {
     }
     
     /**
-      * Figures out the maximum range in the front or turret arc.
-      */
+     * Figures out the maximum range in the front or turret arc.
+     */
     public float maxFrontRange()
     {
         return longRangeFront;
     }
 
     /**
-        * Figures out the maximum range in the left arc.
+     * Figures out the maximum range in the left arc.
      */
     public float maxLeftRange()
     {
@@ -123,7 +122,7 @@ public class MUMyInfo extends MUUnitInfo {
     }
 
     /**
-        * Figures out the maximum range in the right arc.
+     * Figures out the maximum range in the right arc.
      */
     public float maxRightRange()
     {
@@ -131,7 +130,7 @@ public class MUMyInfo extends MUUnitInfo {
     }
 
     /**
-        * Figures out the maximum range in the rear arc.
+     * Figures out the maximum range in the rear arc.
      */
     public float maxRearRange()
     {
@@ -139,7 +138,7 @@ public class MUMyInfo extends MUUnitInfo {
     }
 
     /**
-        * Figures out the maximum range in the turret arc.
+     * Figures out the maximum range in the turret arc.
      */
     public float maxTurretRange()
     {
@@ -147,8 +146,8 @@ public class MUMyInfo extends MUUnitInfo {
     }
 
     /**
-      * Return a float corresponding to percentage armor left on the whole unit.
-      */
+     * Return a float corresponding to percentage armor left on the whole unit.
+     */
     public float percentArmorLeft()
     {
         int			totalAvailArmor = 0;
@@ -169,8 +168,8 @@ public class MUMyInfo extends MUUnitInfo {
     }
     
     /**
-      * Return a float corresponding to percentage internal structure left on the whole unit.
-      */
+     * Return a float corresponding to percentage internal structure left on the whole unit.
+     */
     public float percentInternalLeft()
     {
         int			totalAvailInternal = 0;
@@ -189,7 +188,7 @@ public class MUMyInfo extends MUUnitInfo {
     }
     
     /**
-        * Return a float corresponding to percentage armor left on the specified location.
+     * Return a float corresponding to percentage armor left on the specified location.
      */
     public float percentArmorLeft(int loc)
     {
@@ -212,7 +211,7 @@ public class MUMyInfo extends MUUnitInfo {
     }
     
     /**
-        * Return a float corresponding to percentage internal structure left on the specified location.
+     * Return a float corresponding to percentage internal structure left on the specified location.
      */
     public float percentInternalLeft(int loc)
     {

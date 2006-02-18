@@ -3,9 +3,8 @@
 //  JavaTelnet
 //
 //  Created by asp on Mon Nov 19 2001.
-//  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
-//  Please see LICENSE.TXT for more information.
-//
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.engine;
 
@@ -45,7 +44,9 @@ public class MUParse implements Runnable {
 
     // ---------------------
     
-    // Constructor
+    /**
+     * Constructor
+     */
     public MUParse(LineHolder lh, JTextPane textPane, MUData data, BulkStyledDocument doc, MUPrefs prefs)
     {
         // Init here
@@ -60,11 +61,6 @@ public class MUParse implements Runnable {
         // Start the thread
         start();
     }
-    
-    // Methods
-
-    // ---
-
     public String getSessionKey() {
         return sessionKey;
     }
@@ -73,8 +69,6 @@ public class MUParse implements Runnable {
         sessionKey = newKey;
         hudInfoStart = new String("#HUD:" + sessionKey + ":").intern();
     }
-
-    // ---
 
     public void setCommands(MUCommands commands)
     {
@@ -835,8 +829,8 @@ public class MUParse implements Runnable {
         data.myUnit.newUnitAmmo(a);
     }
 
-     /**
-         * Parse a string which represents a weapon information string (not a particular unit's weapon)
+   /**
+     * Parse a string which represents a weapon information string (not a particular unit's weapon)
      * @param l A single line of the weapon info.
      */
     public void parseHudInfoWL(String l)

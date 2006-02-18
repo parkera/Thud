@@ -3,9 +3,8 @@
 //  Thud
 //
 //  Created by asp on Wed Nov 28 2001.
-//  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
-//  Please see LICENSE.TXT for more information.
-//
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.ui;
 

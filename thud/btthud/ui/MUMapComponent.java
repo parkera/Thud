@@ -3,9 +3,8 @@
 //  Thud
 //
 //  Created by Anthony Parker on Thu Dec 27 2001.
-//  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
-//  Please see LICENSE.TXT for more information.
-//
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.ui;
 
@@ -358,11 +357,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
      * Paints the whole map, in steps.
      */
     public void paint(Graphics gfx)
-    {
-        // Why bother? We're going to draw over it in a minute anyway...
-        //super.paint(gfx);
-        // -----------
-        
+    {        
         getBounds(bounds);
 
         if (savedTerrain == null)
@@ -874,8 +869,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
     /**
       * Get the Image that we want to copy for a given terrain character.
-      */
-    
+      */    
     protected BufferedImage imageForTerrain(int terrain, int elevation)
     {
         return hexImages[terrain][elevation];
@@ -1011,10 +1005,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
      */
     public void drawIDBox(Graphics2D g, MUUnitInfo unit, Point2D pt, boolean self)
     {
-
         try
-        {
-        
+        {   
             AffineTransform		oldTrans = g.getTransform();
             Stroke				oldStroke = g.getStroke();
             float				borderWidth = 4f;
@@ -1245,8 +1237,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
      * @param pt The point at which we are drawing
      * @param u The unit we're dealing with
      * @param type Which type of heading to draw
-     */
-    
+     */   
     public void drawHeading(Graphics2D g, Point2D pt, MUUnitInfo u, int type)
     {
         AffineTransform		trans = new AffineTransform();
@@ -1426,20 +1417,6 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
      */
     public void paintArmorDiagram(Graphics2D g)
     {
-/*        AffineTransform			oldTrans = g.getTransform();
-        Rectangle				barRect = new Rectangle(0, 40, 0, 40);
-        
-        g.setFont(smallFont);
-        
-        g.setColor(new Color(128, 128, 128, 128));
-        g.setColor(Color.red);
-        g.fill(barRect);
-        g.setColor(Color.lightGray);
-        g.drawLine(barRect.x, barRect.y, barRect.width, barRect.y);
-       
-        // Reset transform
-        g.setTransform(oldTrans);
-        */
         AffineTransform xform = g.getTransform();
         int armorScale = 2;	// Size of the armor/internal indicators
         xform.translate(barHeight, bounds.height - 2*barHeight - armorScale * 20);	// Scale of mech drawing is 0-20 pixels
@@ -1677,6 +1654,9 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         g.fill(rlOutline);	    
     }
     
+    /**
+     * Draw an armor diagram for a quad unit.
+     */
     private void armorQuad(Graphics2D g, int armorTransparency) { 
     	AffineTransform xform = g.getTransform();
         float armorLeft;
@@ -1878,7 +1858,10 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
         g.fill(frlOutline);	    
     }
-    
+
+    /**
+     * Draw an armor diagram for a ground unit.
+     */
     private void armorGround(Graphics2D g, int armorTransparency) { 
     	AffineTransform xform = g.getTransform();
         float armorLeft;

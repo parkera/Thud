@@ -2,9 +2,8 @@
 //  Thud.java
 //
 //  Created by asp on Wed Nov 28 2001.
-//  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
-//  Please see LICENSE.TXT for more information.
-//
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.ui;
 
@@ -61,7 +60,6 @@ public class Thud extends JFrame implements  ActionListener
     protected JCheckBoxMenuItem miShowArmorDiagrams;
 
     protected JCheckBoxMenuItem	miShowCliffs;
-//    protected JCheckBoxMenuItem miShowIndicators;
 
     protected JMenuItem	miMoveRight, miMoveLeft, miMoveDown, miMoveUp, miCenterMap;
 
@@ -144,7 +142,6 @@ public class Thud extends JFrame implements  ActionListener
         miShowArmorDiagrams.addActionListener(l);
 
         miShowCliffs.addActionListener(l);
-//        miShowIndicators.addActionListener(l);
 
         miMoveRight.addActionListener(l);
         miMoveLeft.addActionListener(l);
@@ -173,8 +170,7 @@ public class Thud extends JFrame implements  ActionListener
               doQuit();}});
     }
     
-    // -----------------------
-    // File Menu Items
+    /** File Menu Items */
     public void addFileMenuItems()
     {
         fileMenu = new JMenu("File");
@@ -194,8 +190,7 @@ public class Thud extends JFrame implements  ActionListener
         mainMenuBar.add(fileMenu);
     }
 
-    // -----------------------
-    // HUD Menu Items
+    /** HUD Menu Items */
     public void addHUDMenuItems()
     {
         hudMenu = new JMenu("HUD");
@@ -243,8 +238,7 @@ public class Thud extends JFrame implements  ActionListener
         mainMenuBar.add(hudMenu);
     }
 
-    // -----------------------
-    // Update Menu Items
+    /** Update Menu Items */
     public void addUpdateMenuItems()
     {
         updateMenu = new JMenu("Update");
@@ -283,8 +277,8 @@ public class Thud extends JFrame implements  ActionListener
         updateMenu.setEnabled(false);
         mainMenuBar.add(updateMenu);
     }
-    // -----------------------
-    // Debug Menu Items
+    
+    /** Debug Menu Items */
     public void addDebugMenuItems()
     {
         debugMenu = new JMenu("Debug");
@@ -298,8 +292,7 @@ public class Thud extends JFrame implements  ActionListener
             mainMenuBar.add(debugMenu);
     }
 
-    // -----------------------
-    // Utility function to get the proper accelerator for connection items in the HUD menu
+    /** Utility function to get the proper accelerator for connection items in the HUD menu */
     protected void acceleratorForConnectionItem(JMenuItem mi, int i)
     {
         switch (i)
@@ -347,8 +340,7 @@ public class Thud extends JFrame implements  ActionListener
         }
     }
 
-    // -----------------------
-    // Map Menu items (mostly options)
+    /** Map Menu items (mostly options) */
     public void addMapMenuItems()
     {
         mapMenu = new JMenu("Map");
@@ -452,19 +444,12 @@ public class Thud extends JFrame implements  ActionListener
         mapMenu.add(miShowCliffs).setEnabled(true);
         miShowCliffs.setState(prefs.tacShowCliffs);
         
-/*        miShowIndicators = new JCheckBoxMenuItem("Show Heat/Armor on Tactical", prefs.tacShowIndicators);
-        miShowIndicators.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I,
-                                                           Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miShowIndicators).setEnabled(true);
-        miShowIndicators.setState(prefs.tacShowIndicators);
-*/
         // Disable the map menu until we're actually connected
         mapMenu.setEnabled(false);
         mainMenuBar.add(mapMenu);
     }
-
-    // -----------------------
-	// Edit menu items
+    
+	/** Edit menu items */
     public void addEditMenuItems()
     {
         editMenu = new JMenu("Edit");
@@ -526,16 +511,14 @@ public class Thud extends JFrame implements  ActionListener
         
         mainMenuBar.add(editMenu);
     }
-
-    // -----------------------
-    // Initialize the connection items for the HUD menu
+    
+    /** Initialize the connection items for the HUD menu */
     public void initConnectionMenus()
     {        
         miConnections = new JMenuItem[prefs.hosts.size()];
     }
     
-    // -----------------------
-    // Add all of the menus
+    /** Add all of the menus */
     public void addMenus()
     {
         clearMenus();
@@ -553,17 +536,12 @@ public class Thud extends JFrame implements  ActionListener
         setJMenuBar(mainMenuBar);
     }
 
-    // -----------------------
-    // Clear menu bar
+    /** Clear menu bar */
     public void clearMenus()
     {
         mainMenuBar.removeAll();
     }
     
-    // ------------------------------------------------------------------------
-    // TEXT FIELD SETUP
-    // ------------------------------------------------------------------------
-
     protected void setupNewTextFields()
     {
         bsd = new BulkStyledDocument(prefs.mainFontSize, prefs.maxScrollbackSize, mFont);
@@ -677,8 +655,7 @@ public class Thud extends JFrame implements  ActionListener
         }
     }
     
-    // -----------------
-    // Start the connection, including creating new objects
+    /** Start the connection, including creating new objects */
     public void startConnection(String host, int port)
     {        
         if (connected)		// We must already have a connection. Let's clean up that one, then go to this new one
@@ -763,9 +740,7 @@ public class Thud extends JFrame implements  ActionListener
     // ACTION AND MENU HANDLING
     // ------------------------------------------------------------------------
 
-    // -----------------------
-    // Guess we need to repaint ourselves
-
+    /** Repaint ourselves */
     public void paint(Graphics g) {
 
         Graphics2D g2 = (Graphics2D) g;
@@ -773,10 +748,8 @@ public class Thud extends JFrame implements  ActionListener
                             prefs.antiAliasText ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         super.paint(g2);
     }
-    
-    
-    // -----------------------
-    // ActionListener interface (for menus)
+     
+    /** ActionListener interface (for menus) */
     public void actionPerformed(ActionEvent newEvent)
     {
         if (newEvent.getActionCommand().equals(miReleaseNotes.getActionCommand())) doReleaseNotes();
@@ -802,7 +775,6 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miDarkenElevations.getActionCommand())) doDarkenElevations();
         else if (newEvent.getActionCommand().equals(miShowArmorDiagrams.getActionCommand())) doShowArmorDiagrams();
         else if (newEvent.getActionCommand().equals(miShowCliffs.getActionCommand())) doShowCliffs();
-//        else if (newEvent.getActionCommand().equals(miShowIndicators.getActionCommand())) doShowIndicators();
         else if (newEvent.getActionCommand().equals(miMoveLeft.getActionCommand())) doChangeXOffset(-1);
         else if (newEvent.getActionCommand().equals(miMoveRight.getActionCommand())) doChangeXOffset(1);
         else if (newEvent.getActionCommand().equals(miMoveUp.getActionCommand())) doChangeYOffset(-1);
@@ -855,24 +827,21 @@ public class Thud extends JFrame implements  ActionListener
         }
     }
 
-    // -----------------------
-    // Display our about box
+    /** Display our about box */
     public void doAbout() {
         aboutBox.setResizable(false);
         aboutBox.setVisible(true);
         aboutBox.show();
     }
 
-    // -----------------------
-    // Show the release notes
+    /** Show the release notes */
     public void doReleaseNotes()
     {
         ReleaseNotesDialog		notesDialog = new ReleaseNotesDialog(this, true);
         notesDialog.setVisible(true);
     }
 
-    // -----------------------
-    // Quit cleanly
+    /** Quit cleanly */
     public void doQuit()
     {
         try
@@ -893,8 +862,7 @@ public class Thud extends JFrame implements  ActionListener
         System.exit(0);
     }
     
-    // -----------------------
-    // Display the preferences dialog
+    /** Display the preferences dialog */
     public void doPreferences()
     {
         PrefsDialog		prefsDialog = new PrefsDialog(this, true);
@@ -915,16 +883,14 @@ public class Thud extends JFrame implements  ActionListener
         writePrefs();
     }
 
-    // -----------------------
-    // Display the "Add New Host" dialog
+    /** Display the "Add New Host" dialog */
     public void doAddNewHost()
     {
         AddHostDialog		addDialog = new AddHostDialog(this, true);
         addDialog.setVisible(true);
     }
 
-    // -----------------------
-    // Display the "Remove Host" dialog
+    /** Display the "Remove Host" dialog */
     public void doRemoveHost()
     {
         RemoveHostDialog	removeDialog = new RemoveHostDialog(this, true);
@@ -945,8 +911,7 @@ public class Thud extends JFrame implements  ActionListener
 	
     public void doSelectAll() {}
 
-    // -----------------------
-    // Insert the previous command into the text box
+    /** Insert the previous command into the text box */
     public void doPreviousCommand()
     {
         if (commandHistory.size() - historyLoc > 0)		// make sure we're not going past what we have
@@ -960,16 +925,14 @@ public class Thud extends JFrame implements  ActionListener
             historyLoc = 1;
         }
     }
-
-    // -----------------------
-    // Erase the current command from the text box
+    
+    /** Erase the current command from the text box */
     public void doEraseCommand()
     {
         textField.setText("");
     }
 
-    // -----------------------
-    // Mute the text in the main window
+    /** Mute the text in the main window */
     public void doMuteMainWindow()
     {
         data.mainWindowMuted = !data.mainWindowMuted;
@@ -1070,8 +1033,7 @@ public class Thud extends JFrame implements  ActionListener
     		parse.messageLine("*** Display Suspended ***");
     }
     
-    // ----------------------
-    // Set the zoom level on the map
+    /** Set the zoom level on the map */
     public void doZoom(int z)
     {
         // Let's try to keep the hex height even, since there are a lot of places that divide it by 2 - and it's an int
@@ -1084,24 +1046,21 @@ public class Thud extends JFrame implements  ActionListener
         tacMap.newPreferences(prefs);
     }
 
-    // -----------------------
-    // Change the offset of the map in x
+    /** Change the offset of the map in x */
     public void doChangeXOffset(int mod)
     {
         prefs.xOffset += mod;
         tacMap.newPreferences(prefs);
     }
 
-    // -----------------------
-    // Change the offset of the map in y
+    /** Change the offset of the map in y */
     public void doChangeYOffset(float mod)
     {
         prefs.yOffset += mod;
         tacMap.newPreferences(prefs);
     }
 
-    // -----------------------
-    // Recenter the map
+    /** Recenter the map */
     public void doCenterMap()
     {
         prefs.xOffset = 0;
@@ -1109,8 +1068,7 @@ public class Thud extends JFrame implements  ActionListener
         tacMap.newPreferences(prefs);
     }
 
-    // -----------------------
-    // Show the weapons arcs
+    /** Show the weapons arcs */
     public void doShowArcs()
     {
         prefs.tacShowArcs = !prefs.tacShowArcs;
@@ -1124,8 +1082,7 @@ public class Thud extends JFrame implements  ActionListener
         tacMap.newPreferences(prefs);
     }
 
-    // -----------------------
-    // Make the weapons arcs reflect actual weapon range
+    /** Make the weapons arcs reflect actual weapon range */
     public void doMakeArcsWeaponRange()
     {
         prefs.makeArcsWeaponRange = !prefs.makeArcsWeaponRange;
@@ -1134,8 +1091,7 @@ public class Thud extends JFrame implements  ActionListener
         miArcExtend.setEnabled(!prefs.makeArcsWeaponRange);
     }
 
-    // -----------------------
-    // Handle changing of arc length
+    /** Handle changing of arc length */
     public void doChangeArc(int d)
     {
         prefs.arcIndicatorRange += d;
@@ -1146,8 +1102,7 @@ public class Thud extends JFrame implements  ActionListener
         tacMap.newPreferences(prefs);
     }
 
-    // -----------------------
-    // Show the hex numbers?
+    /** Show the hex numbers? */
     public void doShowHexNumbers()
     {
         prefs.tacShowHexNumbers = !prefs.tacShowHexNumbers;
@@ -1155,8 +1110,7 @@ public class Thud extends JFrame implements  ActionListener
         tacMap.newPreferences(prefs);
     }
 
-    // -----------------------
-    // Show the unit names on the tactical map?
+    /** Show the unit names on the tactical map? */
     public void doShowUnitNames()
     {
         prefs.tacShowUnitNames = !prefs.tacShowUnitNames;
@@ -1164,8 +1118,7 @@ public class Thud extends JFrame implements  ActionListener
         tacMap.newPreferences(prefs);
     }
 
-    // -----------------------
-    // Darken elevations on the map?
+    /** Darken elevations on the map? */
     public void doDarkenElevations()
     {
         prefs.tacDarkenElev = !prefs.tacDarkenElev;
@@ -1173,7 +1126,7 @@ public class Thud extends JFrame implements  ActionListener
         tacMap.newPreferences(prefs);
     }
     
-    // -----------------------
+    /** Show armor diagrams? */
     public void doShowArmorDiagrams()
     {
     	prefs.tacShowArmorDiagram = !prefs.tacShowArmorDiagram;
@@ -1181,8 +1134,7 @@ public class Thud extends JFrame implements  ActionListener
     	tacMap.newPreferences(prefs);
     }
 
-    // -----------------------
-    // Show cliffs on the map?
+    /** Show cliffs on the map? */
     public void doShowCliffs()
     {
         prefs.tacShowCliffs = !prefs.tacShowCliffs;
@@ -1190,22 +1142,11 @@ public class Thud extends JFrame implements  ActionListener
         tacMap.newPreferences(prefs);
     }
 
-    // -----------------------
-    // Show indicators on the map?
-/*    public void doShowIndicators()
-    {
-        prefs.tacShowIndicators = !prefs.tacShowIndicators;
-        miShowIndicators.setState(prefs.tacShowIndicators);
-        tacMap.newPreferences(prefs);
-    } */
-
-    // -----------------------
     public void doDumpDocumentStructure()
     {
         bsd.dump(System.out);        
     }
     
-    // -----------------------
     // These two are for future expansion of setting the colors in the main window
     public void doGetBackgroundColor()
     {
@@ -1217,8 +1158,7 @@ public class Thud extends JFrame implements  ActionListener
         prefs.foregroundColor = JColorChooser.showDialog(this, "Choose a foreground color", prefs.foregroundColor);
     }
 
-    // -----------------------
-    // Did someone choose a connection menu item?
+    /** Did someone choose a connection menu item? */
     public boolean matchesConnectionMenu(String action)
     {
         boolean match = false;
@@ -1234,8 +1174,7 @@ public class Thud extends JFrame implements  ActionListener
         return match;
     }
 
-    // -----------------------
-    // Start a new connection
+    /** Start a new connection */
     public void doNewConnection(String action)
     {
         if (connected)			// Clear our current connection first
@@ -1245,15 +1184,13 @@ public class Thud extends JFrame implements  ActionListener
         startConnection(st.nextToken(), Integer.parseInt(st.nextToken().trim()));
     }
 
-    // -----------------------
-    // Disconnect from a connection
+    /** Disconnect from a connection */
     public void doDisconnect()
     {
         stopConnection();
     }
 
-    // -----------------------
-    // Change the update speed
+    /** Change the update speed */
     public void doChangeUpdate(int whichSpeed)
     {
         switch (whichSpeed)
@@ -1290,15 +1227,13 @@ public class Thud extends JFrame implements  ActionListener
         }
     }
 
-    // -----------------------
-    // Forces a tactical update
+    /** Forces a tactical update */
     public void doSendTacUpdate()
     {
         commands.forceTactical();
     }
     
-    // -----------------------
-    // Called when main font size changes
+    /** Called when main font size changes */
     public void mainFontChanged()
     {
         
@@ -1310,8 +1245,7 @@ public class Thud extends JFrame implements  ActionListener
             textField.setFont(mFont);
     }
     
-    // -----------------------
-    // Read our prefs from disk
+    /** Read our prefs from disk */
     public void readPrefs()
     {
         try
@@ -1346,8 +1280,7 @@ public class Thud extends JFrame implements  ActionListener
         
     }
 
-    // -----------------------
-    // Write our prefs to disk
+    /** Write our prefs to disk */
     public void writePrefs()
     {
         try
@@ -1397,10 +1330,6 @@ public class Thud extends JFrame implements  ActionListener
         }
     }
 
-    // --------------------------------------------------
-    // MAIN
-    // --------------------------------------------------
-    
     public static void main(String args[]) {
         new Thud();
     }

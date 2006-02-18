@@ -2,13 +2,18 @@
 //  MUUnitAmmo.java
 //  Thud
 //
-//  Created by Timothy Krajcar on Tue Feb 14 2006.
-//  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
-//  Please see LICENSE.TXT for more information.
-//
+//  Created by Tim Krajcar on Tue Feb 14 2006.
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.data;
 
+
+/**
+ * Class to keep track of individual ammo bins for a unit.
+ * @author tkrajcar
+ *
+ */
 public class MUUnitAmmo{
 
     public int		number;

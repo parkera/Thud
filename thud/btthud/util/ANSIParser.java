@@ -2,8 +2,8 @@
 //  ANSIParser.java
 //  Thud
 //
-//  Created by Anthony Parker on Sat Aug 03 2002.
-//  Copyright (c) 2002 Anthony Parker. All rights reserved.
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.util;
 

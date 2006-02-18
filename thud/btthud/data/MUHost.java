@@ -3,9 +3,9 @@
 //  Thud
 //
 //  Created by Anthony Parker on Wed Sep 25 2002.
-//  Copyright (c) 2002 Anthony Parker. All rights reserved.
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
-
 package btthud.data;
 
 import java.io.*;
@@ -15,11 +15,18 @@ public class MUHost implements Serializable {
     String			host;
     int				port;
 
+    /** 
+     * Constructor with default host and port.
+     */
     public MUHost()
     {
         this.host = null;
         this.port = 23;
     }
+    
+    /**
+     * Constructor with specified host and port.
+     */
     
     public MUHost(String host, int port)
     {

@@ -3,9 +3,8 @@
 //  Thud
 //
 //  Created by Anthony Parker on Wed Jan 02 2002.
-//  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
-//  Please see LICENSE.TXT for more information.
-//
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.engine;
 
@@ -71,12 +70,7 @@ public class MUCommands
 
     public void endTimers()
     {
-    	/* We no longer want to cancel the timers, as 'hudinfo sgi' 
-    	 * should run continually to check if we're still in a unit.
-    	 */
-    	
-        /*if (timer != null)
-            timer.cancel(); */
-    	
+        if (timer != null)
+            timer.cancel();    	
     }
 }

@@ -3,16 +3,15 @@
 //  Thud
 //
 //  Created by asp on Tue Nov 20 2001.
-//  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
-//  Please see LICENSE.TXT for more information.
-//
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.data;
 
 import java.util.*;
 
 /**
- * This class is for storing all the information from contacts and tactical.
+ * Stores all the information from contacts and tactical.
  *
  * Some notes:
  *   Since a lot of other classes (mainly ones for displaying info) use this, we should keep things
@@ -58,6 +57,9 @@ public class MUData {
     int						hudInfoMajorVersion = 0;
     int						hudInfoMinorVersion = 0;
     
+    /**
+     * Constructor
+     */
     public MUData()
     {
         hudRunning = false;
@@ -82,7 +84,9 @@ public class MUData {
     }
     
     /**
-      * Adds a new contact to our list of contacts, or updates an existing one
+      * Adds a new contact to our list of contacts, or updates an existing one.
+      * 
+      * @param con		Contact to be added
       */
     public void newContact(MUUnitInfo con)
     {
@@ -95,7 +99,7 @@ public class MUData {
     }
 
     /**
-      * Iterates through the contact list and marks contacts as expired or old or whatever
+      * Iterates through the contact list and marks contacts as expired or old or whatever.
       */
     public void expireAllContacts()
     {
@@ -121,8 +125,10 @@ public class MUData {
     }
 
     /**
-      * Returns the index of a specified id
+      * Returns the index in the contacts ArayList of a specific map id.
       * Since we keep track of everything in our LinkedList in our hashtable, just check the hashtable to see if we have it
+      * 
+      * @param	id		Map ID of contact to find
       */
     protected int indexForId(String id)
     {
@@ -143,8 +149,8 @@ public class MUData {
     }
 
     /**
-     * Returns a specific contact
-     * @param id Map-id of unit to return
+     * Returns a MUUnitInfo of a specific map id.
+     * @param	id		Map ID of unit to return
      */
     public MUUnitInfo getContact(String id) {
     	return (MUUnitInfo) contacts.get(indexForId(id));    	
@@ -165,7 +171,7 @@ public class MUData {
     // ----------------------------------
 
     /**
-      * Get the terrain of a specific hex (return the id, not the char)
+      * Get the terrain of a specific hex (return the id, not the char).
       * @param x X coordinate
       * @param y Y coordinate
       */
@@ -183,7 +189,7 @@ public class MUData {
     }
 
     /**
-     * Get the elevation of a specific hex
+     * Get the elevation of a specific hex.
      * @param x X coordinate
      * @param y Y coordinate
      */
@@ -201,7 +207,7 @@ public class MUData {
     }
 
     /**
-     * Get the absolute elevation of a specific hex
+     * Get the absolute elevation of a specific hex.
      * @param x X coordinate
      * @param y Y coordinate
      */
@@ -219,7 +225,7 @@ public class MUData {
     }
 
     /**
-     * Set the details of a specific hex
+     * Set the details of a specific hex.
      * @param x X coordinate
      * @param y Y coordinate
      * @param ter The terrain character representation
@@ -260,9 +266,6 @@ public class MUData {
         return terrainChanged;
     }
 
-    /**
-      * Set hudInfoMajorVersion
-      */
     public void setHudInfoMajorVersion(int v)
     {
         hudInfoMajorVersion = v;

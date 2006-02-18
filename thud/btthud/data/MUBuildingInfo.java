@@ -2,8 +2,8 @@
 //  MUBuildingInfo.java
 //  Thud
 //
-//  Created by Anthony Parker on Sat Dec 07 2002.
-//  Copyright (c) 2002 Anthony Parker. All rights reserved.
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.data;
 
@@ -16,7 +16,11 @@ public class MUBuildingInfo extends MUUnitInfo {
     public int			cf = 1;
     public int			maxCf = 1;
 
-    // Make a building contact string
+    /**
+     * Creates a human-readable contact string from a building.
+     * 
+     * @return		the human-readable string
+     */
     public String makeContactString()
     {
         /* Example:

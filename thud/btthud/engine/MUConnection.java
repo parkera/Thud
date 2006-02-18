@@ -3,9 +3,8 @@
 //  JavaTelnet
 //
 //  Created by asp on Fri Nov 16 2001.
-//  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
-//  Please see LICENSE.TXT for more information.
-//
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.engine;
 
@@ -27,7 +26,7 @@ import java.io.*;
 public class MUConnection extends Thread {
 
     
-    /**
+    /*
      * Holds the connection.
      */
     Socket			conn = null;
@@ -45,9 +44,6 @@ public class MUConnection extends Thread {
 
     LineHolder		lh = null;
 
-    // ---------------------------------------------------------
-    
-    // Public constructors
     /**
      * Creates a new MUConnection object, connects to the host, and starts recieving data and storing it.
      * @param host The IP address or name of the host we're connecting to.

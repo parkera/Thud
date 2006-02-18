@@ -3,9 +3,8 @@
 //  Thud
 //
 //  Created by Anthony Parker on April 10, 2002, 2:26 AM.
-//  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
-//  Please see LICENSE.TXT for more information.
-//
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.ui;
 
@@ -313,7 +312,7 @@ public class PrefsDialog extends javax.swing.JDialog {
         prefs.overwriteWithUnknown = overwriteWithUnknownCheckBox.isSelected();
     }
     
-    // Closes the dialog
+    /** Closes the dialog */
     private void closeDialog(java.awt.event.WindowEvent evt) {
         setVisible(false);
         dispose();
@@ -324,7 +323,7 @@ public class PrefsDialog extends javax.swing.JDialog {
             bTerrainColors[i].setIcon(new ColorWellIcon(prefs.terrainColors[i]));
     }
 
-    // Add standard font size menu items to a combo box
+    /** Add standard font size menu items to a combo box */
     private void addFontSizeMenus(JComboBox theBox)
     {
         theBox.addItem(new Integer(9));

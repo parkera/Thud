@@ -1,14 +1,11 @@
-/*
- * ReleaseNotesDialog.java
- *
- * Created on October 18, 2002, 12:39 AM
- */
-
-/**
- *
- * @author  asp
- */
-
+//
+//  ReleaseNotesDialog.java
+//  Thud
+//
+//  Created by asp on October 18, 2002, 12:39 AM
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
+//
 package btthud.ui;
 
 import javax.swing.*;

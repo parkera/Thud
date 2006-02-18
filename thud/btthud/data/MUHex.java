@@ -3,9 +3,8 @@
 //  Thud
 //
 //  Created by Anthony Parker on Mon Dec 17 2001.
-//  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
-//  Please see LICENSE.TXT for more information.
-//
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.data;
 
@@ -39,6 +38,9 @@ public class MUHex
     int							terrain;
     int							elevation;
     
+    /**
+     * Constructor with default terrain.
+     */
     public MUHex()
     {
         // Default terrain is a level 0 unknown
@@ -46,29 +48,45 @@ public class MUHex
         elevation = 0;
     }
 
+    /**
+     * Constructor with specified terrain.
+     * @param terrain		terrain for new hex
+     * @param elevation		elevation for new hex
+     */
     public MUHex(int terrain, int elevation)
     {
         this.terrain = terrain;
         this.elevation = elevation;
     }
     
-    // ---------------
-
-    // Return the 'id' for the terrain, not the char
-    // If they want a character, they can figure it out themselves
+    /**
+     * Returns id for terrain of hex (not char).
+     * @return	ID for this hex
+     */
     public int terrain() {
         return terrain;
     }
-
+    
+    /**
+     * Returns elevation for hex.
+     * @return	Elevation for this hex
+     */
     public int elevation() {
         return elevation;
     }
 
-    // Take a character and turn it into an id for storage
+    /**
+     * Set this hex's terrain
+     * @param	t		new terrain for hex 	
+     */
     public void setTerrain(char t) {
         terrain = idForTerrain(t);
     }
-
+    
+    /**
+     * Set this hex's elevation
+     * @param	e		new elevation for hex
+     */
     public void setElevation(int e) {
         elevation = e;
     }
@@ -93,7 +111,9 @@ public class MUHex
         return new Color(newComp[0], newComp[1], newComp[2]);
     }
 
-    // Get the constant for the terrain
+    /**
+     * Get the constant for the terrain
+     */ 
     static public int idForTerrain(char terr)
     {
         switch (terr)
@@ -133,7 +153,8 @@ public class MUHex
         } 
     }
 
-    // Get the name for the terrain
+    /** Get the name for the terrain
+     */
     static public String nameForId(int id)
     {
         switch (id)
@@ -173,7 +194,7 @@ public class MUHex
         } 
     }
 
-    // Get the terrain for the constant
+    /** Get the terrain for the constant. */
     static public char terrainForId(int id)
     {
         if (id < 0 || id >= TOTAL_TERRAIN)

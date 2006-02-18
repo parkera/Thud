@@ -2,9 +2,8 @@
 //  MUStatus.java
 //  Thud
 //
-//  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
-//  Please see LICENSE.TXT for more information.
-//
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.ui;
 
@@ -21,6 +20,12 @@ import javax.swing.border.*;
 
 import java.util.*;
 import java.text.*;
+
+/**
+ * Implements a status report window that displays heading, speed, heat, and weapon information
+ * very similar to the MUX's 'status'.
+ * @author tkrajcar
+ */
 public class MUStatus extends JFrame
                            implements Runnable,
                                       ActionListener
@@ -270,7 +275,7 @@ public class MUStatus extends JFrame
 
     }	
     
-    /* Adds a blank line to ArrayList elements and sends it back. Used to eliminate code duplication
+    /** Adds a blank line to ArrayList elements and sends it back. Used to eliminate code duplication
      * 
      * @param elements ArrayList to append blank line elements to
      */
@@ -279,7 +284,7 @@ public class MUStatus extends JFrame
         elements.add(new DefaultStyledDocument.ElementSpec(conRegular, DefaultStyledDocument.ElementSpec.StartTagType));            	
     }
     
-    /* Adds a given line to ArrayList elements and sends it back. Used to eliminate code duplication
+    /** Adds a given line to ArrayList elements and sends it back. Used to eliminate code duplication
      * 
      * @param elements ArrayList to append blank line elements to
      * @param s String of text to append
@@ -293,8 +298,10 @@ public class MUStatus extends JFrame
                 s.length()));
     }
     
-    /* Private function for determining percentage of armor remaining.
-     * Used to eliminate division by zero errors.
+    /** Percent of front armor remaining in a given section.
+     * 
+     * @param	section		The section to return.
+     * @return				Percentage (0-100) remaining a section.
      */
     private float ArmorPercent(MUSection section) {
     	if(section.of == 0) {
@@ -304,7 +311,10 @@ public class MUStatus extends JFrame
     	}
     } 
     
-    /* Similar for internal
+    /** Percent of internal points remaining in a given section.
+     * 
+     * @param	section		The section to return.
+     * @return				Percentage (0-100) remaining a section.
      */
     private float InternalPercent(MUSection section) {
     	if(section.oi == 0) {
@@ -314,7 +324,10 @@ public class MUStatus extends JFrame
     	}
     }
 
-    /* Similar for rear armor 
+    /** Percent of rear armor remaining in a given section.
+     * 
+     * @param	section		The section to return.
+     * @return				Percentage (0-100) remaining a section.
      */
     private float RearArmorPercent(MUSection section) {
     	if(section.or == 0) {
@@ -324,7 +337,11 @@ public class MUStatus extends JFrame
     	}
     }
     
-   /* Determining percentage of ammo remaining in a bin. */
+   /** Percentage of ammo remaining in a bin.
+    * 
+    * @param	a			Ammo bin to check
+    * @return				Percentage (0-100) remaining in the bin.
+    */
    private float AmmoPercent(MUUnitAmmo a) {
 	   if(a.roundsOriginal == 0) {
 		   return (float) 1.0;

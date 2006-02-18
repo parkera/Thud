@@ -3,9 +3,8 @@
 //  Thud
 //
 //  Created by asp on Tue Nov 20 2001.
-//  Copyright (c) 2001-2002 Anthony Parker. All rights reserved.
-//  Please see LICENSE.TXT for more information.
-//
+//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  All rights reserved. See LICENSE.TXT for more information.
 //
 package btthud.data;
 
@@ -637,7 +636,7 @@ public class MUUnitInfo extends Object implements Comparable {
     }
 
     /**
-        * Returns true if this unit has the possibility of having a turret (note: doesn't check to see if it actually does have one)
+     * Returns true if this unit has the possibility of having a turret (note: doesn't check to see if it actually does have one)
      */
     public boolean canHaveTurret()
     {
@@ -654,9 +653,8 @@ public class MUUnitInfo extends Object implements Comparable {
     // Static methods
 
     /**
-      * Return a color for displaying an armor percentage (green is minty, etc).
-      * 
-      */
+     * Return a color for displaying an armor percentage (green is minty, etc). 
+     */
     static public Color colorForPercent(float p)
     {
         if (p >= 90)
@@ -672,8 +670,8 @@ public class MUUnitInfo extends Object implements Comparable {
     }
 
     /**
-      * Return a color with Transparency
-      */
+     * Return a color with Transparency
+     */
     static public Color colorForPercent(float p, int a)
     {
         if (p >= 90)
@@ -689,9 +687,8 @@ public class MUUnitInfo extends Object implements Comparable {
     }
 
     /**
-      * Return a constant representing our movement type
-      */
-    
+     * Return a constant representing our movement type
+     */   
     static public int movementForType(String s)
     {
         if (s.equals("B"))
@@ -724,9 +721,9 @@ public class MUUnitInfo extends Object implements Comparable {
         return TYPE_UNKNOWN;
     }
     /**
-      * Return the index in an array for a specific section.
-      * @param s A string representation of the section we're looking for.
-      */
+     * Return the index in an array for a specific section.
+     * @param s A string representation of the section we're looking for.
+     */
     static public int indexForSection(String sec)
     {
         // I could have assumed the incoming string is intern()ed but I thought it was poor style... so I'll do it here
@@ -836,9 +833,8 @@ public class MUUnitInfo extends Object implements Comparable {
     }
 
     /**
-      * Returns true if the weapon can be considered in the 'front' Arc
-      * Only good for 'Mechs and Tanks at the moment
-      */
+     * Returns true if the weapon can be considered in the 'front' Arc (Only good for 'Mechs and Tanks at the moment).
+     */
     static public boolean isInFrontArc(int sNum)
     {
         if (sNum == H || sNum == LA || sNum == LT || sNum == CT || sNum == RT || sNum == RA ||
@@ -849,8 +845,7 @@ public class MUUnitInfo extends Object implements Comparable {
     }
 
     /**
-        * Returns true if the weapon can be considered in the 'front' Arc
-     * Only good for Tanks at the moment
+     * Returns true if the weapon can be considered in the 'front' Arc (Only good for Tanks at the moment)
      */
     static public boolean isInTurretArc(int sNum)
     {
@@ -861,8 +856,7 @@ public class MUUnitInfo extends Object implements Comparable {
     }
 
     /**
-     * Returns true if the weapon can be considered in the left Arc
-     * Only good for 'Mechs and Tanks at the moment
+     * Returns true if the weapon can be considered in the left Arc (Only good for 'Mechs and Tanks at the moment)
      */
     static public boolean isInLeftArc(int sNum)
     {
@@ -873,8 +867,7 @@ public class MUUnitInfo extends Object implements Comparable {
     }
 
     /**
-     * Returns true if the weapon can be considered in the right Arc
-     * Only good for 'Mechs and Tanks at the moment
+     * Returns true if the weapon can be considered in the right Arc (Only good for 'Mechs and Tanks at the moment).
      */
     static public boolean isInRightArc(int sNum)
     {
@@ -885,8 +878,7 @@ public class MUUnitInfo extends Object implements Comparable {
     }
 
     /**
-     * Returns true if the weapon can be considered in the rear or aft Arc
-     * Only good for 'Mechs and Tanks at the moment
+     * Returns true if the weapon can be considered in the rear or aft Arc (Only good for 'Mechs and Tanks at the moment)
      */
     static public boolean isInRearArc(int sNum)
     {
@@ -898,7 +890,7 @@ public class MUUnitInfo extends Object implements Comparable {
     }
     
     /**
-        * Adds a new weapon to our list of weapons, or updates an existing one
+     * Adds a new weapon to our list of weapons, or updates an existing one
      */
     static public void newWeapon(MUWeapon w)
     {
@@ -911,7 +903,7 @@ public class MUUnitInfo extends Object implements Comparable {
     }
 
     /**
-        * Gets a weapon based on its weapon number
+     * Gets a weapon based on its weapon number
      */
     static public MUWeapon getWeapon(int number)
     {
@@ -923,5 +915,4 @@ public class MUUnitInfo extends Object implements Comparable {
             return null;
         }
     }
-
 }
