@@ -630,6 +630,7 @@ public class Thud extends JFrame implements  ActionListener
         // Locate the window properly
         setSize(prefs.mainSizeX, prefs.mainSizeY);
         setLocation(prefs.mainLoc);
+        setAlwaysOnTop(prefs.mainAlwaysOnTop);
         
         // Initilization strings
         Package			pkg = Package.getPackage("btthud.ui");
@@ -878,6 +879,7 @@ public class Thud extends JFrame implements  ActionListener
         
         mainFontChanged();
         bsd.setMaxLines(prefs.maxScrollbackSize);
+        this.setAlwaysOnTop(prefs.mainAlwaysOnTop);
 
         // Why not write the prefs to disk right now? Save ourselves some grief
         writePrefs();

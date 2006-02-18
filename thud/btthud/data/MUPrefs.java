@@ -66,6 +66,8 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public static final int			NORMAL_UPDATE = 2;
     public static final int			SLOW_UPDATE = 3;
     
+    
+    public boolean mainAlwaysOnTop, contactsAlwaysOnTop, statusAlwaysOnTop, tacticalAlwaysOnTop;
     public MUPrefs()
     {
         
@@ -161,6 +163,11 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         elevationFontSize = 10;
 
         maxScrollbackSize = 2000;
+        
+        mainAlwaysOnTop = false;
+        contactsAlwaysOnTop = false;
+        statusAlwaysOnTop = false;
+        tacticalAlwaysOnTop = true;
         
         MUHost bt3030 = new MUHost("btech.dhs.org", 3030);
         MUHost frontiers = new MUHost("btmux.com", 5555);

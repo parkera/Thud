@@ -79,8 +79,10 @@ public class MUStatus extends JFrame
 
         setSize(prefs.statusSizeX, prefs.statusSizeY);
         setLocation(prefs.statusLoc);
+        
+        this.setAlwaysOnTop(prefs.statusAlwaysOnTop);
+        
         // Show the window now
-
         this.show();
         
         start();
@@ -93,6 +95,7 @@ public class MUStatus extends JFrame
         this.prefs = prefs;
         mFont = new Font("Monospaced", Font.PLAIN, prefs.contactFontSize);
         statusPane.setFont(mFont);
+        this.setAlwaysOnTop(prefs.statusAlwaysOnTop);
 
     }
     

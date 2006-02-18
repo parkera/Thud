@@ -11,6 +11,9 @@ package btthud.ui;
 import btthud.data.*;
 import btthud.util.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
 import java.util.*;
 
@@ -46,6 +49,12 @@ public class PrefsDialog extends javax.swing.JDialog {
     private javax.swing.JLabel 			hexNumbersLabel;
     private javax.swing.JComboBox 		hexNumberSizeBox;
 
+    private javax.swing.JPanel			WindowTab;
+    private javax.swing.JCheckBox		mainAlwaysOnTopCheckBox;
+    private javax.swing.JCheckBox		contactsAlwaysOnTopCheckBox;
+    private javax.swing.JCheckBox		statusAlwaysOnTopCheckBox;
+    private javax.swing.JCheckBox		tacticalAlwaysOnTopCheckBox;
+    
     private javax.swing.JButton 		CancelButton;
     private javax.swing.JButton 		SaveButton;
 
@@ -95,6 +104,8 @@ public class PrefsDialog extends javax.swing.JDialog {
         hexNumbersLabel = new javax.swing.JLabel();
         hexNumberSizeBox = new javax.swing.JComboBox();
 
+        WindowTab = new JPanel();
+                
         nullLabel = new javax.swing.JLabel();
         
         CancelButton = new javax.swing.JButton();
@@ -229,6 +240,43 @@ public class PrefsDialog extends javax.swing.JDialog {
         
         TabbedPane.addTab("Fonts", FontTab);
         
+        // --- WINDOW OPTIONS ---
+        WindowTab.setLayout(new GridLayout(4,1));
+        mainAlwaysOnTopCheckBox = new JCheckBox("Main Window Always On Top",null,prefs.mainAlwaysOnTop);
+        mainAlwaysOnTopCheckBox.addActionListener(new ActionListener()  {
+        	public void actionPerformed(ActionEvent evt) {
+        		mainAlwaysOnTopCheckBoxActionPerformed(evt);
+        	}
+        });
+        WindowTab.add(mainAlwaysOnTopCheckBox);
+        
+        contactsAlwaysOnTopCheckBox = new JCheckBox("Contacts Window Always On Top",null,prefs.contactsAlwaysOnTop);
+        contactsAlwaysOnTopCheckBox.addActionListener(new ActionListener()  {
+        	public void actionPerformed(ActionEvent evt) {
+        		contactsAlwaysOnTopCheckBoxActionPerformed(evt);
+        	}
+        });
+        WindowTab.add(contactsAlwaysOnTopCheckBox);
+        
+        statusAlwaysOnTopCheckBox = new JCheckBox("Status Window Always On Top",null,prefs.statusAlwaysOnTop);
+        statusAlwaysOnTopCheckBox.addActionListener(new ActionListener()  {
+        	public void actionPerformed(ActionEvent evt) {
+        		statusAlwaysOnTopCheckBoxActionPerformed(evt);
+        	}
+        });
+        WindowTab.add(statusAlwaysOnTopCheckBox);
+
+        tacticalAlwaysOnTopCheckBox = new JCheckBox("Tactical Window Always On Top",null,prefs.tacticalAlwaysOnTop);
+        tacticalAlwaysOnTopCheckBox.addActionListener(new ActionListener()  {
+        	public void actionPerformed(ActionEvent evt) {
+        		tacticalAlwaysOnTopCheckBoxActionPerformed(evt);
+        	}
+        });
+        WindowTab.add(tacticalAlwaysOnTopCheckBox);
+
+        TabbedPane.add("Window",WindowTab);
+        
+        // done with tabs
         getContentPane().add(TabbedPane);
         TabbedPane.setBounds(10, 10, 390, 250);
         
@@ -310,6 +358,22 @@ public class PrefsDialog extends javax.swing.JDialog {
 
     private void overwriteWithUnknownCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {
         prefs.overwriteWithUnknown = overwriteWithUnknownCheckBox.isSelected();
+    }
+    
+    private void mainAlwaysOnTopCheckBoxActionPerformed(ActionEvent evt) {
+    	prefs.mainAlwaysOnTop = mainAlwaysOnTopCheckBox.isSelected();
+    }
+    
+    private void contactsAlwaysOnTopCheckBoxActionPerformed(ActionEvent evt) {
+    	prefs.contactsAlwaysOnTop = contactsAlwaysOnTopCheckBox.isSelected();
+    }
+    
+    private void statusAlwaysOnTopCheckBoxActionPerformed(ActionEvent evt) {
+    	prefs.statusAlwaysOnTop = statusAlwaysOnTopCheckBox.isSelected();
+    }
+     
+    private void tacticalAlwaysOnTopCheckBoxActionPerformed(ActionEvent evt) {
+    	prefs.tacticalAlwaysOnTop = tacticalAlwaysOnTopCheckBox.isSelected();
     }
     
     /** Closes the dialog */

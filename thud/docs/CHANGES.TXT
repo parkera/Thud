@@ -13,6 +13,7 @@ Version History:
    * THUD now automatically detects when you enter/exit mechs and does updates accordingly. The ‘Start/Stop HUD’ button (Ctrl-G) still works – THUD will not automatically activate if the HUD has been stopped by a user (or not started yet)
    * Armor diagram can be superimposed on tactical map. Must be activated under ‘Map’ menu
    * Cliff detection is now done per-vehicle type – if you’re in a vehicle, the cliff lines will change (automatically) to show on 2 z difference instead of 3. A somewhat shaky VTOL cliffing model is implemented as well
+   * All windows can be made “always on top” (settings in Preference dialog)
    
   Bug Fixes:
    * The tactical display will reload quicker when you first start the HUD or when you change units.

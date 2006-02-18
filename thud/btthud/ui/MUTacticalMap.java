@@ -44,7 +44,7 @@ public class MUTacticalMap extends JFrame
         this.conn = conn;
         this.prefs = prefs;
 
-        // Setup our new contact list pane
+        // Setup our new tactical map pane
         map = new MUMapComponent(data, prefs);
 
         map.setDoubleBuffered(true);
@@ -56,6 +56,8 @@ public class MUTacticalMap extends JFrame
 
         setSize(prefs.tacSizeX, prefs.tacSizeY);
         setLocation(prefs.tacLoc);
+        
+        setAlwaysOnTop(prefs.tacticalAlwaysOnTop);
         
         // Show the window now
         this.show();
@@ -110,5 +112,6 @@ public class MUTacticalMap extends JFrame
     public void newPreferences(MUPrefs prefs)
     {
         map.newPreferences(prefs);
+        this.setAlwaysOnTop(prefs.tacticalAlwaysOnTop);
     }
 }

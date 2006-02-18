@@ -78,6 +78,9 @@ public class MUContactList extends JFrame
 
         setSize(prefs.contactsSizeX, prefs.contactsSizeY);
         setLocation(prefs.contactsLoc);
+        
+        this.setAlwaysOnTop(prefs.contactsAlwaysOnTop);
+        
         // Show the window now
 
         this.show();
@@ -97,6 +100,7 @@ public class MUContactList extends JFrame
         this.prefs = prefs;
         mFont = new Font("Monospaced", Font.PLAIN, prefs.contactFontSize);
         contactPane.setFont(mFont);
+        this.setAlwaysOnTop(prefs.contactsAlwaysOnTop);
         initAttributeSets();
     }
     
