@@ -38,7 +38,7 @@ public class MUStatus extends JFrame
     
     JTextPane			statusPane;
     Thread				thread = null;
-    SimpleAttributeSet conRegular, conIrregular;
+    SimpleAttributeSet	conRegular, conIrregular;
     ArrayList			elements;
     
     boolean				go = true;
@@ -192,23 +192,41 @@ public class MUStatus extends JFrame
 	                    	
 	                    	
 	                    	s = " " + 
-	                    		mydata.leftJust(weapname,22,false) + 
-	                    		"[" + 
+	                    		mydata.leftJust(weapname,19,true);
+	                    	if(weapon.fireMode.equals("-")) {
+	                    		s = s + " ";
+	                    	} else {
+	                    		s = s + weapon.fireMode;
+	                    	}	                    	
+	                    	if(weapon.ammoType.equals("-")) {
+	                    		s = s + " ";
+	                    	} else {
+	                    		s = s + weapon.ammoType;
+	                    	}
+	                    	s = s +
+	                    		" [" + 
 	                    		mydata.rightJust(String.valueOf(weapon.number),2,false) + 
-	                    		"] " + 
+	                    		"] " +
 	                    		mydata.rightJust(weapon.loc,3,false) + 	                    		 
 	                    		"   ";
 	                    	addString(s, conRegular);
 	                    	
-                    		if (weapon.status.equals("R") || weapon.status.equals("0")) {
+                    		if (weapon.status.equals("R")) {
                     			StyleConstants.setForeground(conIrregular, Color.green);
                     			addString(" Ready", conIrregular);                    			                    	
                     		} else if(weapon.status.equals("*")) {
                     			StyleConstants.setForeground(conIrregular,new Color(128,128,128));
                     			addString(" *****", conIrregular);
-                    		}
-                    		else
-                    		{
+                    		} else if(weapon.status.equals("A") || weapon.status.equals("a") || weapon.status.equals("J")) {
+                    			StyleConstants.setForeground(conIrregular,new Color(160,0,0));
+                    			addString("JAMMED", conIrregular);
+                    		} else if(weapon.status.equals("D")) {
+                    			StyleConstants.setForeground(conIrregular,new Color(128,128,128));
+                    			addString("DISBLD", conIrregular);
+                    		} else if(weapon.status.equals("S")) {
+                    			StyleConstants.setForeground(conIrregular,new Color(160,0,0));
+                    			addString("SHORTD", conIrregular);                    			
+                    		} else {
                     			addString(mydata.rightJust(weapon.status,6,false), conRegular);                    			                    		
                     		}                     		
 
@@ -232,7 +250,8 @@ public class MUStatus extends JFrame
 	                    	weapname = weapname.replaceAll("Clan\\.","");
 	                    		
                     		s = " " +
-                    			mydata.leftJust(weapname + " " + mode,17,false);
+                    			mydata.leftJust(weapname,15,false) +
+                    			mode + " ";
                     		addString(s, conRegular);
                     		
                     		s =	mydata.rightJust(String.valueOf(thisAmmo.roundsRemaining),3,false);
