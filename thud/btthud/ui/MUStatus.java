@@ -196,8 +196,16 @@ public class MUStatus extends JFrame
                     
                     if(s.length() > 0)
                     	addString(s,conRegular);
-                    addBlankLine();
+                    addBlankLine();                    
                     
+                    if(mydata.canHaveTurret()) {
+                    	s = "Turret Hdg: " +
+                    		mydata.rightJust(String.valueOf((mydata.turretHeading + mydata.heading + 180) % 360),5,false) +
+                    		" deg";
+                    		addString(s,conRegular);
+                    		addBlankLine();                    	
+                    }
+                    	                    
                     if(mydata.status.length() > 0 && mydata.status.equals("-") == false) {             
                     	
                     	s = "Status: ";                    	
