@@ -247,6 +247,7 @@ public class MUData {
         // Clear contacts and our unit, but leave the map alone
         contacts = new ArrayList(20);		// data for our contact list
         myUnit = new MUMyInfo();			// data that represents our own unit
+        
         lastDataTime = 0;					// clear our last recieved data
     }
 

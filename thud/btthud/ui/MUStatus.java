@@ -172,6 +172,165 @@ public class MUStatus extends JFrame
                     	" deg C.";
                     addString(s, conRegular);
                     addBlankLine();
+                    
+                    s = "";
+                    if(mydata.maxVerticalSpeed != 0) {
+                    	s = s +
+	                    	"Vert Speed: " +
+	                		mydata.rightJust(speedFormatter.format(mydata.verticalSpeed),5,false) +
+	                		" KPH  " +                   	
+                    		"Des. VSp:" +
+                    		mydata.rightJust(speedFormatter.format(mydata.desiredVerticalSpeed),5,false) +
+                    		" KPH  ";                    		
+                    }
+                    if(mydata.maxFuel != 0) {
+                    	s = s +
+                    		"Fuel: " +
+                    		mydata.rightJust(String.valueOf(mydata.fuel),4,false) +
+                    		"/" +
+                    		mydata.rightJust(String.valueOf(mydata.maxFuel),4,false) +
+                    		" (" +
+                    		speedFormatter.format(mydata.percentFuelLeft()) + 
+                    		"%)";                    		
+                    }
+                    
+                    if(s.length() > 0)
+                    	addString(s,conRegular);
+                    addBlankLine();
+                    
+                    if(mydata.status.length() > 0 && mydata.status.equals("-") == false) {             
+                    	
+                    	s = "Status: ";                    	
+                    	addString(s,conRegular);
+                    	
+                    	for(char sc : mydata.status.toCharArray()) { // loop through mydata.status
+                    		switch(sc) {
+	                			case 'B': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,0,0));
+	                				addString("BURNING",conIrregular);
+	                				break;
+	                			}
+	                			case 'C': {
+	                				addString("CARRYING CLUB",conRegular);
+	                				break;
+	                			}
+	                			case 'D': {
+	                				addString("DUG IN",conRegular);
+	                				break;
+	                			}
+	                			case 'e': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,0,0));
+	                				addString("AFFECTED BY ECM",conIrregular);
+	                				break;
+	                			}
+	                			case 'E': {
+	                				addString("EMITTING ECM",conRegular);
+	                				break;
+	                			}
+	                			case 'f': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("STANDING UP",conIrregular);
+	                				break;
+	                			}	                			
+	                			case 'F': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,0,0));
+	                				addString("FALLEN",conIrregular);
+	                				break;
+	                			}	                			
+	                			case 'h': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("GOING HULL DOWN",conIrregular);
+	                				break;
+	                			}	                			
+	                			case 'H': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("HULL DOWN",conIrregular);
+	                				break;
+	                			}	                			
+	                			case 'I': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,0,0));
+	                				addString("ON FIRE",conIrregular);
+	                				break;
+	                			}	                			
+	                			case 'J': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("JUMPING",conIrregular);
+	                				break;
+	                			}	                			
+	                			case 'l': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("ILLUMINATED",conIrregular);
+	                				break;
+	                			}	                			
+	                			case 'L': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("ILLUMINATING",conIrregular);
+	                				break;
+	                			}	                			
+	                			case 'n': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("ENEMY NARC ATTACHED",conIrregular);
+	                				break;
+	                			}	                			
+	                			case 'N': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("FRIENDLY NARC ATTACHED",conIrregular);
+	                				break;
+	                			}	                			
+	                			case '+': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("OVERHEATING",conIrregular);
+	                				break;
+	                			}	                			
+	                			case 'O': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("ORBITAL DROPPING",conIrregular);
+	                				break;
+	                			}	                			
+	                			case 'p': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(0,160,0));
+	                				addString("PROTECTED BY ECCM",conIrregular);
+	                				break;
+	                			}
+	                			case 'P': {
+	                				addString("EMITTING ECCM",conRegular);
+	                				break;
+	                			}
+	                			case 's': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("STARTING UP",conIrregular);
+	                				break;
+	                			}	      	                			
+	                			case 'S': {
+	                        		StyleConstants.setForeground(conIrregular,new Color(255,0,0));
+	                    			addString("SHUTDOWN",conIrregular);
+	                    			break;
+	                			}
+	                			case 't': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("BEING TOWED",conIrregular);
+	                				break;
+	                			}
+	                			case 'T': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("TOWING",conIrregular);
+	                				break;
+	                			}
+	                			case 'W': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("SWARMING",conIrregular);
+	                				break;
+	                			}
+	                			case 'X': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("SPINNING",conIrregular);
+	                				break;
+	                			}	      
+	                		}
+                    		addString(" ",conRegular);
+                    	}
+                    	addBlankLine();
+                    }
                                 	
                     s = "------- Weapon ------- [##] Loc - Status || --- Ammo Type --- Rds";
                     addString(s, conRegular);

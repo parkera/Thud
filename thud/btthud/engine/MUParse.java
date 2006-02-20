@@ -424,17 +424,24 @@ public class MUParse implements Runnable {
             prefs.hudinfoTacHeight = 40;
         
         if(st.hasMoreTokens()) {
-            info.ref = st.nextToken();
+        	String ref = st.nextToken();
+
+            if(ref.compareToIgnoreCase(info.ref) != 0 && info.ref.length() > 1) {
+            	// New ref = new unit.
+            	messageLine("*** Unit Change Detected - Refreshing Data ***");
+            	data.clearData();            	
+            }
+            info.ref = ref;
             info.name = st.nextToken();
 
             info.walkSpeed = Float.parseFloat(st.nextToken());
             info.runSpeed = Float.parseFloat(st.nextToken());
             info.backSpeed = Float.parseFloat(st.nextToken());
-            info.verticalSpeed = Float.parseFloat(st.nextToken());
+            info.maxVerticalSpeed = Float.parseFloat(st.nextToken());
 
             tempStr = st.nextToken().intern();
             if (tempStr != "-")
-                info.fuel = Integer.parseInt(tempStr);
+                info.maxFuel = Integer.parseInt(tempStr);
 
             info.heatSinks = Integer.parseInt(st.nextToken());
 
@@ -443,7 +450,7 @@ public class MUParse implements Runnable {
             
             /* Since we were able to succesfully do a sgi, let's see if we the hud was suspended.
              * If so, restart
-             */
+             */                        
             if(data.hudRunning == false) {
             	messageLine("*** Display Resumed ***");
             	data.hudRunning = true;

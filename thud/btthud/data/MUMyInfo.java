@@ -18,7 +18,7 @@ public class MUMyInfo extends MUUnitInfo {
 
     public int			fuel;
 
-    public float		walkSpeed, runSpeed, backSpeed, verticalSpeed;
+    public float		walkSpeed, runSpeed, backSpeed, maxVerticalSpeed;
     public int			jumpTargetX, jumpTargetY;
     
     public String		ref;
@@ -219,6 +219,17 @@ public class MUMyInfo extends MUUnitInfo {
         
         if (totalAvailInternal != 0)
             return (float) ((int) (100.0 * ((float) armor[loc].i / (float) totalAvailInternal)));
+        else
+            return (float) 100;
+    }
+    
+    /**
+     * Return a float corresponding to percentage of fuel left.
+     */
+    public float percentFuelLeft()
+    {      
+        if (maxFuel != 0)
+            return (float) ((int) (100.0 * ((float) fuel / (float) maxFuel)));
         else
             return (float) 100;
     }

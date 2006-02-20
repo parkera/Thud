@@ -44,6 +44,7 @@ public class MUUnitInfo extends Object implements Comparable {
     public float		range, speed, verticalSpeed;
     public int			x, y, z;
     public int			heading, desiredHeading, bearing, jumpHeading;
+    public int			maxFuel;
     public int			turretHeading;
     public float		rangeToCenter;
     public int			bearingToCenter;
