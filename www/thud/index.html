@@ -1,0 +1,90 @@
+<html>
+<head>
+<title>Thud</title>
+</head>
+<body>
+<br><br><center><font size=+2>Thud<br>A graphical 'heads up display' for BTech MUX<br></font><font size=+1>by Anthony Parker (Tony at 3030MUX)</font><br></center><br><br>
+<center>
+<font size=+1>
+<a href="#requirements">Requirements</a> | <a href="#download">Download Thud</a> | <a href="#running">Running Thud</a> | <a href="#features">Features</a> | <a href="#help">Help</a> | <a href="#source">Getting the Source Code</a> | <a href="#thanks">Thanks</a><br>
+<a href="screenshots.html">Screenshots</a>
+</font>
+</center>
+<br><br>
+<p>
+This is the home page for Thud, an open-source graphical heads up display for BTech MUXes based on the public CVS tree available at <a href="http://btech.sourceforge.net">Sourceforge</a>. Thud can connect to any BTech MUX that supports a certain protocol known as 'hudinfo.' By default, it is set up to connect to <a href="telnet://btech.dhs.org:3030">3030MUX</a>.<br><br>Thud (Tony's Heads Up Display) is a pure Java client designed to retrieve combat-related data from the game and display it in a easier-to-read tactical display. It will display a tactical map, contacts list, armor status, heat status, and more. The map displays terrain, cliffs, your own unit, and enemy units. There are a plethora of options available to customize the client to suit your style of playing. Thud is great for new players and veterans alike! See the <a href="screenshots.html">screenshots</a> to get a good idea of what Thud looks like.
+<p>For more information about helping to develop Thud, to report bugs, or to join the mailing lists about Thud, please visit our <a href="http://www.sourceforge.net/projects/bt-thud/">Sourceforge project page</a>. You don't have to be a programmer to help -- we can use people to help write documentation or provide good insights into new features.
+<p><a name="requirements"><b>Thud Requirements</b>
+<br><br>
+Thud <b>requires</b> the Java Runtime Environment (JRE) version 1.3.1 or better</a> and an internet connection. If you have Mac OS X, the JRE is already installed. If you are running Windows or Linux, you may need to download and install the JRE before Thud can run. Get the latest version of the <b>J2SE</b> package at <a href="http://java.sun.com/j2se/downloads.html">java.sun.com J2SE Download site</a>.
+<br>
+<p><a name="download"><b>Download Thud</b>
+<br><br>You can download Thud from Sourceforge. Make sure you get the latest version (it's the bt-thud package):
+<br><br>
+<a href="https://sourceforge.net/project/showfiles.php?group_id=58787">Download Thud</a>
+<br><font size=-1>Current Version: 1.2.1 - Released May 31, 2003</font>
+<br><br>
+You can also <a href="CHANGES.TXT">see the list of changes</a> in the most recent version.
+<p><a name="running"><b>Running Thud</b>
+<br>
+To run Thud, download it and save it somewhere handy. Thud is written in Java, and so should run on any platform that can handle Java 1.3.1 or better.
+<ul>
+<li><i>For Mac OS X:</i> Thud should be double-clickable. You're up and running.
+<li><i>For Windows:</i> Try double clicking, or typing: <i>java -jar Thud-<b>version</b>.jar</i> where <b>version</b> is the version number, ie <b>1.2</b>.
+<li><i>For a command-line of some sort:</i> For Mac OS X or any other systems with a command line, try typing this at the prompt (once you have navigated to the location of Thud.jar): <i>java -jar Thud-<b>version</b>.jar</i> where <b>version</b> is the version number, ie <b>1.2</b>.
+<li><i>For other systems:</i> You're on your own... sorry. :) I'd love to hear from you if you get it running on some exotic system, though, and we'll put the instructions up here on the web page.
+</ul>
+<p><a name="features"><b>Features</b>
+<br><br>
+Thud has the following features:
+<br>
+<ul>
+<li>ANSI color support
+<li>An impressive tactical map display: see <a href="screenshots.html">screenshots</a>
+<li>All enemy and friendly contacts with headings
+<li>Unique icons for each movement type
+<li>Current heading and desired heading indicators
+<li>Weapons arc indicators
+<li>An overall armor percentage display
+<li>A heat indicator
+<li>Display of hex numbers if desired
+<li>Varying colors of hexes based on height
+<li>A separate contacts window
+<li>Customizable colors and font sizes
+<li>Much more...
+</ul>
+<p><a name="help"><b>Brief Help</b>
+<br><br>
+Until I get a more descriptive Help written, here are some basic instructions on how to use Thud. Note: The following instructions apply only if you have a character on 3030MUX already. If you do not, you must create one at the welcome screen and follow the instructions on the MUX before you have the opportunity to get into a combat unit and try out Thud's main purpose.
+<br><br>
+Once Thud is started up (see 'Running Thud', above), choose 'btech.dhs.org 3030' from the HUD menu. This will connect you to 3030MUX. You should see the 3030MUX welcome screen appear in the text window. Connect to your character as normal (type: connect "name" password) by typing in the box at the bottom of the main text window. Get yourself into a sim pod and startup your unit.<br><br>Now, you're ready to start: choose 'Start/Stop' from the 'HUD' menu, and you're up and running! There are plenty of options in the 'Map' menu to keep you busy, as well as lots in the preferences dialog.
+<p><a name="source"><b>Using CVS to get the latest Thud source</b>
+<br><br>
+This requires some knowledge of how to use a command line and cvs client (but not much). You'll also need the Java Development Kit (JDK) 1.3 or better, available at <a href="http://java.sun.com">java.sun.com</a>.
+<br><br>
+If you have a CVS root already setup, drop into a terminal and type:<br>
+<code>cvs -d:pserver:anonymous@cvs.bt-thud.sourceforge.net:/cvsroot/bt-thud login</code><br>
+Then, type:<br>
+<code>cvs -z8 -d:pserver:anonymous@cvs.bt-thud.sourceforge.net:/cvsroot/bt-thud co thud</code><br><br>
+Now,<br>
+<code>cd thud</code><br>
+<code>sh build.sh</code><br>
+<code>cd build</code><br>
+<code>./Thud.jar</code><br>
+<br>
+This is a pretty rough outline of what you need to do. If any Thud users out there are feeling generous and would like to share some more complete details, I'd appreciate it.
+<br>
+<p><a name="thanks"><b>Thanks To</b>
+<br>
+<ul>
+<li><a href="http://sourceforge.net">Sourceforge</a>, for hosting the project
+<li>Focus @ 3030MUX, for hudinfo and the name of Thud
+<li>Arthur @ 3030MUX, for hudinfo help
+<li>Joe Osaka @ 3030MUX, for beta testing
+<li>M3 @ 3030MUX, for beta testing and code support
+<li>GJ @ 3030MUX, for optimization help
+</ul>
+<br><br>
+<br><center><A href="http://sourceforge.net"> <IMG src="http://sourceforge.net/sflogo.php?group_id=58787&amp;type=5" width="210" height="62" border="0" alt="SourceForge Logo"></A></center><br>
+</body>
+</html>

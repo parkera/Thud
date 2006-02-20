@@ -1,0 +1,136 @@
+
+Thud, by Anthony Parker <asp@mac.com>, Tony at 3030MUX
+
+You can access this file at any time by choosing "View Release Notes..." from the File menu.
+For basic help on how to use Thud, please visit the web site at: http://bt-thud.sourceforge.net
+
+Version History:
+
+1.2.1 May 31, 2003
+ 
+ Bug Fixes:
+ 
+   * Thud will now send much smaller tactical updates when the player is a MechWarrior (Infantry type)
+   * The Mute menu shortcut has been changed to 'Command/Control - Shift - ; ' so as not to interfere with the arc range shortcut
+   * The default text size has been changed to 12 points.
+
+1.2 January 4, 2002
+
+ New Features:
+ 
+  * Added compatability with the new version of hudinfo (0.7) while retaining backward compatability with original hudinfo (0.6).
+  * Contact lists are now sorted
+  * Buildings now appear on the contacts list and on the tactical map
+  * Added ability to 'mute' the main window text. Note: This is not saved across sessions, because you need the main window to login to the MUX each time. Use the 'Mute Main Window Text' item in the Edit menu.
+  * Added some framework for future expansion.
+   
+1.1.1 October 19, 2002
+
+ Fixed a bug which caused strange menu behavior and inability to connect on certain platforms.
+
+1.1 October 18, 2002
+ 
+ This version introduces the ability to connect to any MUX, among many other things (see below). 
+ 
+ Players: If Thud appears to 'lag' your connection and commands you put in are not sent to the game after a short period of time, the cause is the administrators not increasing the command_quota_increment. Talk to them, it's not my fault. =) 
+ 
+ BTech MUX Admins: In order for Thud to work on your site, you need to satisfy 2 requirements:
+   1. The HUDINFO protocol must be implemented
+   2. The command_quota_increment must be increased. Use: @admin command_quota_increment=4
+
+ Due to changes in the preferences file format, your preferences will be reset on starting this version. Sorry. Again.  
+
+ New Features / Other Changes:
+ 
+  * Thud can now display this list of changes in a dialog box. It's in the File menu.
+  * A preference to adjust the length of heading/speed indicator lines on contacts on the map. The lower the number, the longer the line.
+  * A preference to limit the amount of lines in the scrollback. Keeping this number lower reduces memory usage and speeds up Thud.
+  * A new menu with 3 menu items to control the speed of updates that Thud sends. Keep it on Slow to reduce bandwidth usage, crank it to Fast when bad guys show up.
+  * Thud now has an option to keep 'old' data instead of overwriting it with 'unknown.' If it 'Erase Unknown Terrain' is set, Thud will overwrite any old terrain and turn it to a black hex if it gets a '?' for it now. This mostly happens underground. If you want to keep a 'backlog' of terrain underground, uncheck this option.
+  * Thud keeps 'expired' contacts around 3 times longer now. 
+  * Thud no longer colors destroyed contacts grey, leaving that color soley for expired contacts. In addition, enemy destroyed contacts will not be displayed in bold any longer. Destroyed contacts are still styled strike-through however.
+  
+ Bug fixes:
+ 
+  * Finally found and fixed the 'straight lines aren't straight' bug. Hexes are properly shaped now.
+  * Reduced memory usage of map data
+  * Increased efficiency of parsing data from the MUX
+  * Thud won't keep sending commands if it's lagged... it'll hold up until it gets some data again before resuming spamming you
+  * Tabs are closer to the right size in the main window
+  
+1.0 September 16, 2002
+
+ The focus of the final 1.0 release has been enhancements in speed and bug fixes. There are also a few minor new features.
+ All users are encouraged to use this new release and upgrade from any older version.
+ Note: Due to changes in the preferences file format, your preferences will be reset on starting this version. Sorry.
+ 
+ New Features:
+ 
+  * Better ANSI support: background colors and underline mode now supported
+  * If you are in a tank, it will show a red line indicating turret facing
+  * Other jumping mechs show a green line indicating jump heading
+  * Hex numbers along side and top now have a black bar behind them to make them much easier to read
+  * Hex numbers display at any zoom level - they skip numbers at far out zoom to make them readable
+  * New option to display your heat level in the tactical display underneath your unit
+  
+ Bug Fixes:
+ 
+  * Much much quicker connect-to-MUX time
+  * Much quicker text handling
+  * More efficient and usable map scrolling
+  * Contact window listing is quicker and flickers less
+  * Elevation numbers now show when 'Darken Elevations' is turned off
+  * If the connection is dropped for some reason, Thud should now behave better. Choose your connection from the menu to reconnect
+  * Menu items properly disabled/enabled depending on connection status
+  * Choosing a new connection while still connected should disconnect properly first, then reconnect
+  * No more duplicate contacts on unknowns (seismic or BAP contacts)
+  * More misc. bug fixes than you can shake a stick at
+
+1.0b5
+
+ I've decided to move to a more traditional version numbering system as we approach a final 1.0 release. :)
+ 
+ New Features:
+
+  * There is now a preferences window which allows for changing of colors on the map display, font sizes, and more.
+  * Your own unit is now drawn in a bold line on the tactical map to help differentiate it in large battles.
+  * You can now show cliffs, which will highlight edges in red which will cause a fall or halt.
+  * Changes to internal way that maps are stored.
+  * Thud will now exit when the main window is closed.
+  
+ Bug Fixes:
+  
+  * Thud now handles underground maps properly (unknown hexes show up black on the tactical display).
+  * Some work on map correctness done, but there's still more to do.
+  * A lot of small bug fixes
+  
+-0.6b April 7, 2002
+
+ New Features:
+
+  * The map can now be scrolled around the main unit. The commands are in the 'Map' menu, and are most effective when using the keyboard shortcuts.
+  * Weapons arcs can now reflect the range of your weapons in that particular arc or 1 hex (whichever is longer). For example, if your unit has one LRM-5 on your Right Arm and 1 Medium Laser (rear facing) in your Center Torso, then the right yellow arc will be 21 hexes long, the blue front arc will be 21 hexes long (RA weapons can fire in the front arc), the yellow left arc will be 1 hex long, and the rear red arc will be 9 hexes long. 
+  * Weapons arcs can be switched between an arbitrary user-settable range (as used in previous versions) or the weapons range as described above. They can also be turned off completely.
+  * Menus reorganized a bit make them easier to navigate. Also, items in the 'HUD' menu have a keyboard shortcut. 3030MUX is Control-1 by default.
+  * Thud now prints its version number to the main window upon startup.
+
+ Bug Fixes:
+
+  * Menu shortcuts should now change the modifier they use based on the platform that Thud is being run on. This means 'Meta' (Command) on the Macintosh, and 'Control' on everything else.
+  * Zooming out to height zero should no longer be possible.
+  * A few internal changes that should speed up Thud were made.
+  * The .jar file that Thud is shipped in now has a proper manifest file. This means Thud can be started from the command line simply using: java -jar Thud.jar
+
+ Future Plans:
+
+  * A dialog to input user/password for connecting when a MUX is chosen from the 'HUD' menu.
+  * A method to add and remove MUXes from the 'HUD' menu.
+  * Moving some of the currently available preferences to a Preferences dialog box, plus adding some of the advanced ones.
+  * More intuitive controls for scrolling the map are needed.
+  * A better armor display of some kind, instead of just an overall percentage.
+  
+-1.0d November 16, 2001
+
+ * First version.
+
+< Many versions in here I did not bother to keep track of >
