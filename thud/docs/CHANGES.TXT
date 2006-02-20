@@ -9,9 +9,9 @@ Version History:
 1.3.0 (not yet officially released) 
 
   New Features:
-   * New window – status report. Displays hex, heading, speed, heat, and weapons information
+   * New window – status report. Displays hex, heading, speed, heat, and weapons information 
    * THUD now automatically detects when you enter/exit mechs and does updates accordingly. The ‘Start/Stop HUD’ button (Ctrl-G) still works – THUD will not automatically activate if the HUD has been stopped by a user (or not started yet)
-   * Armor diagram can be superimposed on tactical map. Must be activated under ‘Map’ menu
+   * Armor diagram can be superimposed on tactical map. Must be activated under ‘Map’ menu [based on patch by Peitao Ting]
    * Cliff detection is now done per-vehicle type – if you’re in a vehicle, the cliff lines will change (automatically) to show on 2 z difference instead of 3. A somewhat shaky VTOL cliffing model is implemented as well
    * All windows can be made “always on top” (settings in Preference dialog)
    
