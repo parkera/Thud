@@ -844,7 +844,7 @@ public class Thud extends JFrame implements  ActionListener
 
     /** Quit cleanly */
     public void doQuit()
-    {
+    {    	
         try
         {
             // Close our connection
@@ -853,6 +853,10 @@ public class Thud extends JFrame implements  ActionListener
 
             // Write out our preferences file
             writePrefs();
+            
+            // Write out map
+            if(data != null)
+            	data.saveMapToDisk();
         }
         catch (Exception e)
         {
@@ -993,6 +997,7 @@ public class Thud extends JFrame implements  ActionListener
     /** Stops the HUD. */
     public void doStop() {
     	if(data.hudStarted) {//only stop if we're started
+    		data.saveMapToDisk();
     		data.hudStarted = false;
             parse.messageLine("*** Display Stopped ***");
             data.hudRunning = false;
@@ -1005,7 +1010,7 @@ public class Thud extends JFrame implements  ActionListener
     public void doResume() {
     	if(conn.connected && !data.hudRunning) { // only resume if connected and not already running
     		data.hudRunning = true;
-    		commands.forceTactical();    		
+    		commands.forceTactical();
     	}
     }
     
@@ -1021,6 +1026,9 @@ public class Thud extends JFrame implements  ActionListener
 
     /** Suspend the HUD */
     public void doSuspend() {
+    	
+    	data.saveMapToDisk();
+    	
     	if(data.hudRunning)
     		data.hudRunning = false;
     }

@@ -9,8 +9,9 @@
 package btthud.data;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class MUHex
+public class MUHex implements Serializable
 {
     // Statics
     public static final int		UNKNOWN = 0;

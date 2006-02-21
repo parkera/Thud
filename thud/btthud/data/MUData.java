@@ -8,7 +8,9 @@
 //
 package btthud.data;
 
+import java.io.*;
 import java.util.*;
+import com.thoughtworks.xstream.*; // XStream, from http://xstream.codehaus.org/
 
 /**
  * Stores all the information from contacts and tactical.
@@ -71,7 +73,7 @@ public class MUData {
         map = new MUHex[MAX_X][MAX_Y];		// individual hexes will be allocated if they are needed.. this is not very memory efficient still
         
     }
-
+        
     public void createHexCache()
     {
         for (int i = 0; i < MUHex.TOTAL_TERRAIN; i++)
@@ -247,10 +249,19 @@ public class MUData {
         // Clear contacts and our unit, but leave the map alone
         contacts = new ArrayList(20);		// data for our contact list
         myUnit = new MUMyInfo();			// data that represents our own unit
+        clearMap();
+        this.mapName = "";
         
         lastDataTime = 0;					// clear our last recieved data
     }
-
+    
+    /**
+     * Re-initializes map.
+     */
+    public void clearMap()
+    {
+    	map = new MUHex[MAX_X][MAX_Y];
+    }
     /**
       * Sets the map changed flag.
       */
@@ -322,4 +333,60 @@ public class MUData {
         else
             return false;
     }
+    
+    /** Attempts to load map information from a .tmap file on disk.
+     * Uses the name of the current map . tmap (ie: 'DC.city3.tmap')
+     * @return true if succesful, false if error/no file found/etc
+     */
+    public boolean loadMapFromDisk() {
+    	if(mapName.length() <= 1) // do we have a real mapname?
+    		return false;
+    	try {
+    		String mapFileName = mapName + ".tmap";    		
+    		File mapFile = new File(mapFileName);
+    		FileInputStream in = new FileInputStream(mapFile);
+    		ObjectInputStream ois = new ObjectInputStream(in);
+    		this.map = new MUHex[MAX_X][MAX_Y];
+    		this.map = (MUHex[][]) ois.readObject();
+
+    		ois.close();
+    		in.close();
+    	
+    		return true;
+    	} 
+    	catch(Exception e) {
+    		System.out.println("Error loading map " + mapName + ".tmap: " + e);
+    		return false;
+    	}    
+    }
+    
+    /** Attempts to write map information to a .tmap file on disk.
+     * Uses the name of the current map . tmap (ie: 'DC.city3.tmap')
+     * @return true if succesful, false if error/file io error/etc
+     */
+    public boolean saveMapToDisk() {
+    	if(mapName == null || mapName.length() <= 1) // do we have a real mapname?
+    		return false;
+    	try {
+    		String mapFileName = mapName + ".tmap";    		
+    		File mapFile = new File(mapFileName);
+    		mapFile.delete();
+    		mapFile.createNewFile();
+    		FileOutputStream out = new FileOutputStream(mapFile);
+    		ObjectOutputStream oos = new ObjectOutputStream(out);
+    		oos.writeObject(this.map);
+    		oos.flush();
+    		
+    		oos.close();
+    		out.close();
+    		
+    		return true;
+    	} 
+    	catch(Exception e) {
+    		System.out.println("Error saving map " + mapName + ".tmap: " + e);
+    		return false;
+    	}    
+    }
+    
+    
 }
