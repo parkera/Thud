@@ -297,11 +297,11 @@ public class MUStatus extends JFrame
 	                			}	                			
 	                			case 'p': {
 	                    			StyleConstants.setForeground(conIrregular,new Color(0,160,0));
-	                				addString("PROTECTED BY ECCM",conIrregular);
+	                				addString("PROTECTED BY ANGEL ECM",conIrregular);
 	                				break;
 	                			}
 	                			case 'P': {
-	                				addString("EMITTING ECCM",conRegular);
+	                				addString("EMITTING ANGEL ECM",conRegular);
 	                				break;
 	                			}
 	                			case 's': {
