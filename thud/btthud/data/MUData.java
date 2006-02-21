@@ -10,7 +10,6 @@ package btthud.data;
 
 import java.io.*;
 import java.util.*;
-import com.thoughtworks.xstream.*; // XStream, from http://xstream.codehaus.org/
 
 /**
  * Stores all the information from contacts and tactical.
