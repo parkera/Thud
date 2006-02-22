@@ -228,7 +228,7 @@ public class MUStatus extends JFrame
 	                			}
 	                			case 'e': {
 	                    			StyleConstants.setForeground(conIrregular,new Color(255,0,0));
-	                				addString("AFFECTED BY ECM",conIrregular);
+	                				addString("AFFECTED BY ANGEL ECM",conIrregular);
 	                				break;
 	                			}
 	                			case 'E': {
@@ -274,7 +274,15 @@ public class MUStatus extends JFrame
 	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
 	                				addString("ILLUMINATING",conIrregular);
 	                				break;
-	                			}	                			
+	                			}
+	                			case 'M': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("SPRINTING",conIrregular);
+	                			}
+	                			case 'm': {
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("EVADING",conIrregular);
+	                			}
 	                			case 'n': {
 	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
 	                				addString("ENEMY NARC ATTACHED",conIrregular);
@@ -297,7 +305,7 @@ public class MUStatus extends JFrame
 	                			}	                			
 	                			case 'p': {
 	                    			StyleConstants.setForeground(conIrregular,new Color(0,160,0));
-	                				addString("PROTECTED BY ANGEL ECM",conIrregular);
+	                				addString("PROTECTED BY ECM",conIrregular);
 	                				break;
 	                			}
 	                			case 'P': {
@@ -314,12 +322,12 @@ public class MUStatus extends JFrame
 	                    			addString("SHUTDOWN",conIrregular);
 	                    			break;
 	                			}
-	                			case 't': {
+	                			case 'T': {
 	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
 	                				addString("BEING TOWED",conIrregular);
 	                				break;
 	                			}
-	                			case 'T': {
+	                			case 't': {
 	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
 	                				addString("TOWING",conIrregular);
 	                				break;
