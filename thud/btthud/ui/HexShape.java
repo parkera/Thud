@@ -9,10 +9,7 @@
 package btthud.ui;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.geom.*;
-import java.awt.font.*;
-import java.awt.image.*;
 
 public class HexShape implements Shape {
 
