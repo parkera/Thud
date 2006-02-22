@@ -9,16 +9,11 @@
 package btthud.util;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.font.*;
 
-import javax.swing.*;
 import javax.swing.text.*;
-import javax.swing.event.*;
-import javax.swing.undo.*;
 
-import java.lang.*;
 import java.util.*;
 
 public class BulkStyledDocument extends DefaultStyledDocument
@@ -243,7 +238,6 @@ public class BulkStyledDocument extends DefaultStyledDocument
     {
         try
         {
-            Content				c = getContent();
             ElementSpec[]		list = (ElementSpec[]) es.toArray(new ElementSpec[0]);
             
             insert(getLength(), list);

@@ -16,7 +16,6 @@ import java.awt.event.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
-import javax.swing.border.*;
 
 import java.util.*;
 import java.text.*;
@@ -83,7 +82,7 @@ public class MUStatus extends JFrame
         this.setAlwaysOnTop(prefs.statusAlwaysOnTop);
         
         // Show the window now
-        this.show();
+        this.setVisible(true);
         
         start();
     }
@@ -278,10 +277,12 @@ public class MUStatus extends JFrame
 	                			case 'M': {
 	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
 	                				addString("SPRINTING",conIrregular);
+	                				break;
 	                			}
 	                			case 'm': {
 	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
 	                				addString("EVADING",conIrregular);
+	                				break;
 	                			}
 	                			case 'n': {
 	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
@@ -358,7 +359,7 @@ public class MUStatus extends JFrame
                     for(int i = 0; i < weapons.length; i++) {
                     	if (weapons[i] != null) {
 	                    	MUUnitWeapon weapon = weapons[i];
-	                    	MUWeapon weapontype = mydata.getWeapon(weapon.typeNumber);
+	                    	MUWeapon weapontype = MUUnitInfo.getWeapon(weapon.typeNumber);
 
 	                    	String weapname = weapontype.name;
 
@@ -414,7 +415,7 @@ public class MUStatus extends JFrame
                     	/* end of weapon bar - now do ammo */
                     	if(ammo[i] != null) {
                     		MUUnitAmmo thisAmmo = ammo[i];
-                    		MUWeapon thisWeapon = mydata.getWeapon(thisAmmo.weaponTypeNumber);
+                    		MUWeapon thisWeapon = MUUnitInfo.getWeapon(thisAmmo.weaponTypeNumber);
 	                    	String weapname = thisWeapon.name;
 
 	                    	String mode = thisAmmo.ammoMode;	                    	
@@ -430,7 +431,7 @@ public class MUStatus extends JFrame
                     		addString(s, conRegular);
                     		
                     		s =	mydata.rightJust(String.valueOf(thisAmmo.roundsRemaining),3,false);
-                    		StyleConstants.setForeground(conIrregular, MUUnitInfo.colorForPercent(AmmoPercent(thisAmmo)));
+                    		StyleConstants.setForeground(conIrregular, MUUnitInfo.colorForPercent(mydata.percentAmmoLeft(thisAmmo)));
                     		addString(s, conIrregular);                    		                    
                     	}
                        
@@ -493,57 +494,5 @@ public class MUStatus extends JFrame
                 s.toCharArray(),
                 0,
                 s.length()));
-    }
-    
-    /** Percent of front armor remaining in a given section.
-     * 
-     * @param	section		The section to return.
-     * @return				Percentage (0-100) remaining a section.
-     */
-    private float ArmorPercent(MUSection section) {
-    	if(section.of == 0) {
-    		return (float) 1.0;
-    	} else {
-    		return ((float) section.f / (float) section.of) * 100;
-    	}
-    } 
-    
-    /** Percent of internal points remaining in a given section.
-     * 
-     * @param	section		The section to return.
-     * @return				Percentage (0-100) remaining a section.
-     */
-    private float InternalPercent(MUSection section) {
-    	if(section.oi == 0) {
-    		return (float) 1.0;
-    	} else {
-    		return ((float) section.i / (float) section.oi) * 100;
-    	}
-    }
-
-    /** Percent of rear armor remaining in a given section.
-     * 
-     * @param	section		The section to return.
-     * @return				Percentage (0-100) remaining a section.
-     */
-    private float RearArmorPercent(MUSection section) {
-    	if(section.or == 0) {
-    		return (float) 1.0;
-    	} else {
-    		return ((float) section.r / (float) section.or) * 100;
-    	}
-    }
-    
-   /** Percentage of ammo remaining in a bin.
-    * 
-    * @param	a			Ammo bin to check
-    * @return				Percentage (0-100) remaining in the bin.
-    */
-   private float AmmoPercent(MUUnitAmmo a) {
-	   if(a.roundsOriginal == 0) {
-		   return (float) 1.0;
-	   } else {		   
-		   return ((float) a.roundsRemaining / (float) a.roundsOriginal) * 100;
-	   }	  
-   }
+    }       
 }

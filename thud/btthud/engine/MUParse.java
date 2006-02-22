@@ -10,13 +10,7 @@ package btthud.engine;
 
 import btthud.data.*;
 
-import java.awt.*;
-import java.awt.event.*;
-
 import javax.swing.*;
-import javax.swing.text.*;
-
-import java.lang.*;
 
 import java.util.*;
 
@@ -615,7 +609,6 @@ public class MUParse implements Runnable {
         {
             StringTokenizer st = new StringTokenizer(l, ",");
             MUBuildingInfo	building = new MUBuildingInfo();
-            String			tempStr;
 
             building.type = "i";			// installation type
             building.friend = true;			// All buildings are friendly and inviting. :)
@@ -723,13 +716,13 @@ public class MUParse implements Runnable {
 
         // Then stick them into the section
         if (f != "-")
-            info.armor[info.indexForSection(location)].f = Integer.parseInt(f);
+            info.armor[MUUnitInfo.indexForSection(location)].f = Integer.parseInt(f);
 
         if (r != "-")
-            info.armor[info.indexForSection(location)].r = Integer.parseInt(r);
+            info.armor[MUUnitInfo.indexForSection(location)].r = Integer.parseInt(r);
 
         if (i != "-")
-            info.armor[info.indexForSection(location)].i = Integer.parseInt(i);
+            info.armor[MUUnitInfo.indexForSection(location)].i = Integer.parseInt(i);
     }
 
 
@@ -756,19 +749,19 @@ public class MUParse implements Runnable {
 
         // Then stick them into the section
         if (f != "-")
-            info.armor[info.indexForSection(location)].of = Integer.parseInt(f);
+            info.armor[MUUnitInfo.indexForSection(location)].of = Integer.parseInt(f);
         else
-            info.armor[info.indexForSection(location)].of = 0;
+            info.armor[MUUnitInfo.indexForSection(location)].of = 0;
 
         if (r != "-")
-            info.armor[info.indexForSection(location)].or = Integer.parseInt(r);
+            info.armor[MUUnitInfo.indexForSection(location)].or = Integer.parseInt(r);
         else
-            info.armor[info.indexForSection(location)].or = 0;
+            info.armor[MUUnitInfo.indexForSection(location)].or = 0;
 
         if (i != "-")
-            info.armor[info.indexForSection(location)].oi = Integer.parseInt(i);
+            info.armor[MUUnitInfo.indexForSection(location)].oi = Integer.parseInt(i);
         else
-            info.armor[info.indexForSection(location)].oi = 0;
+            info.armor[MUUnitInfo.indexForSection(location)].oi = 0;
         
     }
     
@@ -864,7 +857,6 @@ public class MUParse implements Runnable {
         
         StringTokenizer	st = new StringTokenizer(l, ",");
         MUWeapon		w = new MUWeapon();
-        String			tempStr;
 
         // I'm not sure if the HUD will return -1 or - for invalid (ie underwater LRMs). It looks as if -1 at the moment, but the spec says -
         w.typeNumber = Integer.parseInt(st.nextToken());

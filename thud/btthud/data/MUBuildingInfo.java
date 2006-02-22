@@ -7,8 +7,6 @@
 //
 package btthud.data;
 
-import java.util.*;
-
 // See hudinfo.txt for detailed info on what MUBuildingInfo must have
 
 public class MUBuildingInfo extends MUUnitInfo {

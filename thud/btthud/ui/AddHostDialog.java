@@ -8,11 +8,6 @@
 //
 package btthud.ui;
 
-import btthud.data.*;
-import btthud.util.*;
-import java.awt.*;
-import javax.swing.*;
-
 public class AddHostDialog extends javax.swing.JDialog {
 
     private javax.swing.JLabel hostAddressLabel;

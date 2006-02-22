@@ -9,7 +9,6 @@
 package btthud.ui;
 
 import javax.swing.*;
-import javax.swing.text.*;
 import java.awt.*;
 
 public class OptionTextField extends JTextField {

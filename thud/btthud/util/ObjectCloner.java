@@ -1,8 +1,6 @@
 package btthud.util;
 
 import java.io.*;
-import java.util.*;
-import java.awt.*;
 
 // From: http://www.javaworld.com/javaworld/javatips/jw-javatip76-p2.html
 // Provides a class useful for making deep copies of objects that are serializable... ie MUPrefs

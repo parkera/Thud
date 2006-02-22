@@ -17,9 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
-import javax.swing.text.*;
 
-import java.lang.*;
 import java.util.*;
 
 public class Thud extends JFrame implements  ActionListener
@@ -831,8 +829,7 @@ public class Thud extends JFrame implements  ActionListener
     /** Display our about box */
     public void doAbout() {
         aboutBox.setResizable(false);
-        aboutBox.setVisible(true);
-        aboutBox.show();
+        aboutBox.setVisible(true);        
     }
 
     /** Show the release notes */

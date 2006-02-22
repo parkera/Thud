@@ -13,9 +13,6 @@ import javax.swing.text.*;
 import javax.swing.text.rtf.*;
 import java.awt.*;
 
-import java.net.*;
-import java.io.*;
-
 public class ReleaseNotesDialog extends javax.swing.JDialog {
 
     JButton 				okButton;
@@ -40,7 +37,6 @@ public class ReleaseNotesDialog extends javax.swing.JDialog {
         // Get current classloader, then get the CHANGES.RTF file
         try
         {
-            boolean			go = true;
             ClassLoader 	cl = this.getClass().getClassLoader();
             rtf.read(cl.getResourceAsStream("CHANGES.RTF"), doc, 0);
         }
@@ -97,6 +93,6 @@ public class ReleaseNotesDialog extends javax.swing.JDialog {
     * @param args the command line arguments
     */
     public static void main(String args[]) {
-        new ReleaseNotesDialog(new javax.swing.JFrame(), true).show();
+        new ReleaseNotesDialog(new javax.swing.JFrame(), true).setVisible(true);
     }
 }

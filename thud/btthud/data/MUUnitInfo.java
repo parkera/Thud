@@ -9,19 +9,8 @@
 package btthud.data;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.font.*;
-import java.awt.image.*;
-
-import javax.swing.*;
-import javax.swing.text.*;
-
-import java.lang.*;
-import java.util.*;
-
-import java.awt.geom.*;
-import java.awt.image.*;
 
 /**
  * This class is for storing all the information about a single unit (typically a contact, enemy or friendly).

@@ -9,7 +9,6 @@ package btthud.util;
 
 import javax.swing.text.*;
 import java.awt.*;
-import java.util.*;
 
 /* This is a class full of static methods to help with ANSI parsing */
 

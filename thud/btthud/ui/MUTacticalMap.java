@@ -10,18 +10,12 @@ package btthud.ui;
 
 import btthud.data.*;
 import btthud.engine.*;
-import btthud.util.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.*;
-import java.awt.font.*;
 
 import javax.swing.*;
-import javax.swing.text.*;
 
-import java.lang.*;
-import java.util.*;
 
 public class MUTacticalMap extends JFrame
                            implements Runnable, ActionListener
@@ -60,7 +54,7 @@ public class MUTacticalMap extends JFrame
         setAlwaysOnTop(prefs.tacticalAlwaysOnTop);
         
         // Show the window now
-        this.show();
+        this.setVisible(true);
 
         start();
     }

@@ -11,7 +11,6 @@ package btthud.engine;
 import btthud.ui.Thud;
 import btthud.util.LineHolder;
 
-import java.util.*;
 import java.net.*;
 import java.io.*;
 

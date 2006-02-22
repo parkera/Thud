@@ -8,8 +8,6 @@
 //
 package btthud.data;
 
-import java.util.*;
-
 public class MUMyInfo extends MUUnitInfo {
 
     public float		desiredSpeed, desiredVerticalSpeed;
@@ -232,5 +230,18 @@ public class MUMyInfo extends MUUnitInfo {
             return (float) ((int) (100.0 * ((float) fuel / (float) maxFuel)));
         else
             return (float) 100;
+    }
+    
+    /** 
+     * Return a float corresponding to percentage of ammo left in bin.
+     * @param	a			Ammo bin to check
+     * @return				Percentage (0-100) remaining in the bin.
+     */
+    public float percentAmmoLeft(MUUnitAmmo a) {
+ 	   if(a.roundsOriginal == 0) {
+ 		   return (float) 100;
+ 	   } else {		   
+ 		   return ((float) a.roundsRemaining / (float) a.roundsOriginal) * 100;
+ 	   }	  
     }
 }

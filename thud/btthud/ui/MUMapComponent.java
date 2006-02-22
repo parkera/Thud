@@ -9,8 +9,6 @@
 package btthud.ui;
 
 import btthud.data.*;
-import btthud.engine.*;
-import btthud.util.*;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -19,9 +17,6 @@ import java.awt.font.*;
 import java.awt.image.*;
 
 import javax.swing.*;
-import javax.swing.text.*;
-
-import java.lang.*;
 import java.util.*;
 
 /* Notes:
@@ -436,7 +431,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             AffineTransform		saveTrans = g.getTransform();
             AffineTransform		newTrans = new AffineTransform(saveTrans);
             Point2D				hexPt = hexPoly.hexToReal(data.myUnit.x, data.myUnit.y, false);
-            Point2D				offsets = offsetsForCentering(data.myUnit.bearingToCenter, data.myUnit.rangeToCenter);
+            //Point2D				offsets = offsetsForCentering(data.myUnit.bearingToCenter, data.myUnit.rangeToCenter);
             
             g.setStroke(new BasicStroke(2.0f));
             newTrans.translate(hexPt.getX() - l, hexPt.getY());
@@ -1153,7 +1148,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                     float               internalLeft = data.myUnit.percentInternalLeft();
                     Rectangle       internalRect = new Rectangle(-(heatBarMaxLength - h/2)/2,
                                                                  indOffset, (int) (internalLeft * heatBarMaxLength /100), 8);
-                    g.setColor(data.myUnit.colorForPercent(internalLeft));
+                    g.setColor(MUUnitInfo.colorForPercent(internalLeft));
                     g.fill(internalRect);
                     g.setColor(Color.black);
                     g.drawRect(-(heatBarMaxLength - h/2)/2, indOffset, heatBarMaxLength, 8);
@@ -1380,7 +1375,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         // Armor status
         float		armorLeft = data.myUnit.percentArmorLeft();
-        g.setColor(data.myUnit.colorForPercent(armorLeft));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft));
         tempString = armorLeft + "% / ";
         tempRect = smallFont.getStringBounds(tempString, frc);
         g.drawString(tempString, nextStartsAt, barRect.y + 11);
@@ -1388,7 +1383,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         // Internal status
         float		internalLeft = data.myUnit.percentInternalLeft();
-        g.setColor(data.myUnit.colorForPercent(internalLeft));
+        g.setColor(MUUnitInfo.colorForPercent(internalLeft));
         tempString = internalLeft + "%";
         tempRect = smallFont.getStringBounds(tempString, frc);
         g.drawString(tempString, nextStartsAt, barRect.y + 11);
@@ -1465,8 +1460,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(hOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("H"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("H"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(hOutline);
 
         // Draw Center Torso Armor
@@ -1478,8 +1473,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(ctOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("CT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("CT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(ctOutline);
 
         // Draw Right Torso Armor
@@ -1492,8 +1487,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(rtOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("RT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rtOutline);
 
         // Draw Left Torso Armor
@@ -1506,8 +1501,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(ltOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("LT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("LT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(ltOutline);
 
         // Draw Left Arm Armor
@@ -1520,8 +1515,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(laOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("LA"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("LA"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(laOutline);
 
         // Draw Right Arm Armor
@@ -1534,8 +1529,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(raOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RA"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("RA"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(raOutline);
 
         // Draw Left Leg Armor
@@ -1548,8 +1543,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(llOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("LL"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("LL"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(llOutline);
 
         // Draw Right Leg Armor
@@ -1562,8 +1557,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(rlOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RL"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("RL"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rlOutline);
 
         // Draw Rear armor
@@ -1574,22 +1569,22 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         // Draw Center Torso Armor
         g.setColor(Color.darkGray);
         g.draw(ctOutline);
-        armorLeft = data.myUnit.percentRearArmorLeft(data.myUnit.indexForSection("CT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentRearArmorLeft(MUUnitInfo.indexForSection("CT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(ctOutline);	// ctOutline points already defined above
 
         // Draw Right Torso Armor Rear
         g.setColor(Color.darkGray);
         g.draw(rtOutline);
-        armorLeft = data.myUnit.percentRearArmorLeft(data.myUnit.indexForSection("RT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentRearArmorLeft(MUUnitInfo.indexForSection("RT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rtOutline);
 
         // Draw Left Torso Armor Rear
         g.setColor(Color.darkGray);
         g.draw(ltOutline);
-        armorLeft = data.myUnit.percentRearArmorLeft(data.myUnit.indexForSection("LT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentRearArmorLeft(MUUnitInfo.indexForSection("LT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(ltOutline);
 
         // Draw Internals
@@ -1600,57 +1595,57 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         // Draw Head Internals
         g.setColor(Color.darkGray);
         g.draw(hOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("H"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("H"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(hOutline);
 
         // Draw Center Torso Internals
         g.setColor(Color.darkGray);
         g.draw(ctOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("CT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("CT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(ctOutline);	// ctOutline points already defined above
 
         // Draw Right Torso Armor Internals
         g.setColor(Color.darkGray);
         g.draw(rtOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("RT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rtOutline);
 
         // Draw Left Torso Armor Internals
         g.setColor(Color.darkGray);
         g.draw(ltOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("LT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("LT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(ltOutline);
 
         // Draw Left Arm Internals
         g.setColor(Color.darkGray);
         g.draw(laOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("LA"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("LA"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(laOutline);
 
         // Draw Right Arm Internals
         g.setColor(Color.darkGray);
         g.draw(raOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RA"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("RA"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(raOutline);
 
         // Draw Left Leg Internals
         g.setColor(Color.darkGray);
         g.draw(llOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("LL"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("LL"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(llOutline);
 
         // Draw Right Leg Internals
         g.setColor(Color.darkGray);
         g.draw(rlOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RL"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("RL"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rlOutline);	    
     }
     
@@ -1670,8 +1665,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(hOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("H"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("H"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(hOutline);
 
         // Draw Center Torso Armor
@@ -1683,8 +1678,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(ctOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("CT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("CT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(ctOutline);
 
         // Draw Right Torso Armor
@@ -1697,8 +1692,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(rtOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("RT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rtOutline);
 
         // Draw Left Torso Armor
@@ -1711,8 +1706,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(ltOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("LT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("LT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(ltOutline);
 
         // Draw Rear Left Leg Armor
@@ -1725,8 +1720,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(rllOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RLL"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("RLL"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rllOutline);
 
         // Draw Rear Right Leg Armor
@@ -1739,8 +1734,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(rrlOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RRL"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("RRL"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rrlOutline);
 
         // Draw Front Left Leg Armor
@@ -1753,8 +1748,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(fllOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("FLL"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("FLL"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(fllOutline);
 
         // Draw Front Right Leg Armor
@@ -1767,8 +1762,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(frlOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("FRL"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("FRL"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(frlOutline);
 
         // Draw Rear armor
@@ -1779,22 +1774,22 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         // Draw Center Torso Armor
         g.setColor(Color.darkGray);
         g.draw(ctOutline);
-        armorLeft = data.myUnit.percentRearArmorLeft(data.myUnit.indexForSection("CT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentRearArmorLeft(MUUnitInfo.indexForSection("CT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(ctOutline);	// ctOutline points already defined above
 
         // Draw Right Torso Armor Rear
         g.setColor(Color.darkGray);
         g.draw(rtOutline);
-        armorLeft = data.myUnit.percentRearArmorLeft(data.myUnit.indexForSection("RT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentRearArmorLeft(MUUnitInfo.indexForSection("RT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rtOutline);
 
         // Draw Left Torso Armor Rear
         g.setColor(Color.darkGray);
         g.draw(ltOutline);
-        armorLeft = data.myUnit.percentRearArmorLeft(data.myUnit.indexForSection("LT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentRearArmorLeft(MUUnitInfo.indexForSection("LT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(ltOutline);
 
         // Draw Internals
@@ -1805,57 +1800,57 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         // Draw Head Internals
         g.setColor(Color.darkGray);
         g.draw(hOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("H"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("H"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(hOutline);
 
         // Draw Center Torso Internals
         g.setColor(Color.darkGray);
         g.draw(ctOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("CT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("CT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(ctOutline);	// ctOutline points already defined above
 
         // Draw Right Torso Armor Internals
         g.setColor(Color.darkGray);
         g.draw(rtOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("RT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rtOutline);
 
         // Draw Left Torso Armor Internals
         g.setColor(Color.darkGray);
         g.draw(ltOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("LT"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("LT"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(ltOutline);
 
         // Draw Rear Left Leg Internals
         g.setColor(Color.darkGray);
         g.draw(rllOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RLL"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("RLL"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rllOutline);
 
         // Draw Rear Right Leg Internals
         g.setColor(Color.darkGray);
         g.draw(rrlOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RRL"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("RRL"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rrlOutline);
 
         // Draw Front Left Leg Internals
         g.setColor(Color.darkGray);
         g.draw(fllOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("FLL"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("FLL"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(fllOutline);
 
         // Draw Front Right Leg Internals
         g.setColor(Color.darkGray);
         g.draw(frlOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("FRL"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("FRL"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(frlOutline);	    
     }
 
@@ -1875,8 +1870,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(fsOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("FS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("FS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(fsOutline);
 
         // Draw Turret Armor
@@ -1889,8 +1884,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(tOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("T"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("T"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(tOutline);
         
         // Draw Left Side Armor
@@ -1903,8 +1898,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(lsOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("LS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("LS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(lsOutline);
         
         // Draw Right Side Armor
@@ -1917,8 +1912,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         
         g.setColor(Color.darkGray);
         g.draw(rsOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("RS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rsOutline); 
         
         // Draw Aft Side Armor
@@ -1931,8 +1926,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         
         g.setColor(Color.darkGray);
         g.draw(asOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("AS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("AS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(asOutline);
         
 
@@ -1944,36 +1939,36 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         // Draw Front Side Internals
         g.setColor(Color.darkGray);
         g.draw(fsOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("FS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("FS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(fsOutline);
 
         // Draw Turret Internals
         g.setColor(Color.darkGray);
         g.draw(tOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("T"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("T"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(tOutline);
         
         // Draw Left Side Internals
         g.setColor(Color.darkGray);
         g.draw(lsOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("LS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("LS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(lsOutline);	
         
         // Draw Right Side Internals
         g.setColor(Color.darkGray);
         g.draw(rsOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("RS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rsOutline);
         
         // Draw Aft Side Internals
         g.setColor(Color.darkGray);
         g.draw(asOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("AS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("AS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(asOutline);	
     }
     
@@ -1990,8 +1985,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(fsOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("FS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("FS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(fsOutline);
 
         // Draw Rotor Armor
@@ -2004,8 +1999,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(rOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("R"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("R"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rOutline);
         
         // Draw Left Side Armor
@@ -2018,8 +2013,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         g.setColor(Color.darkGray);
         g.draw(lsOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("LS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("LS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(lsOutline);
         
         // Draw Right Side Armor
@@ -2032,8 +2027,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         
         g.setColor(Color.darkGray);
         g.draw(rsOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("RS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("RS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rsOutline); 
         
         // Draw Aft Side Armor
@@ -2046,8 +2041,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         
         g.setColor(Color.darkGray);
         g.draw(asOutline);
-        armorLeft = data.myUnit.percentArmorLeft(data.myUnit.indexForSection("AS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentArmorLeft(MUUnitInfo.indexForSection("AS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(asOutline);
         
 
@@ -2059,36 +2054,36 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         // Draw Front Side Internals
         g.setColor(Color.darkGray);
         g.draw(fsOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("FS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("FS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(fsOutline);
 
         // Draw Rotor Internals
         g.setColor(Color.darkGray);
         g.draw(rOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("R"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("R"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rOutline);
         
         // Draw Left Side Internals
         g.setColor(Color.darkGray);
         g.draw(lsOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("LS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("LS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(lsOutline);	
         
         // Draw Right Side Internals
         g.setColor(Color.darkGray);
         g.draw(rsOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("RS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("RS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(rsOutline);
         
         // Draw Aft Side Internals
         g.setColor(Color.darkGray);
         g.draw(asOutline);
-        armorLeft = data.myUnit.percentInternalLeft(data.myUnit.indexForSection("AS"));
-        g.setColor(data.myUnit.colorForPercent(armorLeft, armorTransparency));
+        armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("AS"));
+        g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(asOutline);	
     }
     static public float toRadians(float a)

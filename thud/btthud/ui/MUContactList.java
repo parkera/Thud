@@ -17,7 +17,6 @@ import java.awt.event.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
-import javax.swing.border.*;
 
 import java.util.*;
 
@@ -83,7 +82,7 @@ public class MUContactList extends JFrame
         
         // Show the window now
 
-        this.show();
+        this.setVisible(true);
         
         start();
     }

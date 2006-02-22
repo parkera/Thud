@@ -9,9 +9,6 @@
 package btthud.ui;
 
 import btthud.data.*;
-import btthud.util.*;
-import java.awt.*;
-import javax.swing.*;
 
 public class RemoveHostDialog extends javax.swing.JDialog {
 
