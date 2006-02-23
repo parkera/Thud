@@ -854,7 +854,7 @@ public class Thud extends JFrame implements  ActionListener
         if(returnVal == JFileChooser.APPROVE_OPTION) {
         	data.mapFileName = fc.getSelectedFile().getAbsolutePath();
         	if(data.loadMapFromDisk()) {
-        		parse.messageLine("*** Map " + data.mapFileName + " loaded succesfully ***");
+        		parse.messageLine("*** Map " + data.mapFileName + " loaded successfully ***");
         		data.usingPersistentMap = true;
         	} else {
         		parse.messageLine("*** Error loading map " + data.mapFileName + " ***");
@@ -871,7 +871,7 @@ public class Thud extends JFrame implements  ActionListener
         if(returnVal == JFileChooser.APPROVE_OPTION) {
         	data.mapFileName = fc.getSelectedFile().getAbsolutePath();
         	if(data.saveMapToDisk()) {
-        		parse.messageLine("*** Map " + data.mapFileName + " saved succesfully ***");
+        		parse.messageLine("*** Map " + data.mapFileName + " saved successfully ***");
         		data.usingPersistentMap = true;        		
         	} else {
         		parse.messageLine("*** Error saving map " + data.mapFileName + " ***");
