@@ -467,7 +467,7 @@ public class MUParse implements Runnable {
         {
             
             StringTokenizer st = new StringTokenizer(l, ",");
-            MUUnitInfo		con = new MUUnitInfo();
+            MUUnitInfo		con = new MUUnitInfo(prefs);
             String			tempStr;
     
             // See hudinfospec.txt for detailed formatting information

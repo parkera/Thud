@@ -26,6 +26,9 @@ public class MUPrefs extends Object implements Serializable, Cloneable
 
     public boolean				antiAliasText;
 
+    // How long should contacts stick around?
+    public int					contactsAge;
+    
     // These are delays for sending commands, in seconds
     public double				fastCommandUpdate, mediumCommandUpdate, slowCommandUpdate, slugCommandUpdate;
 
@@ -81,6 +84,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         showContacts = true;
 
         antiAliasText = false;
+        contactsAge = 30;
         
         mainSizeX = 580;
         mainSizeY = 580;

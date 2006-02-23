@@ -33,6 +33,8 @@ public class PrefsDialog extends javax.swing.JDialog {
     private javax.swing.JComboBox 		speedLengthBox;
     private javax.swing.JLabel 			scrollbackSizeLabel;
     private javax.swing.JComboBox 		scrollbackSizeBox;
+    private javax.swing.JLabel			contactsAgeLabel;
+    private javax.swing.JComboBox		contactsAgeBox;
 
     private javax.swing.JPanel 			MapColorsTab;
     private javax.swing.JButton 		bTerrainColors[] = new javax.swing.JButton[MUHex.TOTAL_TERRAIN];
@@ -91,6 +93,8 @@ public class PrefsDialog extends javax.swing.JDialog {
         speedLengthBox = new javax.swing.JComboBox();
         scrollbackSizeLabel = new javax.swing.JLabel();
         scrollbackSizeBox = new javax.swing.JComboBox();
+        contactsAgeLabel = new javax.swing.JLabel();
+        contactsAgeBox = new javax.swing.JComboBox();
 
         MapColorsTab = new javax.swing.JPanel();
         for (int i = 0; i < MUHex.TOTAL_TERRAIN; i++)
@@ -135,7 +139,7 @@ public class PrefsDialog extends javax.swing.JDialog {
         });
         
         // --- GENERAL OPTIONS ---
-        GeneralOptionsTab.setLayout(new java.awt.GridLayout(5, 2));
+        GeneralOptionsTab.setLayout(new java.awt.GridLayout(0, 2));
         
         echoCheckBox = new javax.swing.JCheckBox("Echo Commands", null, prefs.echoCommands);
         echoCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -193,6 +197,23 @@ public class PrefsDialog extends javax.swing.JDialog {
         scrollbackSizeBox.addItem(new Integer(20000));
         scrollbackSizeBox.setSelectedItem(new Integer(prefs.maxScrollbackSize));
         GeneralOptionsTab.add(scrollbackSizeBox);
+        
+        contactsAgeLabel.setText("Time to Keep Old Contacts (sec)");
+        GeneralOptionsTab.add(contactsAgeLabel);
+        contactsAgeBox.addItem(new Integer(5));
+        contactsAgeBox.addItem(new Integer(10));
+        contactsAgeBox.addItem(new Integer(15));
+        contactsAgeBox.addItem(new Integer(20));
+        contactsAgeBox.addItem(new Integer(25));
+        contactsAgeBox.addItem(new Integer(30));
+        contactsAgeBox.addItem(new Integer(35));
+        contactsAgeBox.addItem(new Integer(40));
+        contactsAgeBox.addItem(new Integer(45));
+        contactsAgeBox.addItem(new Integer(50));
+        contactsAgeBox.addItem(new Integer(55));
+        contactsAgeBox.addItem(new Integer(60));
+        contactsAgeBox.setSelectedItem(new Integer(prefs.contactsAge));
+        GeneralOptionsTab.add(contactsAgeBox);
         
         TabbedPane.addTab("General", GeneralOptionsTab);
 
@@ -334,6 +355,7 @@ public class PrefsDialog extends javax.swing.JDialog {
 
         prefs.speedIndicatorLength = ((Float) speedLengthBox.getSelectedItem()).floatValue();
         prefs.maxScrollbackSize = ((Integer) scrollbackSizeBox.getSelectedItem()).intValue();
+        prefs.contactsAge = ((Integer) contactsAgeBox.getSelectedItem()).intValue();
         
         thudClass.prefs = prefs;
         

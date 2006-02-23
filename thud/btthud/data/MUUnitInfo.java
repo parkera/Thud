@@ -47,8 +47,9 @@ public class MUUnitInfo extends Object implements Comparable {
 
     // After 'cyclesLeft - isOldAt' cycles they will turn grey
     // After 'cyclesLeft' cycles, they will disappear from the contacts screen
-    int					cyclesLeft = 30;
-    static final int	isOldAt = 27;
+    // These are default values, overriden from prefs by constructor
+    private int			cyclesLeft = 30;
+    private int			isOldAt = 27;
 
     static public MUWeapon		weapons[] = new MUWeapon[200];		// data that stores info on /all/ weapons ... assume 200 of them for now
     
@@ -139,7 +140,12 @@ public class MUUnitInfo extends Object implements Comparable {
 
     public MUUnitInfo()
     {
-        turretHeading = 180;
+        turretHeading = 180;                
+    }
+    
+    public MUUnitInfo(MUPrefs prefs) {
+        cyclesLeft = prefs.contactsAge;
+        isOldAt = cyclesLeft - 3;
     }
 
     // For debugging purposes only
