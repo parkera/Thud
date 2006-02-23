@@ -1161,7 +1161,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                     float					headingDeg = -data.myUnit.heading - 180.0f;
 
                     // Accomodate for rotate torso
-                    if (data.myUnit.isMech())
+                    if (data.myUnit.type.equals("B"))
                         headingDeg -= data.myUnit.turretHeading;
                     
                     arcXform.translate(h / 4, h / 4);
