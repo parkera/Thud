@@ -9,19 +9,24 @@ Version History:
 1.3.0 (not yet officially released) 
 
   New Features:
-   * New window – status report. Displays hex, heading, speed, heat, and weapons information 
-   * Thud now automatically detects when you enter/exit mechs and does updates accordingly. The ‘Start/Stop HUD’ button (Ctrl-G) still works – THUD will not automatically activate if the HUD has been stopped by a user (or not started yet)
-   * Armor diagram can be superimposed on tactical map. Must be activated under ‘Map’ menu [based on patch by Peitao Ting]
-   * Cliff detection is now done per-vehicle type – if you’re in a vehicle, the cliff lines will change (automatically) to show on 2 z difference instead of 3. A somewhat shaky VTOL cliffing model is implemented as well
-   * Maps are persistent – Thud will automatically try and load the current map from disk when it detects a change automatically. Saving is also automatic and done once every 5 minutes or when the HUD is suspended or stopped.
-   * All windows can be made “always on top” (settings in Preference dialog)
+   * A new 'status' report window. Displays hex, heading, speed, heat, status (destroyed/fallen/etc) and weapon/ammo information 
+   * Armor/internal diagrams can be superimposed on tactical map. Must be activated under ‘Map’ menu [based on patch by Peitao Ting]
+   * Support for loading/saving maps. From the File menu, if you select 'Load Map', Thud will attempt to load terrain information from that file. Thud will also automatically update that file every 5 minutes with new map information. If your unit changes maps, that is detected and auto-saving is stopped (so as not to overwrite "good" (RS) map information with "bad" (hangar) map information).
+   * Thud now automatically detects when you enter/exit mechs and suspends/resumes operation accordingly. The 'Start/Stop HUD' button (Ctrl-G) still works – Thud will not automatically activate if the HUD has been stopped by a user (or not started yet)
+   * Cliff detection is now done per-vehicle type – if you’re in a vehicle, the cliff lines will change (automatically) to show on 2 z difference instead of 3.
+   * All windows can be made “always on top” via preferences
+   * The font size of the status bar at the bottom of the tactical window can now be configured via preferences.
+   * The amount of time old contacts should be kept around can now be configured via preferences.
+   * A new Window menu that can be used to restore accidentally-closed windows.
    
   Bug Fixes:
    * The tactical display will reload quicker when you first start the HUD or when you change units.
+   * Enemy contacts no longer in LOS now change color properly.
    * Disconnections are now handled much more gracefully (CPU no longer spikes, can’t send commands)
-   * Closing the main window of THUD now gracefully exits the whole program
+   * Closing the main window of Thud now gracefully exits the whole program
    * Disconnecting from a MUX closes all windows except the main one
-  
+   * Airborne/quad unit arcs are now displayed correctly.
+   * Changing the contacts window font size no longer changes the main window font size
   
 1.2.1 May 31, 2003
  
@@ -42,7 +47,7 @@ Version History:
   * Contact lists are now sorted
   * Buildings now appear on the contacts list and on the tactical map
   * Added ability to 'mute' the main window text. Note: This is not saved across sessions, because you need the main window to login to the MUX each time. Use the 'Mute Main Window Text' item in the Edit menu.
-   * Added some framework for future expansion.
+ * Added some framework for future expansion.
 
 1.1.1 October 19, 2002
 
