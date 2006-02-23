@@ -63,6 +63,11 @@ public class Thud extends JFrame implements  ActionListener
 
     protected JMenuItem	miMoveRight, miMoveLeft, miMoveDown, miMoveUp, miCenterMap;
 
+    JMenu windowMenu;
+    protected JMenuItem miWindowContacts;
+    protected JMenuItem miWindowStatus;
+    protected JMenuItem miWindowTactical;    
+    
     JMenu hudMenu;
     protected JMenuItem miStartStop;
     protected JMenuItem miPreferences;
@@ -163,6 +168,10 @@ public class Thud extends JFrame implements  ActionListener
         miNormalUpdate.addActionListener(l);
         miSlowUpdate.addActionListener(l);
         miSendTacticalUpdate.addActionListener(l);
+        
+        miWindowContacts.addActionListener(l);
+        miWindowStatus.addActionListener(l);
+        miWindowTactical.addActionListener(l);        
         
         miDumpDocument.addActionListener(l);
         
@@ -299,6 +308,25 @@ public class Thud extends JFrame implements  ActionListener
 
         if (DEBUG == 1)
             mainMenuBar.add(debugMenu);
+    }
+    
+    /** Window Menu items */
+    public void addWindowMenuItems()
+    {
+    	windowMenu = new JMenu("Window");
+    	
+        miWindowContacts = new JMenuItem("Show Contacts Window");
+        windowMenu.add(miWindowContacts).setEnabled(true);
+        
+        miWindowStatus = new JMenuItem("Show Status Window");
+        windowMenu.add(miWindowStatus).setEnabled(true);
+
+        miWindowTactical = new JMenuItem("Show Tactical Window");
+        windowMenu.add(miWindowTactical).setEnabled(true);
+        
+        // Disable the window menu until we're actually connected
+        windowMenu.setEnabled(false);
+        mainMenuBar.add(windowMenu);
     }
 
     /** Utility function to get the proper accelerator for connection items in the HUD menu */
@@ -538,6 +566,7 @@ public class Thud extends JFrame implements  ActionListener
         addUpdateMenuItems();
         addHUDMenuItems();
         addDebugMenuItems();
+        addWindowMenuItems();
 
         // Make sure our menus are listening to us
         setupListeners(this);
@@ -705,6 +734,7 @@ public class Thud extends JFrame implements  ActionListener
             miDisconnect.setEnabled(true);
             mapMenu.setEnabled(true);
             updateMenu.setEnabled(true);
+            windowMenu.setEnabled(true);
         }
         catch (Exception e)
         {
@@ -743,6 +773,7 @@ public class Thud extends JFrame implements  ActionListener
             miDisconnect.setEnabled(false);
             mapMenu.setEnabled(false);
             updateMenu.setEnabled(false);
+            windowMenu.setEnabled(false);
         }
     }
 
@@ -802,6 +833,9 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miSlowUpdate.getActionCommand())) doChangeUpdate(MUPrefs.SLOW_UPDATE);
         else if (newEvent.getActionCommand().equals(miSendTacticalUpdate.getActionCommand())) doSendTacUpdate();
         else if (newEvent.getActionCommand().equals(miDumpDocument.getActionCommand())) doDumpDocumentStructure();
+        else if (newEvent.getActionCommand().equals(miWindowContacts.getActionCommand())) doWindowContacts();    	
+        else if (newEvent.getActionCommand().equals(miWindowStatus.getActionCommand())) doWindowStatus();
+        else if (newEvent.getActionCommand().equals(miWindowTactical.getActionCommand())) doWindowTactical();    	
         else		// this is sorta bad, we assume that if it's not a menu item they hit return in the text field. need to fix
         {
             String text = textField.getText();
@@ -1336,6 +1370,21 @@ public class Thud extends JFrame implements  ActionListener
             firstLaunch = true;
         }
         
+    }
+    
+    /** Re-show contacts window */
+    public void doWindowContacts() {
+    	conList.setVisible(true);
+    }
+    
+    /** Re-show status window */
+    public void doWindowStatus() {
+    	status.setVisible(true);
+    }
+    
+    /** Re-show tactical window */
+    public void doWindowTactical() {
+    	tacMap.setVisible(true);
     }
 
     /** Write our prefs to disk */
