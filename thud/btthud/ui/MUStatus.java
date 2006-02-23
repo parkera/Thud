@@ -138,14 +138,18 @@ public class MUStatus extends JFrame
                     String s = "";
                     
                     // Move/heat block
-                    s = mydata.leftJust( 
-                    		mydata.name +
-                        	" (" +
-                        	mydata.ref +
-                        	") [" +
-                        	mydata.id +
-                        	"]",44,false) +
-                        "Heat Prod: " + 
+                    s = mydata.leftJust(mydata.name,14,true) +
+	                	"[" +
+	                	mydata.id +
+	                	"]" +
+	                	"  XYZ:" +
+	                	mydata.rightJust(String.valueOf(mydata.x), 4, false) +
+	                	"," +
+	                	mydata.rightJust(String.valueOf(mydata.y), 4, false) +
+	                	"," +
+	                	mydata.rightJust(String.valueOf(mydata.z), 4, false) +
+	                	"  " +	                	
+                        "Heat Prod:  " + 
                     	mydata.rightJust(String.valueOf(mydata.heat),3,false) +
                     	" deg C.";
                     addString(s, conRegular);
@@ -153,19 +157,19 @@ public class MUStatus extends JFrame
                     
                     NumberFormat speedFormatter = new DecimalFormat("##0.0");
                                       
-                    s = "Speed:      " + 
-                    	mydata.rightJust(speedFormatter.format(mydata.speed),5,false) +
-                    	" KPH  Heading: " +
-                    	mydata.rightJust(String.valueOf(mydata.heading),5,false)
+                    s = "Speed:  " + 
+                    	mydata.rightJust(speedFormatter.format(mydata.speed),6,false) +
+                    	" KPH  Heading:" +
+                    	mydata.rightJust(String.valueOf(mydata.heading),6,false)
                     	+ " deg  Heat Sinks: " +
                     	mydata.rightJust(String.valueOf(mydata.heatSinks),3,false);
                     addString(s, conRegular);
                     addBlankLine();
                     
-                    s = "Des. Speed: " +
-                    	mydata.rightJust(speedFormatter.format(mydata.desiredSpeed),5,false) +
-                    	" KPH  Des. Hdg:  " +
-                    	mydata.rightJust(String.valueOf(mydata.desiredHeading),3,false) +
+                    s = "Des.Spd:" +
+                    	mydata.rightJust(speedFormatter.format(mydata.desiredSpeed),6,false) +
+                    	" KPH  Des.Hdg:" +
+                    	mydata.rightJust(String.valueOf(mydata.desiredHeading),6,false) +
                     	" deg  Heat Dissp: " +
                     	mydata.rightJust(String.valueOf(mydata.heatDissipation),3,false) +
                     	" deg C.";
@@ -175,11 +179,11 @@ public class MUStatus extends JFrame
                     s = "";
                     if(mydata.maxVerticalSpeed != 0) {
                     	s = s +
-	                    	"Vert Speed: " +
-	                		mydata.rightJust(speedFormatter.format(mydata.verticalSpeed),5,false) +
+	                    	"Vrt Spd:" +
+	                		mydata.rightJust(speedFormatter.format(mydata.verticalSpeed),6,false) +
 	                		" KPH  " +                   	
-                    		"Des. VSp:" +
-                    		mydata.rightJust(speedFormatter.format(mydata.desiredVerticalSpeed),5,false) +
+                    		"Des.VSp:" +
+                    		mydata.rightJust(speedFormatter.format(mydata.desiredVerticalSpeed),6,false) +
                     		" KPH  ";                    		
                     }
                     if(mydata.maxFuel != 0) {
@@ -206,11 +210,7 @@ public class MUStatus extends JFrame
                     }
                     	                    
                     if(mydata.status.length() > 0 && mydata.status.equals("-") == false) {             
-                    	
-                    	s = "Status: ";                    	
-                    	addString(s,conRegular);
-                    	
-                    	for(char sc : mydata.status.toCharArray()) { // loop through mydata.status
+                       	for(char sc : mydata.status.toCharArray()) { // loop through mydata.status
                     		switch(sc) {
 	                			case 'B': {
 	                    			StyleConstants.setForeground(conIrregular,new Color(255,0,0));
@@ -226,12 +226,13 @@ public class MUStatus extends JFrame
 	                				break;
 	                			}
 	                			case 'e': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,0,0));
-	                				addString("AFFECTED BY ANGEL ECM",conIrregular);
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("EMITTING ECCM",conIrregular);
 	                				break;
 	                			}
 	                			case 'E': {
-	                				addString("EMITTING ECM",conRegular);
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                				addString("EMITTING ECM",conIrregular);
 	                				break;
 	                			}
 	                			case 'f': {
@@ -305,12 +306,13 @@ public class MUStatus extends JFrame
 	                				break;
 	                			}	                			
 	                			case 'p': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(0,160,0));
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
 	                				addString("PROTECTED BY ECM",conIrregular);
 	                				break;
 	                			}
 	                			case 'P': {
-	                				addString("EMITTING ANGEL ECM",conRegular);
+	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));	                				
+	                				addString("PROTECTED BY ECCM",conIrregular);
 	                				break;
 	                			}
 	                			case 's': {
@@ -344,11 +346,14 @@ public class MUStatus extends JFrame
 	                				break;
 	                			}	      
 	                		}
-                    		addString(" ",conRegular);
+                    		addString("  ",conRegular);
                     	}
-                    	addBlankLine();
+                    } else {
+                    	// Using addBlankLine() here won't work because it won't render two starttag-endtag pairs in a row - it eats one
+                    	addString("\n",conRegular);
                     }
-                                	
+                	addBlankLine();
+                	
                     s = "------- Weapon ------- [##] Loc - Status || --- Ammo Type --- Rds";
                     addString(s, conRegular);
                     addBlankLine();
