@@ -139,28 +139,21 @@ public class MUContactList extends JFrame
                             elements.add(new DefaultStyledDocument.ElementSpec(conRegular, DefaultStyledDocument.ElementSpec.StartTagType));
 
                             SimpleAttributeSet		whichAttrs = new SimpleAttributeSet(conRegular);
-
-                            if (unit.isOld())
-                            {
-                                StyleConstants.setForeground(whichAttrs, Color.gray);
-                            }
-
-                            if (!unit.isFriend() && !unit.isTarget())
-                            {
-                                StyleConstants.setForeground(whichAttrs, Color.yellow);
+                                                        
+                            if(unit.isFriend()) 
+                            	StyleConstants.setForeground(whichAttrs, Color.white);
+                                                       
+                            if(!unit.isOld() && !unit.isFriend())
                                 StyleConstants.setBold(whichAttrs, true);
-                            }
-
-                            if (unit.isTarget())
-                            {
+                                                    
+                            if (!unit.isFriend())                            
+                            	StyleConstants.setForeground(whichAttrs, Color.yellow);                            
+                            
+                            if (unit.isTarget())                            
                                 StyleConstants.setForeground(whichAttrs, Color.red);
-                            }
-
+                            
                             if (unit.isDestroyed())
-                            {
-                                StyleConstants.setStrikeThrough(whichAttrs, true);
-                                StyleConstants.setBold(whichAttrs, false);
-                            }
+                            	StyleConstants.setStrikeThrough(whichAttrs, true);
                             
                             elements.add(new DefaultStyledDocument.ElementSpec(whichAttrs,
                                                                                DefaultStyledDocument.ElementSpec.ContentType,
@@ -168,8 +161,6 @@ public class MUContactList extends JFrame
                                                                                0,
                                                                                unit.makeContactString().length()));
                         }
-                        
-
                     }
 
                     doc.clearAndInsertParsedString(elements);
