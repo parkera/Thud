@@ -108,7 +108,7 @@ public class MUCommandsTask extends TimerTask {
                 }
                 
                 // Do we save our map to disk? (Every 5 minutes)
-                if(data.hudRunning && (count % 300 == 0)) {
+                if(data.usingPersistentMap && data.hudRunning && (count % 300 == 0)) {
                 	data.saveMapToDisk();
                 }
                                 

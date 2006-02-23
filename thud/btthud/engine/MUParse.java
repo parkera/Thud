@@ -661,19 +661,11 @@ public class MUParse implements Runnable {
             // We have some more info about our map
             data.mapId = st.nextToken();
             String newMapName = st.nextToken();
-            if(newMapName.length() > 1 && (data.mapName == null || data.mapName.length() < 1 || newMapName.compareToIgnoreCase(data.mapName) != 0 )) { // new map loaded
-            	messageLine("*** Map Change Detected ***");
-            	// first, write out our old one            	
-            	if(data.mapName != null && data.mapName.length() > 1)  // did we even have one?
-            		data.saveMapToDisk();            		
-            	
-            	// now blank it so that we don't have ghosting
+            if(data.usingPersistentMap && newMapName.length() > 1 && (data.mapName == null || data.mapName.length() < 1 || newMapName.compareToIgnoreCase(data.mapName) != 0 )) { // new map loaded
+            	messageLine("*** Map Change Detected, Halting Map Auto-Save ***");
+            	// Write out our old one            	
+            	data.saveMapToDisk();            	
             	data.clearMap();
-            	
-            	// now, attempt to load new one
-                data.mapName = newMapName;
-                if (data.loadMapFromDisk()) 
-                	messageLine("*** Map " + data.mapName + " loaded succesfully from disk ***");            	
              }
             data.mapName = newMapName;
             data.mapVersion = st.nextToken();

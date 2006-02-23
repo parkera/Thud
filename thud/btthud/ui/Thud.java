@@ -29,6 +29,8 @@ public class Thud extends JFrame implements  ActionListener
     JMenuBar mainMenuBar = new JMenuBar();
 	
     JMenu fileMenu;
+    protected JMenuItem miLoadMap;
+    protected JMenuItem miSaveMapAs;
     protected JMenuItem miReleaseNotes;
     protected JMenuItem miQuit;
 	
@@ -113,6 +115,8 @@ public class Thud extends JFrame implements  ActionListener
       */
     protected void setupListeners(ActionListener l)
     {
+    	miLoadMap.addActionListener(l);
+    	miSaveMapAs.addActionListener(l);
         miReleaseNotes.addActionListener(l);
         miQuit.addActionListener(l);
 
@@ -174,7 +178,14 @@ public class Thud extends JFrame implements  ActionListener
         fileMenu = new JMenu("File");
 
         // ----------
-
+        miLoadMap = new JMenuItem("Load Map...");
+        fileMenu.add(miLoadMap).setEnabled(true);
+        
+        miSaveMapAs = new JMenuItem("Save Map As...");
+        fileMenu.add(miSaveMapAs).setEnabled(true);
+        
+        fileMenu.addSeparator();
+        
         miReleaseNotes = new JMenuItem("View Release Notes...");
         fileMenu.add(miReleaseNotes).setEnabled(true);
 
@@ -751,7 +762,9 @@ public class Thud extends JFrame implements  ActionListener
     /** ActionListener interface (for menus) */
     public void actionPerformed(ActionEvent newEvent)
     {
-        if (newEvent.getActionCommand().equals(miReleaseNotes.getActionCommand())) doReleaseNotes();
+    	if (newEvent.getActionCommand().equals(miLoadMap.getActionCommand())) doLoadMap();        
+    	else if (newEvent.getActionCommand().equals(miSaveMapAs.getActionCommand())) doSaveMapAs();    	
+    	else if (newEvent.getActionCommand().equals(miReleaseNotes.getActionCommand())) doReleaseNotes();
         else if (newEvent.getActionCommand().equals(miQuit.getActionCommand())) doQuit();
         else if (newEvent.getActionCommand().equals(miUndo.getActionCommand())) doUndo();
         else if (newEvent.getActionCommand().equals(miCut.getActionCommand())) doCut();
@@ -832,6 +845,43 @@ public class Thud extends JFrame implements  ActionListener
         aboutBox.setVisible(true);        
     }
 
+    /** Show the release notes */
+    public void doLoadMap()
+    {
+        final JFileChooser fc = new JFileChooser();
+        int returnVal = fc.showOpenDialog(this);
+        
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+        	data.mapFileName = fc.getSelectedFile().getAbsolutePath();
+        	if(data.loadMapFromDisk()) {
+        		parse.messageLine("*** Map " + data.mapFileName + " loaded succesfully ***");
+        		data.usingPersistentMap = true;
+        	} else {
+        		parse.messageLine("*** Error loading map " + data.mapFileName + " ***");
+        		data.usingPersistentMap = false;
+        	}
+        }
+    }
+    
+    public void doSaveMapAs()
+    {
+        final JFileChooser fc = new JFileChooser();
+        int returnVal = fc.showSaveDialog(this);
+        
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+        	data.mapFileName = fc.getSelectedFile().getAbsolutePath();
+        	if(data.saveMapToDisk()) {
+        		parse.messageLine("*** Map " + data.mapFileName + " saved succesfully ***");
+        		data.usingPersistentMap = true;        		
+        	} else {
+        		parse.messageLine("*** Error saving map " + data.mapFileName + " ***");
+        		data.usingPersistentMap = false;
+        	}
+        }
+    	
+    }
+
+    
     /** Show the release notes */
     public void doReleaseNotes()
     {
@@ -994,7 +1044,8 @@ public class Thud extends JFrame implements  ActionListener
     /** Stops the HUD. */
     public void doStop() {
     	if(data.hudStarted) {//only stop if we're started
-    		data.saveMapToDisk();
+    		if(data.usingPersistentMap) 
+    			data.saveMapToDisk();
     		data.hudStarted = false;
             parse.messageLine("*** Display Stopped ***");
             data.hudRunning = false;
@@ -1023,8 +1074,8 @@ public class Thud extends JFrame implements  ActionListener
 
     /** Suspend the HUD */
     public void doSuspend() {
-    	
-    	data.saveMapToDisk();
+    	if(data.usingPersistentMap)
+    		data.saveMapToDisk();
     	
     	if(data.hudRunning)
     		data.hudRunning = false;

@@ -39,8 +39,10 @@ public class MUData {
     // The map
     MUHex						map[][] = null;
     boolean						terrainChanged = true;
-    public String				mapName, mapId, mapVersion;
+    public String				mapName, mapId, mapVersion;    
     public boolean				mapLOSOnly = false;
+    public boolean				usingPersistentMap;
+    public String				mapFileName;
 
     // One MUHex for each elevation and terrain
     // By storing references to MUHexes we can save memory
@@ -338,21 +340,20 @@ public class MUData {
      * @return true if succesful, false if error/no file found/etc
      */
     public boolean loadMapFromDisk() {
-    	if(mapName.length() <= 1) // do we have a real mapname?
+    	if(mapFileName.length() <= 1) // do we have a real mapname?
     		return false;
     	try {
-    		String mapFileName = mapName + ".tmap";    		
+    		    	
     		File mapFile = new File(mapFileName);
     		FileInputStream in = new FileInputStream(mapFile);
     		ObjectInputStream ois = new ObjectInputStream(in);
-    		this.map = new MUHex[MAX_X][MAX_Y];
-    		this.map = (MUHex[][]) ois.readObject();
-
+    		map = new MUHex[MAX_X][MAX_Y];
+    		map = (MUHex[][]) ois.readObject();
     		ois.close();
-    		in.close();
-    	
+    		in.close();                 
+    		    		    	
     		return true;
-    	} 
+    	}
     	catch(Exception e) {
     		System.out.println("Error loading map " + mapName + ".tmap: " + e);
     		return false;
@@ -364,10 +365,9 @@ public class MUData {
      * @return true if succesful, false if error/file io error/etc
      */
     public boolean saveMapToDisk() {
-    	if(mapName == null || mapName.length() <= 1) // do we have a real mapname?
+    	if(mapFileName == null || mapFileName.length() <= 1) // do we have a real mapname?
     		return false;
-    	try {
-    		String mapFileName = mapName + ".tmap";    		
+    	try {    		
     		File mapFile = new File(mapFileName);
     		mapFile.delete();
     		mapFile.createNewFile();
@@ -386,6 +386,4 @@ public class MUData {
     		return false;
     	}    
     }
-    
-    
 }
