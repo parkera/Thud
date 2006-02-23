@@ -42,6 +42,10 @@ public class PrefsDialog extends javax.swing.JDialog {
     private javax.swing.JComboBox 		mainSizeBox;
     private javax.swing.JLabel 			contactsLabel;
     private javax.swing.JComboBox 		contactsSizeBox;
+    private javax.swing.JLabel			statusLabel;
+    private javax.swing.JComboBox		statusSizeBox;
+    private javax.swing.JLabel			tacStatusBarLabel;
+    private javax.swing.JComboBox		tacStatusBarSizeBox;
     private javax.swing.JLabel 			contactsOnMapLabel;
     private javax.swing.JComboBox 		contactsOnMapSizeBox;
     private javax.swing.JLabel 			elevationsLabel;
@@ -103,7 +107,11 @@ public class PrefsDialog extends javax.swing.JDialog {
         elevationsSizeBox = new javax.swing.JComboBox();
         hexNumbersLabel = new javax.swing.JLabel();
         hexNumberSizeBox = new javax.swing.JComboBox();
-
+        statusLabel = new javax.swing.JLabel();
+        statusSizeBox = new javax.swing.JComboBox();
+        tacStatusBarLabel = new javax.swing.JLabel();
+        tacStatusBarSizeBox = new javax.swing.JComboBox();
+        
         WindowTab = new JPanel();
                 
         nullLabel = new javax.swing.JLabel();
@@ -206,7 +214,7 @@ public class PrefsDialog extends javax.swing.JDialog {
         TabbedPane.addTab("Map Colors", MapColorsTab);
 
         // --- FONT OPTIONS ---
-        FontTab.setLayout(new GridLayout(5, 2));
+        FontTab.setLayout(new GridLayout(0, 2));
         
         mainLabel.setText("Main Window Font Size");
         FontTab.add(mainLabel);
@@ -219,6 +227,12 @@ public class PrefsDialog extends javax.swing.JDialog {
         addFontSizeMenus(contactsSizeBox);
         contactsSizeBox.setSelectedItem(new Integer(prefs.contactFontSize));
         FontTab.add(contactsSizeBox);
+        
+        statusLabel.setText("Status Window Font Size");
+        FontTab.add(statusLabel);
+        addFontSizeMenus(statusSizeBox);
+        statusSizeBox.setSelectedItem(new Integer(prefs.statusFontSize));
+        FontTab.add(statusSizeBox);
         
         contactsOnMapLabel.setText("Contacts on Map Font Size");
         FontTab.add(contactsOnMapLabel);
@@ -237,6 +251,12 @@ public class PrefsDialog extends javax.swing.JDialog {
         addFontSizeMenus(hexNumberSizeBox);
         hexNumberSizeBox.setSelectedItem(new Integer(prefs.hexNumberFontSize));
         FontTab.add(hexNumberSizeBox);
+        
+        tacStatusBarLabel.setText("Map Status Bar Size");
+        FontTab.add(tacStatusBarLabel);
+        addFontSizeMenus(tacStatusBarSizeBox);
+        tacStatusBarSizeBox.setSelectedItem(new Integer(prefs.tacStatusFontSize));
+        FontTab.add(tacStatusBarSizeBox);
         
         TabbedPane.addTab("Fonts", FontTab);
         
@@ -305,10 +325,12 @@ public class PrefsDialog extends javax.swing.JDialog {
         // They've clicked the save button
         // Get the values of some of the items
         prefs.mainFontSize = ((Integer) mainSizeBox.getSelectedItem()).intValue();
+        prefs.statusFontSize = ((Integer) statusSizeBox.getSelectedItem()).intValue();
         prefs.contactFontSize = ((Integer) contactsSizeBox.getSelectedItem()).intValue();
         prefs.infoFontSize = ((Integer) contactsOnMapSizeBox.getSelectedItem()).intValue();
         prefs.elevationFontSize = ((Integer) elevationsSizeBox.getSelectedItem()).intValue();
         prefs.hexNumberFontSize = ((Integer) hexNumberSizeBox.getSelectedItem()).intValue();
+        prefs.tacStatusFontSize = ((Integer) tacStatusBarSizeBox.getSelectedItem()).intValue();
 
         prefs.speedIndicatorLength = ((Float) speedLengthBox.getSelectedItem()).floatValue();
         prefs.maxScrollbackSize = ((Integer) scrollbackSizeBox.getSelectedItem()).intValue();

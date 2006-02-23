@@ -51,10 +51,10 @@ public class MUStatus extends JFrame
         this.conn = conn;
         this.prefs = prefs;
 
-        mFont = new Font("Monospaced", Font.PLAIN, prefs.contactFontSize);
+        mFont = new Font("Monospaced", Font.PLAIN, prefs.statusFontSize);
         
         elements = new ArrayList();
-        BulkStyledDocument	bsd = new BulkStyledDocument(prefs.contactFontSize, 1000, mFont);        // Yes, max of 1000 contacts. So sue me.
+        BulkStyledDocument	bsd = new BulkStyledDocument(prefs.statusFontSize, 50, mFont);
         statusPane = new JTextPane(bsd);
         statusPane.setBackground(Color.black);
         statusPane.setEditable(false);
@@ -92,10 +92,10 @@ public class MUStatus extends JFrame
     public void newPreferences(MUPrefs prefs)
     {
         this.prefs = prefs;
-        mFont = new Font("Monospaced", Font.PLAIN, prefs.contactFontSize);
+        mFont = new Font("Monospaced", Font.PLAIN, prefs.statusFontSize);
         statusPane.setFont(mFont);
         this.setAlwaysOnTop(prefs.statusAlwaysOnTop);
-
+        initAttributeSets();
     }
     
     // --------------------
@@ -111,11 +111,11 @@ public class MUStatus extends JFrame
     protected void initAttributeSets()
     {
         conRegular = new SimpleAttributeSet();
-        StyleConstants.setFontSize(conRegular, prefs.contactFontSize);
+        StyleConstants.setFontSize(conRegular, prefs.statusFontSize);
         StyleConstants.setForeground(conRegular, Color.white);
 
         conIrregular = new SimpleAttributeSet();
-        StyleConstants.setFontSize(conIrregular, prefs.contactFontSize);
+        StyleConstants.setFontSize(conIrregular, prefs.statusFontSize);
         StyleConstants.setForeground(conIrregular, Color.white);
         StyleConstants.setBold(conIrregular,true);
         
@@ -447,8 +447,6 @@ public class MUStatus extends JFrame
                 }
                 
             	doc.clearAndInsertParsedString(elements);
-                // Don't scroll
-                // contactPane.setCaretPosition(doc.getLength());
                 
                 // This should probably sleep until notified or something
                 Thread.sleep(1000);

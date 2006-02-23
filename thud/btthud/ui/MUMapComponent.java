@@ -36,7 +36,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     MUData					data;
     MUPrefs					prefs;
 
-    Font					smallFont;
+    Font					tacStatusFont;
     Font					hexNumberFont;
     Font					infoFont;
     Font					terrainFont;
@@ -333,7 +333,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
       */
     private void setupFonts()
     {
-        smallFont = new Font("Monospaced", Font.PLAIN, prefs.smallFontSize);
+        tacStatusFont = new Font("Monospaced", Font.PLAIN, prefs.tacStatusFontSize);
         hexNumberFont = new Font("Monospaced", Font.BOLD, prefs.hexNumberFontSize);
         infoFont = new Font("Monospaced", Font.BOLD, prefs.infoFontSize);
         terrainFont = new Font("Monospaced", Font.PLAIN, 10);		// this changes dynamically anyway. based on size of hex
@@ -1314,7 +1314,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         int						nextStartsAt = 10;
         int						spacingDiff = 15;
 
-        g.setFont(smallFont);
+        g.setFont(tacStatusFont);
         
         g.setColor(Color.black);
         g.fill(barRect);
@@ -1361,7 +1361,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         // Unit information
         tempString = "[" + data.myUnit.id + "] " + data.myUnit.name + " (" + data.myUnit.ref + ")" + " S:" + data.myUnit.status;
-        tempRect = smallFont.getStringBounds(tempString, frc);
+        tempRect = tacStatusFont.getStringBounds(tempString, frc);
 
         g.setColor(Color.white);
         g.drawString(tempString, nextStartsAt, barRect.y + 11);
@@ -1377,7 +1377,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         float		armorLeft = data.myUnit.percentArmorLeft();
         g.setColor(MUUnitInfo.colorForPercent(armorLeft));
         tempString = armorLeft + "% / ";
-        tempRect = smallFont.getStringBounds(tempString, frc);
+        tempRect = tacStatusFont.getStringBounds(tempString, frc);
         g.drawString(tempString, nextStartsAt, barRect.y + 11);
         nextStartsAt += tempRect.getWidth();	// Don't put in spacing here, the space is there in the string
 
@@ -1385,7 +1385,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         float		internalLeft = data.myUnit.percentInternalLeft();
         g.setColor(MUUnitInfo.colorForPercent(internalLeft));
         tempString = internalLeft + "%";
-        tempRect = smallFont.getStringBounds(tempString, frc);
+        tempRect = tacStatusFont.getStringBounds(tempString, frc);
         g.drawString(tempString, nextStartsAt, barRect.y + 11);
         nextStartsAt += tempRect.getWidth() + spacingDiff;
 
@@ -1397,7 +1397,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         // Location information
         tempString = "Loc: " + data.myUnit.x + ", " + data.myUnit.y + ", " + data.myUnit.z;
-        tempRect = smallFont.getStringBounds(tempString, frc);
+        tempRect = tacStatusFont.getStringBounds(tempString, frc);
         g.setColor(Color.white);
         g.drawString(tempString, nextStartsAt, barRect.y + 11);
         nextStartsAt += tempRect.getWidth();	// Don't put in spacing here, the space is there in the string

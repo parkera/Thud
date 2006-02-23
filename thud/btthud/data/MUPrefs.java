@@ -55,7 +55,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
 
     public Color				terrainColors[] = new Color[MUHex.TOTAL_TERRAIN];
 
-    public int					mainFontSize, smallFontSize, hexNumberFontSize, infoFontSize, elevationFontSize, contactFontSize;
+    public int					mainFontSize, tacStatusFontSize, hexNumberFontSize, infoFontSize, elevationFontSize, contactFontSize, statusFontSize;
     public int					maxScrollbackSize;
     
     public ArrayList			hosts = new ArrayList();
@@ -155,9 +155,10 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         
         mainFontSize = 12;
         contactFontSize = 12;
-        smallFontSize = 9;
+        tacStatusFontSize = 9;
         hexNumberFontSize = 9;
         infoFontSize = 10;
+        statusFontSize = 12;
         elevationFontSize = 10;
 
         maxScrollbackSize = 2000;
@@ -165,7 +166,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         mainAlwaysOnTop = false;
         contactsAlwaysOnTop = false;
         statusAlwaysOnTop = false;
-        tacticalAlwaysOnTop = true;
+        tacticalAlwaysOnTop = false;
         
         MUHost bt3030 = new MUHost("btech.dhs.org", 3030);
         MUHost frontiers = new MUHost("btmux.com", 5555);

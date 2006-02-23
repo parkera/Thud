@@ -1300,7 +1300,7 @@ public class Thud extends JFrame implements  ActionListener
         if (bsd != null)
             bsd.setFontSize(prefs.mainFontSize, mFont);
         if (textField != null)
-            textField.setFont(mFont);
+            textField.setFont(mFont);        	
     }
     
     /** Read our prefs from disk */
