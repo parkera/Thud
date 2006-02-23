@@ -54,7 +54,7 @@ public class MUStatus extends JFrame
         mFont = new Font("Monospaced", Font.PLAIN, prefs.statusFontSize);
         
         elements = new ArrayList();
-        BulkStyledDocument	bsd = new BulkStyledDocument(prefs.statusFontSize, 50, mFont);
+        BulkStyledDocument	bsd = new BulkStyledDocument(prefs.statusFontSize, 100, mFont);
         statusPane = new JTextPane(bsd);
         statusPane.setBackground(Color.black);
         statusPane.setEditable(false);
