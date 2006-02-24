@@ -60,6 +60,7 @@ public class Thud extends JFrame implements  ActionListener
     protected JCheckBoxMenuItem miShowArmorDiagrams;
 
     protected JCheckBoxMenuItem	miShowCliffs;
+    protected JCheckBoxMenuItem miShowIndicators;
 
     protected JMenuItem	miMoveRight, miMoveLeft, miMoveDown, miMoveUp, miCenterMap;
 
@@ -149,6 +150,7 @@ public class Thud extends JFrame implements  ActionListener
         miShowArmorDiagrams.addActionListener(l);
 
         miShowCliffs.addActionListener(l);
+        miShowIndicators.addActionListener(l);
 
         miMoveRight.addActionListener(l);
         miMoveLeft.addActionListener(l);
@@ -481,6 +483,12 @@ public class Thud extends JFrame implements  ActionListener
         mapMenu.add(miShowCliffs).setEnabled(true);
         miShowCliffs.setState(prefs.tacShowCliffs);
         
+        miShowIndicators = new JCheckBoxMenuItem("Show Heat/Armor on Tactical", prefs.tacShowIndicators);
+        miShowIndicators.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I,
+                                                           Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        mapMenu.add(miShowIndicators).setEnabled(true);
+        miShowIndicators.setState(prefs.tacShowIndicators);
+
         // Disable the map menu until we're actually connected
         mapMenu.setEnabled(false);
         mainMenuBar.add(mapMenu);
@@ -818,6 +826,7 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miDarkenElevations.getActionCommand())) doDarkenElevations();
         else if (newEvent.getActionCommand().equals(miShowArmorDiagrams.getActionCommand())) doShowArmorDiagrams();
         else if (newEvent.getActionCommand().equals(miShowCliffs.getActionCommand())) doShowCliffs();
+        else if (newEvent.getActionCommand().equals(miShowIndicators.getActionCommand())) doShowIndicators();
         else if (newEvent.getActionCommand().equals(miMoveLeft.getActionCommand())) doChangeXOffset(-1);
         else if (newEvent.getActionCommand().equals(miMoveRight.getActionCommand())) doChangeXOffset(1);
         else if (newEvent.getActionCommand().equals(miMoveUp.getActionCommand())) doChangeYOffset(-1);
@@ -1231,6 +1240,14 @@ public class Thud extends JFrame implements  ActionListener
     {
         prefs.tacShowCliffs = !prefs.tacShowCliffs;
         miShowCliffs.setState(prefs.tacShowCliffs);
+        tacMap.newPreferences(prefs);
+    }
+
+    /** Show indicators on the map? */
+    public void doShowIndicators()
+    {
+        prefs.tacShowIndicators = !prefs.tacShowIndicators;
+        miShowIndicators.setState(prefs.tacShowIndicators);
         tacMap.newPreferences(prefs);
     }
 
