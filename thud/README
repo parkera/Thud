@@ -1,27 +1,44 @@
 Hi there!
 
-Post-1.2.1, compiling THUD has switched to use Apache ant, a sophisticated
+Post-1.2.1, compiling Thud has switched to use Apache ant, a sophisticated
 compilation tool.
 
 If ant is installed, you should be able to just run 'ant' from the directory 
-this file's in to compile THUD to a .jar file.
+this file's in to compile Thud and package it in a .jar file.
 
 If you want to edit the source files, a Java-specific integrated development 
-environment (IDE) such as Eclipse is highly recommended.
+environment (IDE) is highly recommended. The Thud team recommends using
+Eclipse, a free, open-source multi-language IDE. We also suggest that you
+install Subclipse, an Eclipse plugin that enables Subversion tasks to be run
+from within Eclipse. 
 
-To set up the project to edit and compile under Eclipse:
-1) File -> New -> Other...
-2) Select 'Java Project from Existing Ant Buildfile'
-3) Enter a descriptive project name and in the 'Ant buildfile' box, navigate to
-   the 'build.xml' file located in this directory
-4) Hit 'Finish' and you're all set!
+Once you have Subclipse installed, the best way we've found to get everything up
+and going looks like this (instructions as of Eclipse 3.1):
+
+1) Check out a copy of Thud wherever you want the root of the project to be.
+   Using the command line svn client, this looks something like:
+   svn co https://svn.sourceforge.net/svnroot/bt-thud/trunk/thud
+2) The Thud project contains an "example" .project and .classpath file that you 
+   can use to import into Eclipse. This lets us do an 'import' from Eclipse, 
+   which sounds like it copies the project into your Eclipse workspace, but 
+   really it just makes a pointer to your folder you just created with your
+   checkout, which is what we want. So, go to File -> Import from inside
+   Eclipse.   
+2) Select 'Existing Projects into Workspace' (under 'General')
+3) Enter the root directory of where you checked out Thud. Be sure and DO NOT
+   check the 'Copy projects into workspace' checkbox. 
+4) Hit 'Finish' and you should be all set! Eclipse should configure the compile
+   path and so on automatically. And now, not only can you manipulate the files
+   as usual, but if you right click on a file and go to the 'Team' submenu,
+   you'll see options for working with the file in Subversion, too!
 
 If you are interested in working on the THUD client, join our developer's
 mailing list and introduce yourself! We can always use the help.
 
 Thanks,
---The THUD Team
+--The Thud Team
 http://bt-thud.sourceforge.net/thud/
 
 Get Ant: http://ant.apache.org/
 Get Eclipse: http://www.eclipse.org/
+Get Subclipse: http://subclipse.tigris.org/
