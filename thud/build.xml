@@ -1,12 +1,12 @@
 <project name="thud" default="package" basedir=".">	
     <path id="project.classpath">
-        <pathelement location="bin"/>
+        <pathelement location="src"/>
         <pathelement location="${JRE_LIB}"/>
     </path>
 	<target name="compile">
-		<mkdir dir="bin/btthud"/>
-		<javac destdir="bin" excludes="bin doc">
-		            <src path="."/>
+		<mkdir dir="bin"/>
+		<javac destdir="bin">
+		            <src path="src"/>
 		            <classpath refid="project.classpath"/>
 		           
 		</javac>
@@ -16,7 +16,7 @@
 		<jar destfile="Thud.jar" basedir="bin">	
 			<manifest>
 			    <attribute name="Built-By" value="${user.name}"/>
-			    <attribute name="Main-Class" value="btthud.ui.Thud"/>
+			    <attribute name="Main-Class" value="net.sourceforge.btthud.ui.Thud"/>
 			    <section name="common">
 			      <attribute name="Specification-Title" value="btthud"/>
 			      <attribute name="Specification-Version" value="${version} ${TODAY}"/>
