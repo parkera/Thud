@@ -27,6 +27,9 @@ Version History:
    * Disconnecting from a MUX closes all windows except the main one
    * Airborne/quad unit arcs are now displayed correctly.
    * Changing the contacts window font size no longer changes the main window font size
+
+  Misc:
+   * For Thud developers: The repository has been converted from CVS to Subversion.
   
 1.2.1 May 31, 2003
  
