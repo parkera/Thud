@@ -61,7 +61,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public int					mainFontSize, tacStatusFontSize, hexNumberFontSize, infoFontSize, elevationFontSize, contactFontSize, statusFontSize;
     public int					maxScrollbackSize;
     
-    public ArrayList			hosts = new ArrayList<MUHost>();
+    public ArrayList<MUHost>	hosts = new ArrayList<MUHost>();
 
     public static final int			FAST_UPDATE = 1;
     public static final int			NORMAL_UPDATE = 2;

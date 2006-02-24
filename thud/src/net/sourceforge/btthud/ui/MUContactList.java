@@ -17,6 +17,7 @@ import java.awt.event.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
+import javax.swing.text.DefaultStyledDocument.ElementSpec;
 
 import java.util.*;
 
@@ -117,7 +118,7 @@ public class MUContactList extends JFrame
     {
         MUUnitInfo								unit = new MUUnitInfo();
         BulkStyledDocument 						doc = (BulkStyledDocument) contactPane.getDocument();
-        ArrayList								elements = new ArrayList();
+        ArrayList<ElementSpec>					elements = new ArrayList<ElementSpec>();
         
         while (go)
         {

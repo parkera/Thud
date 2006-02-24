@@ -104,7 +104,7 @@ public class Thud extends JFrame implements  ActionListener
     MUPrefs					prefs = null;
     MUCommands				commands = null;
 
-    LinkedList				commandHistory = new LinkedList();
+    LinkedList<String>		commandHistory = new LinkedList<String>();
     int						historyLoc = 1;							// how far we are from end of history list
     
     static final int		DEBUG = 0;

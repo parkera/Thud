@@ -50,8 +50,8 @@ public class MUData {
     MUHex						hexCache[][] = new MUHex[MUHex.TOTAL_TERRAIN][19];
     
     // We store the contact data in a ArrayList, because we need to iterate over it efficiently
-    ArrayList					contacts = null;
-    ArrayList					buildings = null;
+    ArrayList<MUUnitInfo>		contacts = null;
+    ArrayList<MUUnitInfo>		buildings = null;
 
     // This is the time that we received our last hudinfo data
     public long					lastDataTime;
@@ -168,7 +168,7 @@ public class MUData {
         if (!sorted)
             return contacts.iterator();
         else
-            return ((new TreeSet(contacts)).iterator());
+            return ((new TreeSet<MUUnitInfo>(contacts)).iterator());
     }
     
     // ----------------------------------
@@ -248,7 +248,7 @@ public class MUData {
     public void clearData()
     {
         // Clear contacts and our unit, but leave the map alone
-        contacts = new ArrayList(20);		// data for our contact list
+        contacts = new ArrayList<MUUnitInfo>(20);		// data for our contact list
         myUnit = new MUMyInfo();			// data that represents our own unit
         clearMap();
         this.mapName = "";

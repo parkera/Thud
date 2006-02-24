@@ -27,7 +27,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
     MutableAttributeSet		attrCommand;
     MutableAttributeSet		attrHudMessage;
 
-    HashMap					cachedAttributes = new HashMap();
+    HashMap<String,AttributeSet>	cachedAttributes = new HashMap<String,AttributeSet>();
 
     int						maxLines = 1000;
 
@@ -125,7 +125,7 @@ public class BulkStyledDocument extends DefaultStyledDocument
         int							parsePos = 0;
         boolean						done;
 
-        ArrayList					elements = new ArrayList();	// we could specify an initial capacity here
+        ArrayList<ElementSpec>		elements = new ArrayList<ElementSpec>();	// we could specify an initial capacity here
         
         if (l == null)
             return elements;

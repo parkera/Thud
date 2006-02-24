@@ -16,6 +16,7 @@ import java.awt.event.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
+import javax.swing.text.DefaultStyledDocument.ElementSpec;
 
 import java.util.*;
 import java.text.*;
@@ -38,7 +39,7 @@ public class MUStatus extends JFrame
     JTextPane			statusPane;
     Thread				thread = null;
     SimpleAttributeSet	conRegular, conIrregular;
-    ArrayList			elements;
+    ArrayList<ElementSpec>	elements;
     
     boolean				go = true;
 
@@ -53,7 +54,7 @@ public class MUStatus extends JFrame
 
         mFont = new Font("Monospaced", Font.PLAIN, prefs.statusFontSize);
         
-        elements = new ArrayList();
+        elements = new ArrayList<ElementSpec>();
         BulkStyledDocument	bsd = new BulkStyledDocument(prefs.statusFontSize, 100, mFont);
         statusPane = new JTextPane(bsd);
         statusPane.setBackground(Color.black);
