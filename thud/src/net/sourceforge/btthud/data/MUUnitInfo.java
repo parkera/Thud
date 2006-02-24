@@ -243,7 +243,7 @@ public class MUUnitInfo extends Object implements Comparable {
     
     /** Returns the cliff differential for this unit. */
     public int cliffDiff() {
-    	if(this.isMech()) { 
+    	if(this.isMech() || this.type.equals("S")) { // Mech or battlesuit
     		return 2;
     	} else {
     		return 1;
@@ -455,6 +455,8 @@ public class MUUnitInfo extends Object implements Comparable {
         switch (type.charAt(0))
         {
             case 'B':							// Biped
+            case 'S':							// BattleSuit
+            case 'I':							// Infantry
                 unitOutline.moveTo(8, 0);
                 unitOutline.lineTo(8, 3);
                 unitOutline.lineTo(5, 3);
@@ -586,10 +588,6 @@ public class MUUnitInfo extends Object implements Comparable {
                 if (!drawArmor)
                     xform.scale(h / 4.0, h / 4.0);
                     
-                break;
-            case 'S':
-                break;
-            case 'I':
                 break;
             case 'i':
                 unitOutline.moveTo(4, 4);
