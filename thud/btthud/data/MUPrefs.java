@@ -61,7 +61,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public int					mainFontSize, tacStatusFontSize, hexNumberFontSize, infoFontSize, elevationFontSize, contactFontSize, statusFontSize;
     public int					maxScrollbackSize;
     
-    public ArrayList			hosts = new ArrayList();
+    public ArrayList			hosts = new ArrayList<MUHost>();
 
     public static final int			FAST_UPDATE = 1;
     public static final int			NORMAL_UPDATE = 2;
@@ -124,15 +124,15 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         tacShowTerrainElev = true;
         tacShowUnitNames = true;
         tacDarkenElev = true;
-        tacShowCliffs = false;
-        tacShowIndicators = false;      // Floating Heat/Armor/Internal bar on tactical map
-        tacShowArmorDiagram = false;
-        highlightMyHex = false;
+        tacShowCliffs = true;
+        tacShowIndicators = true;      // Floating Heat/Armor/Internal bar on tactical map
+        tacShowArmorDiagram = true;
+        highlightMyHex = true;
         speedIndicatorLength = 3.0f;
         overwriteWithUnknown = true;	// Ie, don't save terrain we already know about in the underground
         
         makeArcsWeaponRange = false;
-        tacShowArcs = false;
+        tacShowArcs = true;
         arcIndicatorRange = 2;
 
         yOffset = 0;
