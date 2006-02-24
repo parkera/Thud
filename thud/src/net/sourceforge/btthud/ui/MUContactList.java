@@ -141,8 +141,11 @@ public class MUContactList extends JFrame
 
                             SimpleAttributeSet		whichAttrs = new SimpleAttributeSet(conRegular);
                                                         
-                            if(unit.isFriend()) 
+                            if(unit.isFriend() && !unit.isOld()) 
                             	StyleConstants.setForeground(whichAttrs, Color.white);
+                            
+                            if(unit.isFriend() && unit.isOld())
+                            	StyleConstants.setForeground(whichAttrs, Color.gray);
                                                        
                             if(!unit.isOld() && !unit.isFriend())
                                 StyleConstants.setBold(whichAttrs, true);
