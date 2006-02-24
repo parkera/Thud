@@ -14,10 +14,10 @@
 <br><br>
 <p>
 This is the home page for Thud, an open-source graphical heads up display for BattleTech MUXes based on the public CVS tree available at <a href="http://btech.sourceforge.net">Sourceforge</a>.
-Thud can connect to any BTech MUX that supports a certain protocol known as 'hudinfo.' 
+Thud can connect to any BTech MUX that supports a certain protocol known as 'hudinfo.'
 By default, it is set up to connect to <a href="telnet://btech.dhs.org:3030">3030MUX</a> and <a href="telnet://btmux.com:5555">Frontiers</a>.
 <br><br>
-Thud (Tony's Heads Up Display) is a pure Java client designed to retrieve combat-related data from the game and display it in a easier-to-read tactical display. 
+Thud (Tony's Heads Up Display) is a pure Java client designed to retrieve combat-related data from the game and display it in a easier-to-read tactical display.
 It will display a tactical map, contacts list, weapons status, armor status, heat status, and more.
 The map displays terrain, cliffs, your own unit, and enemy units.
 There are a plethora of options available to customize the client to suit your style of playing.
@@ -78,14 +78,14 @@ Connect to your character as normal (type: connect "name" password) by typing in
 Get yourself into a sim pod and startup your unit.<br><br
 >Now, you're ready to start: choose 'Start/Stop' from the 'HUD' menu, and you're up and running!
 There are plenty of options in the 'Map' menu to keep you busy, as well as lots in the preferences dialog.
-<p><a name="source"><b>Using CVS to get the latest Thud source</b>
+<p><a name="source"><b>Using Subversion to get the latest Thud source</b>
 <br><br>
-This requires some knowledge of how to use a command line and cvs client (but not much), and ant, a Java application builder (available at <a href="http://ant.apache.org">ant.apache.org</a>).
-You'll also need the Java Development Kit (JDK) 1.3 or better, available at <a href="http://java.sun.com">java.sun.com</a>.
+This requires some knowledge of how to use a command line, a Subversion client (<a href="http://sourceforge.net/docs/E09#use">click here</a> for info), and ant, a Java application builder (available at <a href="http://ant.apache.org">ant.apache.org</a>).
+You'll also need the Java Development Kit (JDK) 1.5 or better, available at <a href="http://java.sun.com">java.sun.com</a>.
 <br><br>
-If you have a CVS root already setup, drop into a terminal and type:<br>
-<code>cvs -d:pserver:anonymous@cvs.bt-thud.sourceforge.net:/cvsroot/bt-thud login</code><br>
-<code>cvs -z8 -d:pserver:anonymous@cvs.bt-thud.sourceforge.net:/cvsroot/bt-thud co thud</code><br><br>
+The SVN root URL is: <code><b>https://svn.sourceforge.net/svnroot/bt-thud/trunk/thud</b></code>. Most GUI Subversion tools will allow you to input this directly.
+If you are using the "official" command line Subversion client (svn), you'll want to type:<br>
+<code>svn co https://svn.sourceforge.net/svnroot/bt-thud/trunk/thud</code><br>
 <code>cd thud</code><br>
 <code>ant</code><br>
 <code>./Thud.jar</code><br>
