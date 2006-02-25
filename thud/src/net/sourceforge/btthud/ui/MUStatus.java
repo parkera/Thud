@@ -228,7 +228,7 @@ public class MUStatus extends JFrame
 	                			}
 	                			case 'e': {
 	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
-	                				addString("EMITTING ECCM",conIrregular);
+	                				addString("AFFECTED BY ECM",conIrregular);
 	                				break;
 	                			}
 	                			case 'E': {
