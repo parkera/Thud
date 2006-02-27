@@ -51,7 +51,7 @@ public class MUContactList extends JFrame
         this.conn = conn;
         this.prefs = prefs;
 
-        mFont = new Font("Monospaced", Font.PLAIN, prefs.contactFontSize);
+        mFont = new Font(prefs.mainFont, Font.PLAIN, prefs.contactFontSize);
         
         // Setup our new contact list pane
         BulkStyledDocument	bsd = new BulkStyledDocument(prefs.contactFontSize, 1000, mFont);        // Yes, max of 1000 contacts. So sue me.
@@ -91,6 +91,7 @@ public class MUContactList extends JFrame
     protected void initAttributeSets()
     {
         conRegular = new SimpleAttributeSet();
+        StyleConstants.setFontFamily(conRegular, prefs.mainFont);        
         StyleConstants.setFontSize(conRegular, prefs.contactFontSize);
         StyleConstants.setForeground(conRegular, Color.white);
     }
@@ -98,7 +99,7 @@ public class MUContactList extends JFrame
     public void newPreferences(MUPrefs prefs)
     {
         this.prefs = prefs;
-        mFont = new Font("Monospaced", Font.PLAIN, prefs.contactFontSize);
+        mFont = new Font(prefs.mainFont, Font.PLAIN, prefs.contactFontSize);
         contactPane.setFont(mFont);
         this.setAlwaysOnTop(prefs.contactsAlwaysOnTop);
         initAttributeSets();

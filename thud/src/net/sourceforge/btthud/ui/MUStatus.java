@@ -52,7 +52,7 @@ public class MUStatus extends JFrame
         this.conn = conn;
         this.prefs = prefs;
 
-        mFont = new Font("Monospaced", Font.PLAIN, prefs.statusFontSize);
+        mFont = new Font(prefs.mainFont, Font.PLAIN, prefs.statusFontSize);
         
         elements = new ArrayList<ElementSpec>();
         BulkStyledDocument	bsd = new BulkStyledDocument(prefs.statusFontSize, 100, mFont);
@@ -93,7 +93,7 @@ public class MUStatus extends JFrame
     public void newPreferences(MUPrefs prefs)
     {
         this.prefs = prefs;
-        mFont = new Font("Monospaced", Font.PLAIN, prefs.statusFontSize);
+        mFont = new Font(prefs.mainFont, Font.PLAIN, prefs.statusFontSize);
         statusPane.setFont(mFont);
         this.setAlwaysOnTop(prefs.statusAlwaysOnTop);
         initAttributeSets();
@@ -112,10 +112,12 @@ public class MUStatus extends JFrame
     protected void initAttributeSets()
     {
         conRegular = new SimpleAttributeSet();
+        StyleConstants.setFontFamily(conRegular, prefs.mainFont);
         StyleConstants.setFontSize(conRegular, prefs.statusFontSize);
         StyleConstants.setForeground(conRegular, Color.white);
 
         conIrregular = new SimpleAttributeSet();
+        StyleConstants.setFontFamily(conIrregular, prefs.mainFont);
         StyleConstants.setFontSize(conIrregular, prefs.statusFontSize);
         StyleConstants.setForeground(conIrregular, Color.white);
         StyleConstants.setBold(conIrregular,true);

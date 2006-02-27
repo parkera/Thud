@@ -18,6 +18,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public boolean				showTacMap, showContacts;
 
     public Point				mainLoc, tacLoc, contactsLoc, armorLoc, statusLoc;
+    public String               mainFont;
     public int					mainSizeX, mainSizeY, tacSizeX, tacSizeY, contactsSizeX, contactsSizeY, statusSizeX, statusSizeY;
     public int					armorSizeX, armorSizeY;
     
@@ -157,6 +158,8 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         terrainColors[MUHex.SMOKE_OVER_WATER] = Color.lightGray;
         terrainColors[MUHex.UNKNOWN] = Color.black;
         
+        // Need to get the "real" font name for the Monospaced font
+        mainFont = new Font("Monospaced",Font.PLAIN,10).getFontName();
         mainFontSize = 12;
         contactFontSize = 12;
         tacStatusFontSize = 9;

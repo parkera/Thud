@@ -40,7 +40,9 @@ public class PrefsDialog extends javax.swing.JDialog {
     private javax.swing.JButton 		bTerrainColors[] = new javax.swing.JButton[MUHex.TOTAL_TERRAIN];
 
     private javax.swing.JPanel 			FontTab;
+    private javax.swing.JLabel			mainFontLabel;
     private javax.swing.JLabel 			mainLabel;
+    private javax.swing.JComboBox       	mainFontBox;
     private javax.swing.JComboBox 		mainSizeBox;
     private javax.swing.JLabel 			contactsLabel;
     private javax.swing.JComboBox 		contactsSizeBox;
@@ -65,6 +67,9 @@ public class PrefsDialog extends javax.swing.JDialog {
     private javax.swing.JButton 		SaveButton;
 
     private javax.swing.JLabel			nullLabel;
+    
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    Font[] fonts = ge.getAllFonts();
     
     /** Creates new form PrefsDialog */
     public PrefsDialog(java.awt.Frame parent, boolean modal) {
@@ -101,6 +106,8 @@ public class PrefsDialog extends javax.swing.JDialog {
             bTerrainColors[i] = new javax.swing.JButton();
         
         FontTab = new javax.swing.JPanel();
+        mainFontLabel = new javax.swing.JLabel();
+        mainFontBox = new javax.swing.JComboBox();
         mainLabel = new javax.swing.JLabel();
         mainSizeBox = new javax.swing.JComboBox();
         contactsLabel = new javax.swing.JLabel();
@@ -237,6 +244,16 @@ public class PrefsDialog extends javax.swing.JDialog {
         // --- FONT OPTIONS ---
         FontTab.setLayout(new GridLayout(0, 2));
         
+        mainFontLabel.setText("Font for All Windows");
+        FontTab.add(mainFontLabel);
+        mainFontBox.addItem("Monospaced");
+        mainFontBox.addItem("Serif");
+        mainFontBox.addItem("SansSerif");        
+        for(int i=0; i< fonts.length; i++) 
+        	mainFontBox.addItem(new String(fonts[i].getFontName()));        
+        mainFontBox.setSelectedItem(prefs.mainFont);
+        FontTab.add(mainFontBox);
+        
         mainLabel.setText("Main Window Font Size");
         FontTab.add(mainLabel);
         addFontSizeMenus(mainSizeBox);
@@ -345,6 +362,7 @@ public class PrefsDialog extends javax.swing.JDialog {
     private void SaveButtonActionPerformed(java.awt.event.ActionEvent evt) {
         // They've clicked the save button
         // Get the values of some of the items
+    	prefs.mainFont = ((String) mainFontBox.getSelectedItem());
         prefs.mainFontSize = ((Integer) mainSizeBox.getSelectedItem()).intValue();
         prefs.statusFontSize = ((Integer) statusSizeBox.getSelectedItem()).intValue();
         prefs.contactFontSize = ((Integer) contactsSizeBox.getSelectedItem()).intValue();

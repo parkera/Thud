@@ -689,7 +689,7 @@ public class Thud extends JFrame implements  ActionListener
         
         bsd.insertPlainString(" *** Thud, (c) 2001-2006 Anthony Parker & the THUD team   ***");
         bsd.insertPlainString(" *** bt-thud.sourceforge.net                              ***");
-        bsd.insertPlainString(" *** Version: 1.3.0 Beta                                  ***\n");        
+        bsd.insertPlainString(" *** Version: 1.4.0 Beta                                  ***\n");        
 
         // Show ourselves
         setVisible(true);
@@ -1346,12 +1346,12 @@ public class Thud extends JFrame implements  ActionListener
     public void mainFontChanged()
     {
         
-        mFont = new Font("Monospaced", Font.PLAIN, prefs.mainFontSize);
+        mFont = new Font(prefs.mainFont, Font.PLAIN, prefs.mainFontSize);
 
-        if (bsd != null)
-            bsd.setFontSize(prefs.mainFontSize, mFont);
+        if (bsd != null)        	
+            bsd.setFont(prefs.mainFontSize, mFont);
         if (textField != null)
-            textField.setFont(mFont);        	
+            textField.setFont(mFont);
     }
     
     /** Read our prefs from disk */
@@ -1374,6 +1374,7 @@ public class Thud extends JFrame implements  ActionListener
                 ObjectInputStream 	ois = new ObjectInputStream(fis);
                 
                 prefs = (MUPrefs) ois.readObject();
+                mainFontChanged();
                 fis.close();
             }
         }

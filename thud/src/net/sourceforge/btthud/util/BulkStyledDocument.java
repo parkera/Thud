@@ -47,14 +47,15 @@ public class BulkStyledDocument extends DefaultStyledDocument
         this.fontSize = fontSize;
         this.maxLines = maxLines;
         
-        setFontSize(fontSize, font);
+        setFont(fontSize, font);
     }
 
-    public void setFontSize(int fontSize, Font font)
+    public void setFont(int fontSize, Font font)
     {
         this.font = font;
         this.fontSize = fontSize;
         
+        StyleConstants.setFontFamily(attrBase, font.getFontName());
         StyleConstants.setFontSize(attrBase, fontSize);				// Default font size...
         StyleConstants.setForeground(attrBase, Color.white);		// ... and color
         StyleConstants.setBackground(attrBase, Color.black);
