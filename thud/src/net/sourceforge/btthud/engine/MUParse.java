@@ -666,6 +666,7 @@ public class MUParse implements Runnable {
             	// Write out our old one            	
             	data.saveMapToDisk();            	
             	data.clearMap();
+            	data.usingPersistentMap = false;
              }
             data.mapName = newMapName;
             data.mapVersion = st.nextToken();
