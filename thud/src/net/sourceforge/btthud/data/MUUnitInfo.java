@@ -651,7 +651,7 @@ public class MUUnitInfo extends Object implements Comparable {
      */
     static public Color colorForPercent(float p)
     {
-        if (p >= 90)
+        if (p > 90)
             return new Color(0, 255, 0);			// Bright green
         else if (p > 70)
             return new Color(0, 160, 0);			// Darker green
@@ -668,13 +668,13 @@ public class MUUnitInfo extends Object implements Comparable {
      */
     static public Color colorForPercent(float p, int a)
     {
-        if (p >= 90)
+        if (p > 90)
             return new Color(0, 255, 0, a);			// Bright green
         else if (p > 70)
             return new Color(0, 160, 0, a);			// Darker green
         else if (p > 45)
             return new Color(255, 255, 0, a);		// Bright yellow
-        else if (p >= 1)
+        else if (p > 1)
             return new Color(160, 0, 0, a);			// Dark red
         else
             return new Color(128, 128, 128, a);		// (visible) "black"

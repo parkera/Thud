@@ -189,23 +189,20 @@ public class MUMyInfo extends MUUnitInfo {
      * Return a float corresponding to percentage armor left on the specified location.
      */
     public float percentArmorLeft(int loc)
-    {
-        int			totalAvailArmor = armor[loc].of;
-        
-        if (totalAvailArmor != 0)
-            return(float) ((int) (100.0 * ((float) armor[loc].f / (float) totalAvailArmor)));
-        else
-            return (float) 100;
+    {   
+    	if(armor[loc].f <= 0)
+    		return (float) 0;
+        return (float) ((1 + armor[loc].f) * 100) / (armor[loc].of + 1);
     }
 
+    /**
+     * Return a float corresponding to percentage rear armor left on the specified location.
+     */
     public float percentRearArmorLeft(int loc)
     {
-        int			totalAvailArmor = armor[loc].or;
-
-        if (totalAvailArmor != 0)
-            return (float) ((int) (100.0 * ((float) armor[loc].r / (float) totalAvailArmor)));
-        else
-            return (float) 100;
+    	if(armor[loc].r <= 0)
+    		return (float) 0;
+    	return (float) ((1 + armor[loc].r) * 100) / (armor[loc].or + 1);
     }
     
     /**
@@ -213,12 +210,9 @@ public class MUMyInfo extends MUUnitInfo {
      */
     public float percentInternalLeft(int loc)
     {
-        int			totalAvailInternal = armor[loc].oi;
-        
-        if (totalAvailInternal != 0)
-            return (float) ((int) (100.0 * ((float) armor[loc].i / (float) totalAvailInternal)));
-        else
-            return (float) 100;
+    	if(armor[loc].i <= 0)
+    		return (float) 0;
+    	return (float) ((1 + armor[loc].i) * 100) / (armor[loc].oi + 1);
     }
     
     /**
@@ -226,10 +220,9 @@ public class MUMyInfo extends MUUnitInfo {
      */
     public float percentFuelLeft()
     {      
-        if (maxFuel != 0)
-            return (float) ((int) (100.0 * ((float) fuel / (float) maxFuel)));
-        else
-            return (float) 100;
+    	if(fuel <= 0)
+    		return (float) 0;
+        return (float) ((1 + fuel) * 100) / (maxFuel + 1);
     }
     
     /** 
@@ -238,10 +231,8 @@ public class MUMyInfo extends MUUnitInfo {
      * @return				Percentage (0-100) remaining in the bin.
      */
     public float percentAmmoLeft(MUUnitAmmo a) {
- 	   if(a.roundsOriginal == 0) {
- 		   return (float) 100;
- 	   } else {		   
- 		   return ((float) a.roundsRemaining / (float) a.roundsOriginal) * 100;
- 	   }	  
+    	if(a.roundsRemaining <= 0)
+    		return (float) 0;
+        return (float) ((1 + a.roundsRemaining) * 100) / (a.roundsOriginal + 1);
     }
 }
