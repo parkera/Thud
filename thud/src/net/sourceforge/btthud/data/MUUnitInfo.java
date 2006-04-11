@@ -584,9 +584,9 @@ public class MUUnitInfo extends Object implements Comparable {
                 unitOutline.lineTo(19, 5);
                 unitOutline.lineTo(15, 1);
                 unitOutline.lineTo(5, 1);
-                // We scale because dropships are big. :)
-                if (!drawArmor)
-                    xform.scale(h / 4.0, h / 4.0);
+                //No longer scale, as dropship hexes are actually transformed on the map.
+                //if (!drawArmor)
+                //    xform.scale(h / 4.0, h / 4.0);
                     
                 break;
             case 'i':

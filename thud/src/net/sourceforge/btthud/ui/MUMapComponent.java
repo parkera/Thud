@@ -592,8 +592,37 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
       */
     public void paintTerrainGraphics(Graphics2D g)
     {
-        /*
-         
+        /* Before we do anything, check the list of contacts for dropships. 
+         * If there are dropships, change the hexes around them.
+         */
+    	
+    	Iterator contacts = data.getContactsIterator(false);
+		while (contacts.hasNext()) {
+			// Get the next unit...
+			MUUnitInfo unit = (MUUnitInfo) contacts.next();
+			if (unit.type.equals("D") || unit.type.equals("A")) { // is it a dropship?  
+				if(unit.z == data.getHexElevation(unit.x, unit.y)) { // is it landed?
+					data.setHexDS(unit.x, unit.y); // center
+					data.setHexDS(unit.x - 1, unit.y - 1); // top left
+					data.setHexDS(unit.x, unit.y - 1); // top
+					data.setHexDS(unit.x + 1, unit.y - 1); // top right
+					data.setHexDS(unit.x - 1, unit.y); // left
+					data.setHexDS(unit.x + 1, unit.y); // right
+					data.setHexDS(unit.x, unit.y + 1); // bottom
+				} else { // not landed
+					// Clear DS flag from these hexes, just to be sure.
+					data.setHexNoDS(unit.x, unit.y); // center
+					data.setHexNoDS(unit.x - 1, unit.y - 1); // top left
+					data.setHexNoDS(unit.x, unit.y - 1); // top
+					data.setHexNoDS(unit.x + 1, unit.y - 1); // top right
+					data.setHexNoDS(unit.x - 1, unit.y); // left
+					data.setHexNoDS(unit.x + 1, unit.y); // right
+					data.setHexNoDS(unit.x, unit.y + 1); // bottom
+				}	
+			}
+		}
+    	
+    	/*
         We should go hex by hex from the top left, check what terrain it is, and draw
         the correct color or pattern or whatever for that hex.
 

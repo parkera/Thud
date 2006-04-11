@@ -182,8 +182,13 @@ public class MUData {
     {        
         if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y)
         {
-            if (map[x][y] != null)
-                return map[x][y].terrain();
+            if (map[x][y] != null) {
+            	if(map[x][y].hasDS) {
+            		return MUHex.WALL;
+            	} else {
+            		return map[x][y].terrain();
+            	}
+            }
             else
                 return MUHex.UNKNOWN;
         }
@@ -241,6 +246,26 @@ public class MUData {
             map[x][y] = hexCache[MUHex.idForTerrain(ter)][elevation + 9];
         }
     }
+    
+  /**
+	 * Change a normal terrain hex into a hex with a dropship marker on it. Used
+	 * by map drawing stuff to draw a '=' instead of normal terrain.
+	 */
+    public void setHexDS(int x, int y) {
+		if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y) {
+			map[x][y] = new MUHex(getHexTerrain(x, y), getHexElevation(x, y));
+			map[x][y].hasDS = true;
+		}
+	}
+    
+    /**
+	 * Clear dropship marker from a hex.
+	 */
+      public void setHexNoDS(int x, int y) {
+		if (x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y) {
+			map[x][y] = hexCache[map[x][y].terrain()][getHexElevation(x,y) + 9];
+		}
+	}
     
   /**
     * Clear data that is 'Mech specific, so that when we start the HUD again we have a clean slate.

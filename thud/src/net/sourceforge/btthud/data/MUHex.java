@@ -38,6 +38,7 @@ public class MUHex implements Serializable
     // Variables
     int							terrain;
     int							elevation;
+    boolean						hasDS = false;
     
     /**
      * Constructor with default terrain.
@@ -47,6 +48,7 @@ public class MUHex implements Serializable
         // Default terrain is a level 0 unknown
         terrain = UNKNOWN;
         elevation = 0;
+        hasDS = false;
     }
 
     /**
@@ -58,6 +60,7 @@ public class MUHex implements Serializable
     {
         this.terrain = terrain;
         this.elevation = elevation;
+        this.hasDS = false;
     }
     
     /**
