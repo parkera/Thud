@@ -455,28 +455,7 @@ public class MUUnitInfo extends Object implements Comparable {
         switch (type.charAt(0))
         {
             case 'B':							// Biped
-            case 'S':							// BattleSuit
-            case 'I':							// Infantry
-                unitOutline.moveTo(8, 0);
-                unitOutline.lineTo(8, 3);
-                unitOutline.lineTo(5, 3);
-                unitOutline.lineTo(1, 8);
-                unitOutline.lineTo(4, 10);
-                unitOutline.lineTo(6, 7);
-                unitOutline.lineTo(7, 12);
-                unitOutline.lineTo(4, 20);
-                unitOutline.lineTo(8, 20);
-                unitOutline.lineTo(10, 13);
-                unitOutline.lineTo(12, 20);
-                unitOutline.lineTo(16, 20);
-                unitOutline.lineTo(13, 12);
-                unitOutline.lineTo(14, 7);
-                unitOutline.lineTo(16, 10);
-                unitOutline.lineTo(19, 8);
-                unitOutline.lineTo(15, 3);
-                unitOutline.lineTo(12, 3);
-                unitOutline.lineTo(12, 0);
-                unitOutline.lineTo(8, 0);
+            	drawBiped(unitOutline,0,0);
                 break;
             case 'Q':
                 unitOutline.moveTo(8, 7);
@@ -533,6 +512,15 @@ public class MUUnitInfo extends Object implements Comparable {
                 unitOutline.lineTo((float) 10.5, 10);
                     
                 break;
+            case 'S':							// BattleSuit
+            case 'I':							// Infantry
+            	drawBiped(unitOutline, 0, 0); // Top left figure            	
+            	drawBiped(unitOutline,20, 0); // Top right figure
+            	drawBiped(unitOutline, 0,21); // Bottom left figure
+            	drawBiped(unitOutline,20,21); // Bottom right figure
+            	// Scale it down
+            	xform.scale(0.5, 0.5);
+                break;          	
             case 'N':
                 break;
             case 'Y':
@@ -627,6 +615,32 @@ public class MUUnitInfo extends Object implements Comparable {
 
         return unitOutline;
         
+    }
+    
+    /**
+     * Draws a biped figure, given an x offset and y offset, into a path.
+     */
+    private void drawBiped(GeneralPath path, int xOffset, int yOffset) {
+        path.moveTo(xOffset+8,  yOffset+ 0);
+        path.lineTo(xOffset+8,  yOffset+ 3);
+        path.lineTo(xOffset+5,  yOffset+ 3);
+        path.lineTo(xOffset+1,  yOffset+ 8);
+        path.lineTo(xOffset+4,  yOffset+10);
+        path.lineTo(xOffset+6,  yOffset+ 7);
+        path.lineTo(xOffset+7,  yOffset+12);
+        path.lineTo(xOffset+4,  yOffset+20);
+        path.lineTo(xOffset+8,  yOffset+20);
+        path.lineTo(xOffset+10, yOffset+13);
+        path.lineTo(xOffset+12, yOffset+20);
+        path.lineTo(xOffset+16, yOffset+20);
+        path.lineTo(xOffset+13, yOffset+12);
+        path.lineTo(xOffset+14, yOffset+ 7);
+        path.lineTo(xOffset+16, yOffset+10);
+        path.lineTo(xOffset+19, yOffset+ 8);
+        path.lineTo(xOffset+15, yOffset+ 3);
+        path.lineTo(xOffset+12, yOffset+ 3);
+        path.lineTo(xOffset+12, yOffset+ 0);
+        path.lineTo(xOffset+8,  yOffset+ 0);
     }
 
     /**

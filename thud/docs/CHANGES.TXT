@@ -8,6 +8,7 @@ Version History:
 
 1.4.0 (not yet released)
   Bug Fixes:
+   * Battlesuits/infantry show up as a little icon of four bipeds, instead of just using the normal biped icon.
    * Landed dropships now change the hexes they're on to '='.
    * Armor diagram coloring should now match MUX status & other command coloring.
 
