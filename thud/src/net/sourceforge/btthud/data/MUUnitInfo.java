@@ -457,7 +457,7 @@ public class MUUnitInfo extends Object implements Comparable {
             case 'B':							// Biped
             	drawBiped(unitOutline,0,0);
                 break;
-            case 'Q':
+            case 'Q':							// Quad
                 unitOutline.moveTo(8, 7);
                 unitOutline.lineTo(8, 10);
                 unitOutline.lineTo(5, 10);
@@ -487,9 +487,12 @@ public class MUUnitInfo extends Object implements Comparable {
                 unitOutline.lineTo(8, 7);
                     
                 break;
-            case 'H':
-            case 'T':
-            case 'W':
+            case 'H':							// Hover
+            case 'T':							// Tracked
+            case 'W':							// Wheeled
+            case 'N':							// Naval Surface Displacement
+            case 'Y':							// Naval Hydrofoil
+            case 'U':							// Naval Submarine
                 unitOutline.moveTo(5, 2);
                 unitOutline.lineTo(3, 5);
                 unitOutline.lineTo(3, 15);
@@ -521,13 +524,7 @@ public class MUUnitInfo extends Object implements Comparable {
             	// Scale it down
             	xform.scale(0.5, 0.5);
                 break;          	
-            case 'N':
-                break;
-            case 'Y':
-                break;
-            case 'U':
-                break;
-            case 'V':
+            case 'V':							// VTOL
                 unitOutline.moveTo(8, 2);
                 unitOutline.lineTo(7, 3);
                 unitOutline.lineTo(7, 10);
@@ -558,11 +555,11 @@ public class MUUnitInfo extends Object implements Comparable {
                 unitOutline.lineTo(2, 6);
                     
                 break;
-            case 'F':
+            case 'F':							// AeroFighter
                 break;
-            case 'A':
+            case 'A':							// Aerodyne DropShip
                 break;
-            case 'D':
+            case 'D':							// Spheroid DropShip
                 unitOutline.moveTo(5, 1);
                 unitOutline.lineTo(1, 5);
                 unitOutline.lineTo(1, 15);
@@ -577,7 +574,7 @@ public class MUUnitInfo extends Object implements Comparable {
                 //    xform.scale(h / 4.0, h / 4.0);
                     
                 break;
-            case 'i':
+            case 'i':							// Installation
                 unitOutline.moveTo(4, 4);
                 unitOutline.lineTo(2, 19);
                 unitOutline.lineTo(18, 19);
@@ -589,7 +586,7 @@ public class MUUnitInfo extends Object implements Comparable {
                 unitOutline.lineTo(15, 6);
                 unitOutline.lineTo(5, 6);
                 break;
-            default:
+            default:							// just draw a box
                 unitOutline.moveTo(7, 7);
                 unitOutline.lineTo(7, 13);
                 unitOutline.lineTo(13, 13);
