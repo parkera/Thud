@@ -602,11 +602,15 @@ public class Thud extends JFrame implements  ActionListener
         textPane.setBackground(Color.black);
         textPane.setEditable(false);
         textPane.setFont(mFont);
+        // Add listener to give focus to textfield when click on textpane
+        textPane.addFocusListener(new FocusListener() {
+        		public void focusGained(FocusEvent f) {textField.grabFocus();}
+        		public void focusLost(FocusEvent f) {}
+        		});
         
         JScrollPane scrollPane = new JScrollPane(textPane,
                                                  JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                                                  JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
@@ -618,36 +622,11 @@ public class Thud extends JFrame implements  ActionListener
         contentPane.add(textField, BorderLayout.SOUTH);
 
         // Add listeners for PageUp, PageDown, Home, End
-        /* Not working, but not sure why not...
-            
-        textField.getInputMap().put(KeyStroke.getKeyStroke(java.awt.Event.PGUP, 0), "PageUp");
-        textField.getActionMap().put("PageUp", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                textPane.setCaretPosition(textPane.getCaretPosition() - 100);
-            }
-        });
-
-        textField.getInputMap().put(KeyStroke.getKeyStroke(java.awt.Event.PGDN, 0), "PageDn");
-        textField.getActionMap().put("PageDn", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                textPane.setCaretPosition(textPane.getCaretPosition() + 100);
-            }
-        });
-
-        textField.getInputMap().put(KeyStroke.getKeyStroke(java.awt.Event.HOME, 0), "Home");
-        textField.getActionMap().put("Home", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                textPane.setCaretPosition(0);
-            }
-        });
-
-        textField.getInputMap().put(KeyStroke.getKeyStroke(java.awt.Event.END, 0), "End");
-        textField.getActionMap().put("End", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                textPane.setCaretPosition(bsd.getLength());
-            }
-        });
-        */
+        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0), new PageUpAction(textPane));               
+        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0), new PageDownAction(textPane));
+        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), new HomeAction(textPane));        
+        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_END, 0), new EndAction(textPane));        
+        
     }
 
     // ------------------------------------------------------------------------
@@ -720,11 +699,22 @@ public class Thud extends JFrame implements  ActionListener
             // Setup the connection
             conn = new MUConnection(lh, host, port, this);
 
-            // Setup the rest of the helper classes
+            // Setup the rest of the helper classes, adding focus listeners for all
+            FocusListener focusOnInput = new FocusListener() {
+        		public void focusGained(FocusEvent f) {textField.grabFocus();}
+        		public void focusLost(FocusEvent f) {}
+        		};
+        	// This does not work on the status window or contact list, and I have no idea why.
             status = new MUStatus(conn, data, prefs);
+            status.addFocusListener(focusOnInput);            
+                        
             conList = new MUContactList(conn, data, prefs);
+            conList.addFocusListener(focusOnInput);            
             
             tacMap = new MUTacticalMap(conn, data, prefs);
+            tacMap.addFocusListener(focusOnInput);                
+
+            
             commands = new MUCommands(conn, data, prefs);
             
             // Let our parsing class know where to send commands
