@@ -1017,7 +1017,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             if (self)
                 g.setStroke(new BasicStroke(2));
 
-            g.draw(unit.icon(h / 2, false, unit.isFriend() ? Color.black : Color.red));
+            g.draw(unit.icon(h / 2, false));
 
             if (self)
                 g.setStroke(oldStroke);
@@ -1046,8 +1046,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                 backingBox = new Rectangle2D.Float((float) (iconBounds.getWidth() / 2 + spacing + borderWidth / 2),
                                                    (float) (-stringRect.getHeight() / 2 - borderHeight / 2),
                                                    (float) (stringRect.getWidth() + borderWidth),
-                                                   (float) (stringRect.getHeight() + borderHeight));
-                
+                                                   (float) (stringRect.getHeight() + borderHeight));                
                 
                 if (!unit.isDestroyed())
                 {

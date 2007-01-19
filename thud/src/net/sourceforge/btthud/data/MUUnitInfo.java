@@ -431,12 +431,11 @@ public class MUUnitInfo extends Object implements Comparable {
     /*********************************************************************/
     
     /**
-      * Returns a BufferedImage which represents this particular unit.
+      * Returns a GeneralPath which represents this particular unit.
       * @param h The height of the icon (not neccesarily the height of a hex)
-      * @param drawArmor If true, draw any known armor information for this unit
-      * @param color What color to draw this unit
+      * @param drawArmor If true, draw any known armor information for this unit (TODO)
       */
-    public GeneralPath icon(int h, boolean drawArmor, Color color)
+    public GeneralPath icon(int h, boolean drawArmor)
     {
 
         // We do everything on a scale of 20 pixels. We scale up the path later if the height is > 20.
@@ -444,14 +443,7 @@ public class MUUnitInfo extends Object implements Comparable {
         //BufferedImage		unitImage = new BufferedImage(h, h, BufferedImage.TYPE_INT_ARGB);
         GeneralPath			unitOutline = new GeneralPath();
         AffineTransform		xform = new AffineTransform();
-
-        /*
-        Graphics2D			g = (Graphics2D) unitImage.getGraphics();
-
-        g.setColor(new Color(0, 0, 0, 0));
-        g.fill(new Rectangle(0, 0, h, h));
-         */
-        
+       
         switch (type.charAt(0))
         {
             case 'B':							// Biped
@@ -601,14 +593,6 @@ public class MUUnitInfo extends Object implements Comparable {
             xform.rotate(Math.PI / 2, 10, 10);
         xform.scale((float) h / 20.0, (float) h / 20.0);
         unitOutline.transform(xform);
-
-        /*
-        g.setColor(color);
-        g.setTransform(new AffineTransform());		// reset the transform
-        g.draw(unitOutline);
-        
-        return unitImage;
-         */
 
         return unitOutline;
         
