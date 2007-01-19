@@ -647,15 +647,15 @@ public class MUUnitInfo extends Object implements Comparable {
     static public Color colorForPercent(float p)
     {
         if (p > 90)
-            return new Color(0, 255, 0);			// Bright green
+            return MUColors.hg;	// Bright green
         else if (p > 70)
-            return new Color(0, 160, 0);			// Darker green
+            return MUColors.g;	// Darker green
         else if (p > 45)
-            return new Color(255, 255, 0);			// Bright yellow
+            return MUColors.hy;	// Bright yellow
         else if (p > 1)
-            return new Color(160, 0, 0);			// Dark red
+            return MUColors.r;	// Dark red
         else
-            return new Color(128, 128, 128);		// (visible) "Black"
+            return MUColors.hx;	// (visible) "Black"
     }
 
     /**
@@ -663,16 +663,16 @@ public class MUUnitInfo extends Object implements Comparable {
      */
     static public Color colorForPercent(float p, int a)
     {
-        if (p > 90)
-            return new Color(0, 255, 0, a);			// Bright green
+        if (p > 90)        	
+            return MUColors.withTransparency(MUColors.hg, a);	// Bright green
         else if (p > 70)
-            return new Color(0, 160, 0, a);			// Darker green
+            return MUColors.withTransparency(MUColors.g, a);	// Darker green
         else if (p > 45)
-            return new Color(255, 255, 0, a);		// Bright yellow
+            return MUColors.withTransparency(MUColors.hy, a);	// Bright yellow
         else if (p > 1)
-            return new Color(160, 0, 0, a);			// Dark red
+            return MUColors.withTransparency(MUColors.r, a); 	// Dark red
         else
-            return new Color(128, 128, 128, a);		// (visible) "black"
+            return MUColors.withTransparency(MUColors.hx, a);	// (visible) "black"
     }
 
     /**

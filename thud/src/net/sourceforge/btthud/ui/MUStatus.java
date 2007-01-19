@@ -121,7 +121,6 @@ public class MUStatus extends JFrame
         StyleConstants.setFontSize(conIrregular, prefs.statusFontSize);
         StyleConstants.setForeground(conIrregular, Color.white);
         StyleConstants.setBold(conIrregular,true);
-        
     }
     
     public void run()
@@ -211,12 +210,95 @@ public class MUStatus extends JFrame
                     		addString(s,conRegular);
                     		addBlankLine();                    	
                     }
+                    
+                    /* Add heat scale. */
+                    addString("Temp: ",conRegular);
+                    int barHeat = mydata.heat / 10;
+                    int minHeat = mydata.heatDissipation / 10;
+                    int heatCounter = 1; // counter
+                    for(; heatCounter < minHeat; heatCounter++) { // Black portion
+                    	if(barHeat >= heatCounter)
+                    		s = s + ":";
+                    	else
+                    		s = s + ".";                    	
+                    }
+        			StyleConstants.setForeground(conIrregular, MUColors.hx);
+                    addString(s,conIrregular);
+                    s = "";
+                    
+                    StyleConstants.setForeground(conIrregular, MUColors.hg); // Divider
+                    addString("|",conIrregular);
+                    
+                    for (; heatCounter < minHeat + MUPrefs.HEAT_LEVEL_BGREEN; heatCounter++) // Green portion
+                    	if(barHeat >= heatCounter)
+                    		s = s + ":";
+                    	else
+                    		s = s + ".";
+                    StyleConstants.setForeground(conIrregular, MUColors.g);
+                    addString(s,conIrregular);
+                    s = "";
+                    
+                    for (; heatCounter < minHeat + MUPrefs.HEAT_LEVEL_LYELLOW; heatCounter++) // Bright green portion
+                    	if(barHeat >= heatCounter)
+                    		s = s + ":";
+                    	else
+                    		s = s + ".";
+                    StyleConstants.setForeground(conIrregular, MUColors.hg);
+                    addString(s,conIrregular);
+                    s = "";
+                    
+                    StyleConstants.setForeground(conIrregular, MUColors.hy); // Divider
+                    addString("|",conIrregular);
+
+                    for (; heatCounter < minHeat + MUPrefs.HEAT_LEVEL_BYELLOW; heatCounter++) // Yellow portion
+                    	if(barHeat >= heatCounter)
+                    		s = s + ":";
+                    	else
+                    		s = s + ".";
+                    StyleConstants.setForeground(conIrregular, MUColors.y);
+                    addString(s,conIrregular);
+                    s = "";
+                    
+                    for (; heatCounter < minHeat + MUPrefs.HEAT_LEVEL_LRED; heatCounter++) // Bright yellow portion
+                    	if(barHeat >= heatCounter)
+                    		s = s + ":";
+                    	else
+                    		s = s + ".";
+                    StyleConstants.setForeground(conIrregular, MUColors.hy);
+                    addString(s,conIrregular);
+                    s = "";
+                    
+                    StyleConstants.setForeground(conIrregular, MUColors.hr); // Divider
+                    addString("|",conIrregular);
+                    
+                    for (; heatCounter < minHeat + MUPrefs.HEAT_LEVEL_BRED; heatCounter++) // Red portion
+                    	if(barHeat >= heatCounter)
+                    		s = s + ":";
+                    	else
+                    		s = s + ".";
+                    StyleConstants.setForeground(conIrregular, MUColors.r);
+                    addString(s,conIrregular);
+                    s = "";
+                    
+                    for (; heatCounter < minHeat + MUPrefs.HEAT_LEVEL_TOP; heatCounter++) // Bright red portion
+                    	if(barHeat >= heatCounter)
+                    		s = s + ":";
+                    	else
+                    		s = s + ".";
+                    StyleConstants.setForeground(conIrregular, MUColors.hr);
+                    addString(s,conIrregular);
+                    s = "";
+                    
+                    StyleConstants.setForeground(conIrregular, MUColors.h); // Divider
+                    addString("|",conIrregular);
+                    
+                    addBlankLine();                    
                     	                    
                     if(mydata.status.length() > 0 && mydata.status.equals("-") == false) {             
                        	for(char sc : mydata.status.toCharArray()) { // loop through mydata.status
                     		switch(sc) {
 	                			case 'B': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,0,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hr);
 	                				addString("BURNING",conIrregular);
 	                				break;
 	                			}
@@ -229,122 +311,122 @@ public class MUStatus extends JFrame
 	                				break;
 	                			}
 	                			case 'e': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("AFFECTED BY ECM",conIrregular);
 	                				break;
 	                			}
 	                			case 'E': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("EMITTING ECM",conIrregular);
 	                				break;
 	                			}
 	                			case 'f': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("STANDING UP",conIrregular);
 	                				break;
 	                			}	                			
 	                			case 'F': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,0,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hr);
 	                				addString("FALLEN",conIrregular);
 	                				break;
 	                			}	                			
 	                			case 'h': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("GOING HULL DOWN",conIrregular);
 	                				break;
 	                			}	                			
 	                			case 'H': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("HULL DOWN",conIrregular);
 	                				break;
 	                			}	                			
 	                			case 'I': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,0,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hr);
 	                				addString("ON FIRE",conIrregular);
 	                				break;
 	                			}	                			
 	                			case 'J': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("JUMPING",conIrregular);
 	                				break;
 	                			}	                			
 	                			case 'l': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("ILLUMINATED",conIrregular);
 	                				break;
 	                			}	                			
 	                			case 'L': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("ILLUMINATING",conIrregular);
 	                				break;
 	                			}
 	                			case 'M': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("SPRINTING",conIrregular);
 	                				break;
 	                			}
 	                			case 'm': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("EVADING",conIrregular);
 	                				break;
 	                			}
 	                			case 'n': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("ENEMY NARC ATTACHED",conIrregular);
 	                				break;
 	                			}	                			
 	                			case 'N': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("FRIENDLY NARC ATTACHED",conIrregular);
 	                				break;
 	                			}	                			
 	                			case '+': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("OVERHEATING",conIrregular);
 	                				break;
 	                			}	                			
 	                			case 'O': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("ORBITAL DROPPING",conIrregular);
 	                				break;
 	                			}	                			
 	                			case 'p': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("PROTECTED BY ECM",conIrregular);
 	                				break;
 	                			}
 	                			case 'P': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));	                				
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);	                				
 	                				addString("PROTECTED BY ECCM",conIrregular);
 	                				break;
 	                			}
 	                			case 's': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("STARTING UP",conIrregular);
 	                				break;
 	                			}	      	                			
 	                			case 'S': {
-	                        		StyleConstants.setForeground(conIrregular,new Color(255,0,0));
+	                        		StyleConstants.setForeground(conIrregular,MUColors.hr);
 	                    			addString("SHUTDOWN",conIrregular);
 	                    			break;
 	                			}
 	                			case 'T': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("BEING TOWED",conIrregular);
 	                				break;
 	                			}
 	                			case 't': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("TOWING",conIrregular);
 	                				break;
 	                			}
 	                			case 'W': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("SWARMING",conIrregular);
 	                				break;
 	                			}
 	                			case 'X': {
-	                    			StyleConstants.setForeground(conIrregular,new Color(255,255,0));
+	                    			StyleConstants.setForeground(conIrregular,MUColors.hy);
 	                				addString("SPINNING",conIrregular);
 	                				break;
 	                			}	      
@@ -396,19 +478,19 @@ public class MUStatus extends JFrame
 	                    	addString(s, conRegular);
 	                    	
                     		if (weapon.status.equals("R")) {
-                    			StyleConstants.setForeground(conIrregular, Color.green);
+                    			StyleConstants.setForeground(conIrregular, MUColors.g);
                     			addString(" Ready", conIrregular);                    			                    	
                     		} else if(weapon.status.equals("*")) {
-                    			StyleConstants.setForeground(conIrregular,new Color(128,128,128));
+                    			StyleConstants.setForeground(conIrregular, MUColors.hx);
                     			addString(" *****", conIrregular);
                     		} else if(weapon.status.equals("A") || weapon.status.equals("a") || weapon.status.equals("J")) {
-                    			StyleConstants.setForeground(conIrregular,new Color(160,0,0));
+                    			StyleConstants.setForeground(conIrregular, MUColors.r);
                     			addString("JAMMED", conIrregular);
                     		} else if(weapon.status.equals("D")) {
-                    			StyleConstants.setForeground(conIrregular,new Color(128,128,128));
+                    			StyleConstants.setForeground(conIrregular, MUColors.hx);
                     			addString("DISBLD", conIrregular);
                     		} else if(weapon.status.equals("S")) {
-                    			StyleConstants.setForeground(conIrregular,new Color(160,0,0));
+                    			StyleConstants.setForeground(conIrregular, MUColors.r);
                     			addString("SHORTD", conIrregular);                    			
                     		} else {
                     			addString(mydata.rightJust(weapon.status,6,false), conRegular);                    			                    		
