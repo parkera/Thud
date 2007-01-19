@@ -177,9 +177,12 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         
         MUHost bt3030 = new MUHost("btech.dhs.org", 3030);
         MUHost frontiers = new MUHost("btmux.com", 5555);
+        MUHost bt3065 = new MUHost("btmux.com", 3065);
+        
 
         hosts.add(bt3030);
         hosts.add(frontiers);
+        hosts.add(bt3065);
     }
 
     public void addHost(String newHost, int newPort)
