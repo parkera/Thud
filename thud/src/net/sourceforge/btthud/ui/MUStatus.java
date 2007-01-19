@@ -211,11 +211,19 @@ public class MUStatus extends JFrame
                     		addBlankLine();                    	
                     }
                     
-                    /* Add heat scale. */
-                    addString("Temp: ",conRegular);
+                    /* Add heat scale. */                                        
                     int barHeat = mydata.heat / 10;
-                    int minHeat = mydata.heatDissipation / 10;
+                    int minHeat = mydata.heatDissipation / 10;                    
                     int heatCounter = 1; // counter
+                    if(minHeat > MUPrefs.HEAT_LEVEL_NONE) 
+                    	heatCounter = minHeat - MUPrefs.HEAT_LEVEL_NONE;
+                    
+                    addString("Temp:",conRegular);
+                    if(heatCounter > 1)
+                    	addString("<",conRegular);
+                    else
+                    	addString(" ",conRegular);
+                    
                     for(; heatCounter < minHeat; heatCounter++) { // Black portion
                     	if(barHeat >= heatCounter)
                     		s = s + ":";
@@ -455,6 +463,7 @@ public class MUStatus extends JFrame
 
 	                    	weapname = weapname.replaceAll("IS\\.","");
 	                    	weapname = weapname.replaceAll("Clan\\.","");
+	                    	weapname = weapname.replaceAll("CL\\.","");
 	                    	
 	                    	
 	                    	s = " " + 
@@ -514,6 +523,7 @@ public class MUStatus extends JFrame
 	                    	
 	                    	weapname = weapname.replaceAll("IS\\.","");
 	                    	weapname = weapname.replaceAll("Clan\\.","");
+	                    	weapname = weapname.replaceAll("CL\\.","");
 	                    		
                     		s = " " +
                     			mydata.leftJust(weapname,15,false) +

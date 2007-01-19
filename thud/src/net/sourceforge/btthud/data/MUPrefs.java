@@ -76,6 +76,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public static final int			HEAT_LEVEL_LRED=18;
     public static final int			HEAT_LEVEL_BRED=24;
     public static final int			HEAT_LEVEL_TOP=40;    
+    public static final int			HEAT_LEVEL_NONE=17; // This one is different than the MUX to account for THUD's smaller status window     
     
     public boolean mainAlwaysOnTop, contactsAlwaysOnTop, statusAlwaysOnTop, tacticalAlwaysOnTop;
     public MUPrefs()
