@@ -5,7 +5,7 @@
     </path>
 	<target name="compile">
 		<mkdir dir="bin"/>
-		<javac destdir="bin">
+		<javac destdir="bin" target="1.5">
 		            <src path="src"/>
 		            <classpath refid="project.classpath"/>
 		           
