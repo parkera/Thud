@@ -659,16 +659,8 @@ public class MUParse implements Runnable {
         if (data.hiSupportsExtendedMapInfo())
         {
             // We have some more info about our map
-            data.mapId = st.nextToken();
-            String newMapName = st.nextToken();
-            if(data.usingPersistentMap && newMapName.length() > 1 && (data.mapName == null || data.mapName.length() < 1 || newMapName.compareToIgnoreCase(data.mapName) != 0 )) { // new map loaded
-            	messageLine("*** Map Change Detected, Halting Map Auto-Save ***");
-            	// Write out our old one            	
-            	data.saveMapToDisk();            	
-            	data.clearMap();
-            	data.usingPersistentMap = false;
-             }
-            data.mapName = newMapName;
+            data.mapId = st.nextToken();            
+            data.mapName = st.nextToken();
             data.mapVersion = st.nextToken();
 
             // Is this a LOS-only map? 

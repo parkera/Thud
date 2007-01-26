@@ -10,6 +10,7 @@ package net.sourceforge.btthud.data;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 
 /**
  * Stores all the information from contacts and tactical.
@@ -41,7 +42,6 @@ public class MUData {
     boolean						terrainChanged = true;
     public String				mapName, mapId, mapVersion;    
     public boolean				mapLOSOnly = false;
-    public boolean				usingPersistentMap;
     public String				mapFileName;
 
     // One MUHex for each elevation and terrain
@@ -370,17 +370,55 @@ public class MUData {
     	try {
     		    	
     		File mapFile = new File(mapFileName);
-    		FileInputStream in = new FileInputStream(mapFile);
-    		ObjectInputStream ois = new ObjectInputStream(in);
-    		map = new MUHex[MAX_X][MAX_Y];
-    		map = (MUHex[][]) ois.readObject();
-    		ois.close();
-    		in.close();                 
-    		    		    	
-    		return true;
+    		
+    		BufferedReader brin = new BufferedReader(new FileReader(mapFile));
+    		String s = brin.readLine();
+    		
+    		/* Check and see if this is a mux-format mapfile */
+    		String patternStr = "^([0-9]+) ([0-9]+$)";
+    		Pattern pattern = Pattern.compile(patternStr);
+    		Matcher matcher = pattern.matcher(s);
+    		boolean matchFound = matcher.find();
+    		
+    		if(matchFound) {
+    			/* Looks like a btech format, let's parse it. */
+    			int mapMaxX = Integer.parseInt(matcher.group(1));
+    			int mapMaxY = Integer.parseInt(matcher.group(2));
+				System.out.println("Reading btmap file: " + String.valueOf(mapMaxX) + " by " + String.valueOf(mapMaxY));
+				map = new MUHex[MAX_X][MAX_Y];
+				int x = 0;			
+				int y = 0;				
+    			while ((s = brin.readLine()) != null) {
+    				if(!s.matches("(\\D\\d)+")) { // only process line if it looks like good terrain
+    					System.out.println("Rejecting line: " + s);
+    				} else { // good line    				
+	    				while(x < mapMaxX) {
+	    					CharSequence hexSeq = s.subSequence(x * 2, (x * 2) + 2);
+	    					char terrain = hexSeq.charAt(0);
+	    					char elev = hexSeq.charAt(1);
+	    					//System.out.println("Hex " + x + " " + y + "= " + terrain + " level " + elev);
+	    					map[x][y] = hexCache[MUHex.idForTerrain(terrain)][Integer.parseInt(String.valueOf(elev)) + 9];
+	    					x++;
+	    				}
+	    				x=0;
+	    				y++;
+    				}
+    			}   
+    			return true;
+    		} else {
+    			/* Not a btech format mapfile, try using our 'Thud Format' */
+        		FileInputStream in = new FileInputStream(mapFile);
+        		ObjectInputStream ois = new ObjectInputStream(in);
+        		map = new MUHex[MAX_X][MAX_Y];
+        		map = (MUHex[][]) ois.readObject();
+        		ois.close();
+        		in.close();                 
+        		
+        		return true;
+    		}
     	}
     	catch(Exception e) {
-    		System.out.println("Error loading map " + mapName + ".tmap: " + e);
+    		System.out.println("Error loading map " + mapFileName + ": " + e);
     		return false;
     	}    
     }

@@ -668,7 +668,7 @@ public class Thud extends JFrame implements  ActionListener
         
         bsd.insertPlainString(" *** Thud, (c) 2001-2006 Anthony Parker & the THUD team   ***");
         bsd.insertPlainString(" *** bt-thud.sourceforge.net                              ***");
-        bsd.insertPlainString(" *** Version: 1.3.1                                       ***\n");        
+        bsd.insertPlainString(" *** Version: 1.3.2 Beta                                  ***\n");        
 
         // Show ourselves
         setVisible(true);
@@ -888,10 +888,8 @@ public class Thud extends JFrame implements  ActionListener
         	data.mapFileName = fc.getSelectedFile().getAbsolutePath();
         	if(data.loadMapFromDisk()) {
         		parse.messageLine("*** Map " + data.mapFileName + " loaded successfully ***");
-        		data.usingPersistentMap = true;
         	} else {
         		parse.messageLine("*** Error loading map " + data.mapFileName + " ***");
-        		data.usingPersistentMap = false;
         	}
         }
     }
@@ -905,10 +903,8 @@ public class Thud extends JFrame implements  ActionListener
         	data.mapFileName = fc.getSelectedFile().getAbsolutePath();
         	if(data.saveMapToDisk()) {
         		parse.messageLine("*** Map " + data.mapFileName + " saved successfully ***");
-        		data.usingPersistentMap = true;        		
         	} else {
         		parse.messageLine("*** Error saving map " + data.mapFileName + " ***");
-        		data.usingPersistentMap = false;
         	}
         }
     	
@@ -935,8 +931,8 @@ public class Thud extends JFrame implements  ActionListener
             writePrefs();
             
             // Write out map
-            if(data != null)
-            	data.saveMapToDisk();
+            //if(data != null)
+            	//data.saveMapToDisk();
         }
         catch (Exception e)
         {
@@ -1077,8 +1073,6 @@ public class Thud extends JFrame implements  ActionListener
     /** Stops the HUD. */
     public void doStop() {
     	if(data.hudStarted) {//only stop if we're started
-    		if(data.usingPersistentMap) 
-    			data.saveMapToDisk();
     		data.hudStarted = false;
             parse.messageLine("*** Display Stopped ***");
             data.hudRunning = false;
@@ -1106,10 +1100,7 @@ public class Thud extends JFrame implements  ActionListener
     }
 
     /** Suspend the HUD */
-    public void doSuspend() {
-    	if(data.usingPersistentMap)
-    		data.saveMapToDisk();
-    	
+    public void doSuspend() {   	
     	if(data.hudRunning)
     		data.hudRunning = false;
     }

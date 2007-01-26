@@ -106,12 +106,6 @@ public class MUCommandsTask extends TimerTask {
                 if(conn != null && data.lastDataTime == 0) {
                 	conn.sendCommand("hudinfo oas");
                 }
-                
-                // Do we save our map to disk? (Every 5 minutes)
-                if(data.usingPersistentMap && data.hudRunning && (count % 300 == 0)) {
-                	data.saveMapToDisk();
-                }
-                                
             }           
         }
         catch (Exception e)
