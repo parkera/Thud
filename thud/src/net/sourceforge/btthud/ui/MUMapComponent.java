@@ -1389,8 +1389,47 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         tempRect = tacStatusFont.getStringBounds(tempString, frc);
         g.setColor(Color.white);
         g.drawString(tempString, nextStartsAt, barRect.y + 11);
-        nextStartsAt += tempRect.getWidth();	// Don't put in spacing here, the space is there in the string
+        nextStartsAt += tempRect.getWidth() + spacingDiff;
+
+        // Sep
+        g.setColor(Color.darkGray);
+        g.drawLine(nextStartsAt, barRect.y + 1, nextStartsAt, barRect.y + barHeight);
+        g.setColor(Color.black);
+        nextStartsAt += spacingDiff;
+                
+        tempString = "Weather: " + data.weather.lightString(data.weather.light) + 
+        			 " : Vis " + data.weather.visibility + 
+        			 " : Temp " + data.weather.ambientTemperature +
+        			 "°C : Gravity " + data.weather.gravity + "%";
+        tempRect = tacStatusFont.getStringBounds(tempString, frc);
+        g.setColor(Color.white);
+        g.drawString(tempString, nextStartsAt, barRect.y + 11);
+        nextStartsAt += tempRect.getWidth() + spacingDiff;
         
+        if(data.weather.isVacuum) {
+            tempString = "VACUUM";
+			tempRect = tacStatusFont.getStringBounds(tempString, frc);
+			g.setColor(Color.red);
+			g.drawString(tempString, nextStartsAt, barRect.y + 11);
+			nextStartsAt += tempRect.getWidth() + spacingDiff;        	
+        }
+        
+        if(data.weather.isUnderground) {
+            tempString = "UNDERGROUND";
+			tempRect = tacStatusFont.getStringBounds(tempString, frc);
+			g.setColor(Color.red);
+			g.drawString(tempString, nextStartsAt, barRect.y + 11);
+			nextStartsAt += tempRect.getWidth() + spacingDiff;        	
+        }
+        
+        if(data.weather.isDark) {
+            tempString = "DARK";
+			tempRect = tacStatusFont.getStringBounds(tempString, frc);
+			g.setColor(Color.red);
+			g.drawString(tempString, nextStartsAt, barRect.y + 11);
+			nextStartsAt += tempRect.getWidth() + spacingDiff;        	
+        }
+        	        
         // Reset transform
         g.setTransform(oldTrans);
     }

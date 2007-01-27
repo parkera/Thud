@@ -53,6 +53,7 @@ public class MUCommands
             conn.sendCommand("hudinfo oas");
             conn.sendCommand("hudinfo wl");
             conn.sendCommand("hudinfo we");
+            conn.sendCommand("hudinfo co");
         }
         catch (Exception e)
         {

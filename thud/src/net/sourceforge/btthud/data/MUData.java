@@ -53,6 +53,9 @@ public class MUData {
     ArrayList<MUUnitInfo>		contacts = null;
     ArrayList<MUUnitInfo>		buildings = null;
 
+    // Weather info
+    public MUWeather			weather;
+    
     // This is the time that we received our last hudinfo data
     public long					lastDataTime;
 
@@ -277,7 +280,7 @@ public class MUData {
         myUnit = new MUMyInfo();			// data that represents our own unit
         clearMap();
         this.mapName = "";
-        
+        weather = new MUWeather();
         lastDataTime = 0;					// clear our last recieved data
     }
     

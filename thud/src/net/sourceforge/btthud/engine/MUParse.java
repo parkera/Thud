@@ -266,6 +266,8 @@ public class MUParse implements Runnable {
                 }
                 else if (whichCommand == "SGI")	// static general information
                     parseHudInfoSGI(restOfCommand);
+                else if (whichCommand == "CO")
+                	parseHudInfoCO(restOfCommand);
                 else if (whichCommand == "AS")		// Armor status
                     parseHudInfoAS(restOfCommand);
                 else if (whichCommand == "OAS")	// Original armor status
@@ -455,6 +457,60 @@ public class MUParse implements Runnable {
     }
     
     /**
+     * Parse a string which represents conditions/weather information
+     * @param l The string, minus the header.
+     */
+   public void parseHudInfoCO(String l)
+   {
+       /* 	#HUD:<key>:CO:R# LT,VR,GR,TP,FL
+	   LT: light type
+	   VR: range, visibility range
+	   GR: integer, gravity in 100th G's
+	   TP: heatmeasure, ambient temperature
+	   FL: map condition flags
+	   light type: One of the following:
+	    'D': Daylight
+	    'T': Twilight
+	    'N': Night
+	   map condition flags: '-', or at least one of the following:
+	    'V': Map is Vacuum
+	    'U': Map is Underground (no jumping, VTOLs)
+	    'D': Map is Dark (no tactical beyond sensors)	    
+        */        
+
+       StringTokenizer st = new StringTokenizer(l, ",");
+       MUWeather weather = data.weather;
+       String			tempStr;
+
+       if (weather == null)
+           weather = new MUWeather();
+
+       tempStr = st.nextToken().intern();
+
+       if (tempStr == "D")
+    	   weather.light = MUWeather.LIGHT_DAY;
+       else if(tempStr == "T")
+    	   weather.light = MUWeather.LIGHT_DAWN_DUSK;
+       else if(tempStr == "N")
+    	   weather.light = MUWeather.LIGHT_NIGHT;   	   
+       
+       weather.visibility = Integer.parseInt(st.nextToken());
+       
+       weather.gravity = Integer.parseInt(st.nextToken());
+       
+       weather.ambientTemperature = Integer.parseInt(st.nextToken());
+       
+       tempStr = st.nextToken();
+       
+       if(tempStr.contains("V"))
+    	   weather.isVacuum = true;
+       if(tempStr.contains("U"))
+    	   weather.isUnderground = true;
+       if(tempStr.contains("D"))
+    	   weather.isDark = true;       
+   }
+   
+   /**
       * Parse a string which represents a single contact.
       * @param l The contact information string, minus the header.
       */

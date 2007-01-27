@@ -106,6 +106,12 @@ public class MUCommandsTask extends TimerTask {
                 if(conn != null && data.lastDataTime == 0) {
                 	conn.sendCommand("hudinfo oas");
                 }
+                
+                // Do we send a weather condition update?
+                if (data.hudRunning && (count % (30 * prefs.mediumCommandUpdate) == 0))
+                {
+                    conn.sendCommand("hudinfo co");
+                }
             }           
         }
         catch (Exception e)
