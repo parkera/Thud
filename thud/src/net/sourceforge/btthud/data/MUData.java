@@ -218,15 +218,13 @@ public class MUData {
     }
 
     /**
-     * Get the absolute elevation of a specific hex.
+     * Get the "cliff" elevation of a specific hex (is negative for water, and 0 for ice).
      * @param x X coordinate
      * @param y Y coordinate
      */
-    public int getHexAbsoluteElevation(int x, int y)
+    public int getHexCliffElevation(int x, int y)
     {
         int	e = getHexElevation(x, y);
-        if (e < 0)
-            e = -e;
         // Since we use this function in determining cliff edges, a few corrections...
 
         if (getHexTerrain(x, y) == MUHex.ICE)		// ice
