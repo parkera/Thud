@@ -56,7 +56,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     
     int						elevWidth[] = new int[10]; 	// Stores width of each elevation number glyph, 0 - 9
     
-    BufferedImage			hexImages[][] = new BufferedImage[MUHex.TOTAL_TERRAIN][10];			// One for each hex type and elevation
+    BufferedImage			hexImages[][][] = new BufferedImage[MUHex.TOTAL_TERRAIN][10][2];			// One for each hex type, elevation, and LOS or not
 
     GeneralPath				gp = new GeneralPath();
     HexShape				hexPoly;
@@ -269,60 +269,66 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         {
             for (int j = 0; j < 10; j++)
             {
-                BufferedImage	newImage = new BufferedImage(hexPoly.getBounds().width, hexPoly.getBounds().height, BufferedImage.TYPE_INT_ARGB);
-
-                // Get the graphics context for this BufferedImage
-                Graphics2D		g = (Graphics2D) newImage.getGraphics();
-
-                // Setup the color
-                if (prefs.tacDarkenElev)
-                    g.setColor(MUHex.colorForElevation(colorForTerrain(i), j, prefs.elevationColorMultiplier));
-                else
-                    g.setColor(colorForTerrain(i));
-                
-                // Fill the hex
-                g.fill(hexPoly);
-
-                // Draw the line around the hex
-                g.setColor(Color.gray);
-                g.draw(hexPoly);                    
-
-                // Draw the elevation number (lower right corner)
-                if (prefs.tacShowTerrainElev && h >= 20)
-                {
-                    // Draw the elevation
-                    g.setColor(Color.black);
-                    g.setFont(elevFont);
-
-                    if (j != 0)			// We don't draw zero elevation numbers
-                    {
-                        String		hexElev = Integer.toString(j);
-                        int			width;
-
-                        if (j < 0 && Math.abs(j) <= 9)
-                            width = 2 * elevWidth[Math.abs(j)];
-                        else if (j > 0 && j <= 9)
-                            width = elevWidth[j];
-                        else
-                            width = elevWidth[0];
-
-                        g.drawString(hexElev,
-                                     (float) (hexPoly.getX(0) + w - width),
-                                     (float) (hexPoly.getY(0) + h - 2));
-                    }
-                }
-
-                // Draw the terrain type (upper left corner)
-                if (prefs.tacShowTerrainChar && h >= 20)
-                {
-                    if (i != MUHex.PLAIN)			// we don't draw plain types
-                    {
+            	for (int k = 0; k < 2; k++) {
+	                BufferedImage	newImage = new BufferedImage(hexPoly.getBounds().width, hexPoly.getBounds().height, BufferedImage.TYPE_INT_ARGB);
+	
+	                // Get the graphics context for this BufferedImage
+	                Graphics2D		g = (Graphics2D) newImage.getGraphics();
+	
+	                // Setup the color
+	                if (prefs.tacDarkenElev)
+	                    g.setColor(MUHex.colorForElevation(colorForTerrain(i), j, prefs.elevationColorMultiplier));
+	                else
+	                    g.setColor(colorForTerrain(i));
+	                
+	                // Fill the hex
+	                g.fill(hexPoly);
+	
+	                // Draw the line around the hex
+	                g.setColor(Color.gray);
+	                g.draw(hexPoly);                    
+	
+	                // Draw the elevation number (lower right corner)
+	                if (prefs.tacShowTerrainElev && h >= 20)
+	                {
+	                    // Draw the elevation
+	                    g.setColor(Color.black);
+	                    g.setFont(elevFont);
+	
+	                    if (j != 0)			// We don't draw zero elevation numbers
+	                    {
+	                        String		hexElev = Integer.toString(j);
+	                        int			width;
+	
+	                        if (j < 0 && Math.abs(j) <= 9)
+	                            width = 2 * elevWidth[Math.abs(j)];
+	                        else if (j > 0 && j <= 9)
+	                            width = elevWidth[j];
+	                        else
+	                            width = elevWidth[0];
+	
+	                        g.drawString(hexElev,
+	                                     (float) (hexPoly.getX(0) + w - width),
+	                                     (float) (hexPoly.getY(0) + h - 2));
+	                    }
+	                }
+	
+	                // Draw the terrain type (upper left corner)
+	                if (prefs.tacShowTerrainChar && h >= 20)
+	                {
+	                	String terrain = String.valueOf(MUHex.terrainForId(i));
+	                    if (i == MUHex.PLAIN)			// we don't draw plain types
+	                    	terrain = " ";
+	                    if(k == 0) // LOS-less hex 
+	                    	terrain += "?";
+	                    
                         g.setFont(terrainFont);
-                        g.drawString(String.valueOf(MUHex.terrainForId(i)), (float) hexPoly.getX(0), (float) (hexPoly.getY(0) + h/2));
-                    }
-                }
-                
-                hexImages[i][j] = newImage;                
+                        g.drawString(terrain, (float) hexPoly.getX(0), (float) (hexPoly.getY(0) + h/2));
+	                    
+	                }
+	                
+	                hexImages[i][j][k] = newImage;
+            	}
             }
         }
     }
@@ -687,25 +693,42 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                         trans.translate(realHex.getX() - l, realHex.getY());
                         g.setTransform(trans);
                         // And draw it
+                        int hideQuestionMark = 1;
+                        if(prefs.tacShowLOSInfo == true) {
+                            String hashkey = String.valueOf(hexX + j) + " " + String.valueOf(hexY + i);
+	                        if(data.LOSinfo.get(hashkey) != null && (Boolean) data.LOSinfo.get(hashkey) == false) 
+	                        	hideQuestionMark = 0;
+                        }
                         g.drawImage(imageForTerrain(data.getHexTerrain(hexX + j, hexY + i),
-                                                    hexAbsoluteElevation),
+                                                    hexAbsoluteElevation,
+                                                    hideQuestionMark),
                                     null,
                                     null);
                         
                         // Set our transform for the rest of the info
 
                         // Optional stuff -----------------------
-                        if (prefs.tacShowLOSInfo) {
+/*                        if (prefs.tacShowLOSInfo) {
                             // Draw LOS info
-                            if(data.LOSinfo != null ) {
+                            if(data.LOSinfo != null ) {                            	
     	                        String hashkey = String.valueOf(hexX + j) + " " + String.valueOf(hexY + i);
     	                        if(data.LOSinfo.get(hashkey) != null && (Boolean) data.LOSinfo.get(hashkey) == false) {
-    	                        	g.setColor(new Color(0, 0, 0, 150));
-    	                        	g.fill(hexPoly);
-    	                        }
+    	                        	AffineTransform			beforeNumberRot = g.getTransform();
+	                                AffineTransform			baseTrans2 = g.getTransform();
+	                                String					hexString = " ?";
+	                                //baseTrans2.rotate(-PI / 2, hexPoly.getX(1), hexPoly.getY(1));
+	                                
+	                                g.setColor(new Color(0.0f, 0.0f, 0.0f, 1.0f));
+	                                g.setFont(terrainFont);
+	                                //g.setTransform(baseTrans2);
+	                                g.drawString(hexString,
+	                                             (float) (hexPoly.getX(0)),
+	                                             (float) (hexPoly.getY(0) + (terrainFont.getLineMetrics(hexString, frc)).getAscent()));
+	                                g.setTransform(beforeNumberRot);
+                            	}
                             }
                         }
-                        	
+    */                    	
                         if (prefs.tacShowHexNumbers)
                         {
                             AffineTransform			beforeNumberRot = g.getTransform();
@@ -864,9 +887,9 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     /**
       * Get the Image that we want to copy for a given terrain character.
       */    
-    protected BufferedImage imageForTerrain(int terrain, int elevation)
+    protected BufferedImage imageForTerrain(int terrain, int elevation, int los)
     {
-        return hexImages[terrain][elevation];
+        return hexImages[terrain][elevation][los];
     }
 
     /**

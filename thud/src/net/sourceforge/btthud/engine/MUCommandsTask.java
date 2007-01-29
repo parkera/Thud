@@ -86,7 +86,7 @@ public class MUCommandsTask extends TimerTask {
 
                 // Do we send a tactical?
                 // If we know we're on an LOS-only map, send it at a faster pace
-                if (data.hudRunning && (forceTactical || (count % (4 * (data.mapLOSOnly ? prefs.mediumCommandUpdate : prefs.slugCommandUpdate)) == 0)))
+                if (data.hudRunning && (forceTactical || (count % (4 * (data.mapLOSOnly ? prefs.mediumCommandUpdate : prefs.slowCommandUpdate)) == 0)))
                 {
                     conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight);
                     conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight + " 0 0 l"); // LOS-only info
