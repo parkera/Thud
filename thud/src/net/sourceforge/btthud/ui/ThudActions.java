@@ -94,4 +94,25 @@ class EndAction extends ThudKeyAction {
     }
 }
 
+class NumpadAction extends ThudKeyAction {
+	int key = 0; // which key are we concerned about?
+	JTextField textField;
+	Thud thud;
+	public NumpadAction(JTextField textField_arg, int key_arg, Thud thud_arg) {
+		this.textField = textField_arg;
+		this.key = key_arg;
+		this.thud = thud_arg;
+	}
+	
+    public void actionPerformed(ActionEvent e) {
+    	try {    		
+        	textField.setText("heading 120");
+        	thud.actionPerformed(new ActionEvent(this, 1001, ""));
+        	textField.setText("");
+    	} catch (Exception ex) {
+    		System.out.println(ex);
+    	}
+    }
+}
+
 

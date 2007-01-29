@@ -627,6 +627,16 @@ public class Thud extends JFrame implements  ActionListener
         textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), new HomeAction(textPane));        
         textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_END, 0), new EndAction(textPane));        
         
+        // Add numpad listeners
+        textField.getKeymap().removeKeyStrokeBinding(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1,0));
+        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1, 0), new NumpadAction(textField,1,this));
+        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD2, 0), new NumpadAction(textField,2,this));
+        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD3, 0), new NumpadAction(textField,3,this));
+        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD4, 0), new NumpadAction(textField,4,this));        
+        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD6, 0), new NumpadAction(textField,6,this));
+        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD7, 0), new NumpadAction(textField,7,this));
+        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8, 0), new NumpadAction(textField,8,this));
+        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD9, 0), new NumpadAction(textField,9,this));       
     }
 
     // ------------------------------------------------------------------------
@@ -835,7 +845,8 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miWindowContacts.getActionCommand())) doWindowContacts();    	
         else if (newEvent.getActionCommand().equals(miWindowStatus.getActionCommand())) doWindowStatus();
         else if (newEvent.getActionCommand().equals(miWindowTactical.getActionCommand())) doWindowTactical();    	
-        else		// this is sorta bad, we assume that if it's not a menu item they hit return in the text field. need to fix
+        else if (newEvent.getID() == 1001) 		// this is sorta bad, we assume that if it's not a menu item they hit return in the text field. need to fix
+        			// NumpadAction now depends on this sorta-bad behavior, so if this is fixed, fix it too or numpad bindings will break
         {
             String text = textField.getText();
             try
