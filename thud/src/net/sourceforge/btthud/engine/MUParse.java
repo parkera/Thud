@@ -723,6 +723,8 @@ public class MUParse implements Runnable {
             if (st.hasMoreTokens())
                 data.mapLOSOnly = st.nextToken().equals("l");
         }
+        
+        data.LOSinfo= new Hashtable(); // Clear out old LOS
     }
 
     /**
