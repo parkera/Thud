@@ -146,7 +146,10 @@ public class PrefsDialog extends javax.swing.JDialog {
         });
         
         // --- GENERAL OPTIONS ---
-        GeneralOptionsTab.setLayout(new java.awt.GridLayout(0, 2));
+        JPanel generalOptionsTopPanel = new JPanel();        
+        generalOptionsTopPanel.setLayout(new GridLayout(0,3));        
+        JPanel generalOptionsBottomPanel = new JPanel();
+        generalOptionsBottomPanel.setLayout(new GridLayout(0,2));
         
         echoCheckBox = new javax.swing.JCheckBox("Echo Commands", null, prefs.echoCommands);
         echoCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -154,7 +157,7 @@ public class PrefsDialog extends javax.swing.JDialog {
                 echoCheckBoxActionPerformed(evt);
             }
         });
-        GeneralOptionsTab.add(echoCheckBox);
+        generalOptionsTopPanel.add(echoCheckBox);
 
         // Does this work? No idea...
         antiAliasTextCheckBox = new javax.swing.JCheckBox("Antialias Text", null, prefs.antiAliasText);
@@ -163,7 +166,7 @@ public class PrefsDialog extends javax.swing.JDialog {
                 antiAliasTextCheckBoxActionPerformed(evt);
             }
         });
-        GeneralOptionsTab.add(antiAliasTextCheckBox);
+        generalOptionsTopPanel.add(antiAliasTextCheckBox);
         
         highlightMyHexCheckBox = new javax.swing.JCheckBox("Highlight My Hex", null, prefs.highlightMyHex);
         highlightMyHexCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -171,18 +174,11 @@ public class PrefsDialog extends javax.swing.JDialog {
                 highlightMyHexCheckBoxActionPerformed(evt);
             }
         });
-        GeneralOptionsTab.add(highlightMyHexCheckBox);
-
-        overwriteWithUnknownCheckBox = new javax.swing.JCheckBox("Erase Unknown Terrain", null, prefs.overwriteWithUnknown);
-        overwriteWithUnknownCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                overwriteWithUnknownCheckBoxActionPerformed(evt);
-            }
-        });
-        GeneralOptionsTab.add(overwriteWithUnknownCheckBox);
-
+        generalOptionsTopPanel.add(highlightMyHexCheckBox);
+        
         speedLengthLabel.setText("Speed Indicator Divisor");
-        GeneralOptionsTab.add(speedLengthLabel);
+        generalOptionsBottomPanel.add(speedLengthLabel);
+        
         speedLengthBox.addItem(new Float(1.0));
         speedLengthBox.addItem(new Float(1.5));
         speedLengthBox.addItem(new Float(2.0));
@@ -191,11 +187,12 @@ public class PrefsDialog extends javax.swing.JDialog {
         speedLengthBox.addItem(new Float(3.5));
         speedLengthBox.addItem(new Float(4.0));
         speedLengthBox.setSelectedItem(new Float(prefs.speedIndicatorLength));
-        GeneralOptionsTab.add(speedLengthBox);
+        generalOptionsBottomPanel.add(speedLengthBox);
 
         scrollbackSizeLabel.setText("Lines of Text in Scrollback");
-        GeneralOptionsTab.add(scrollbackSizeLabel);
-        scrollbackSizeBox.addItem(new Integer(500));
+        generalOptionsBottomPanel.add(scrollbackSizeLabel);
+        
+        scrollbackSizeBox.addItem(new Integer(500));        
         scrollbackSizeBox.addItem(new Integer(1000));
         scrollbackSizeBox.addItem(new Integer(2000));
         scrollbackSizeBox.addItem(new Integer(5000));
@@ -203,10 +200,11 @@ public class PrefsDialog extends javax.swing.JDialog {
         scrollbackSizeBox.addItem(new Integer(10000));
         scrollbackSizeBox.addItem(new Integer(20000));
         scrollbackSizeBox.setSelectedItem(new Integer(prefs.maxScrollbackSize));
-        GeneralOptionsTab.add(scrollbackSizeBox);
+        generalOptionsBottomPanel.add(scrollbackSizeBox);
         
         contactsAgeLabel.setText("Time to Keep Old Contacts (sec)");
-        GeneralOptionsTab.add(contactsAgeLabel);
+        generalOptionsBottomPanel.add(contactsAgeLabel);
+        
         contactsAgeBox.addItem(new Integer(5));
         contactsAgeBox.addItem(new Integer(10));
         contactsAgeBox.addItem(new Integer(15));
@@ -219,9 +217,11 @@ public class PrefsDialog extends javax.swing.JDialog {
         contactsAgeBox.addItem(new Integer(50));
         contactsAgeBox.addItem(new Integer(55));
         contactsAgeBox.addItem(new Integer(60));
-        contactsAgeBox.setSelectedItem(new Integer(prefs.contactsAge));
-        GeneralOptionsTab.add(contactsAgeBox);
+        contactsAgeBox.setSelectedItem(new Integer(prefs.contactsAge));        
+        generalOptionsBottomPanel.add(contactsAgeBox);
         
+        GeneralOptionsTab.add(generalOptionsTopPanel);
+        GeneralOptionsTab.add(generalOptionsBottomPanel);
         TabbedPane.addTab("General", GeneralOptionsTab);
 
         // --- MAP COLOR OPTIONS ---
@@ -417,11 +417,7 @@ public class PrefsDialog extends javax.swing.JDialog {
     private void antiAliasTextCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {
         prefs.antiAliasText = antiAliasTextCheckBox.isSelected();
     }
-
-    private void overwriteWithUnknownCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {
-        prefs.overwriteWithUnknown = overwriteWithUnknownCheckBox.isSelected();
-    }
-    
+   
     private void mainAlwaysOnTopCheckBoxActionPerformed(ActionEvent evt) {
     	prefs.mainAlwaysOnTop = mainAlwaysOnTopCheckBox.isSelected();
     }

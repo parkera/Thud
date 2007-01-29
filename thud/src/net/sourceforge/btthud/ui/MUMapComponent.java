@@ -692,11 +692,20 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                                     null,
                                     null);
                         
-
                         // Set our transform for the rest of the info
 
                         // Optional stuff -----------------------
-
+                        if (prefs.tacShowLOSInfo) {
+                            // Draw LOS info
+                            if(data.LOSinfo != null ) {
+    	                        String hashkey = String.valueOf(hexX + j) + " " + String.valueOf(hexY + i);
+    	                        if(data.LOSinfo.get(hashkey) != null && (Boolean) data.LOSinfo.get(hashkey) == false) {
+    	                        	g.setColor(new Color(0, 0, 0, 150));
+    	                        	g.fill(hexPoly);
+    	                        }
+                            }
+                        }
+                        	
                         if (prefs.tacShowHexNumbers)
                         {
                             AffineTransform			beforeNumberRot = g.getTransform();

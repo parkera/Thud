@@ -817,15 +817,14 @@ public class MUParse implements Runnable {
         // Ok it must be a data line
         StringTokenizer st = new StringTokenizer(l, ",");
         int				thisY = Integer.parseInt(st.nextToken());
-        String			tacData = st.nextToken();
-
+        String			tacData = st.nextToken();        
         // Format: TerrElevTerrElevTerrElev...
         for (int i = 0; i <= tacEX - tacSX; i++)
         {
             char		terrTypeChar = tacData.charAt(2 * i);
             char		terrElevChar = tacData.charAt(2 * i + 1);		//tacData.substring(2*i+1, 2*i+2);
             int			terrElev;
-            
+
             if (Character.isDigit(terrElevChar))
                 terrElev = Character.digit(terrElevChar, 10);		// Get the actual integer value, in base 10
             else
@@ -834,10 +833,13 @@ public class MUParse implements Runnable {
             // Water and ice are negative elevation
             if ((terrTypeChar == '~' || terrTypeChar == '-') && terrElev != 0)
                 terrElev = -terrElev;
-
-            // If it's a '?' make sure we're supposed to overwrite
-            if (terrTypeChar != '?' || prefs.overwriteWithUnknown)
+            
+            if (terrTypeChar != '?')
                 data.setHex(tacSX + i, thisY, terrTypeChar, terrElev);
+            else { // ? in the terrain = LOS info.
+            	String hashkey = String.valueOf(tacSX + i) + " " + String.valueOf(thisY);
+            	data.LOSinfo.put(hashkey, (Boolean)false);
+            }
         }
     }
 

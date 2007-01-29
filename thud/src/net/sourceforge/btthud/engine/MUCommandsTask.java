@@ -89,7 +89,8 @@ public class MUCommandsTask extends TimerTask {
                 if (data.hudRunning && (forceTactical || (count % (4 * (data.mapLOSOnly ? prefs.mediumCommandUpdate : prefs.slugCommandUpdate)) == 0)))
                 {
                     conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight);
-                    forceTactical = false;
+                    conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight + " 0 0 l"); // LOS-only info
+                    forceTactical = false;                    		
                 }
 
                 // Do we send an armor status?

@@ -58,6 +58,7 @@ public class Thud extends JFrame implements  ActionListener
     protected JCheckBoxMenuItem miShowUnitNames;
     protected JCheckBoxMenuItem miDarkenElevations;
     protected JCheckBoxMenuItem miShowArmorDiagrams;
+    protected JCheckBoxMenuItem miShowLOSInfo;
 
     protected JCheckBoxMenuItem	miShowCliffs;
     protected JCheckBoxMenuItem miShowIndicators;
@@ -148,6 +149,7 @@ public class Thud extends JFrame implements  ActionListener
         miShowUnitNames.addActionListener(l);
         miDarkenElevations.addActionListener(l);
         miShowArmorDiagrams.addActionListener(l);
+        miShowLOSInfo.addActionListener(l);
 
         miShowCliffs.addActionListener(l);
         miShowIndicators.addActionListener(l);
@@ -445,6 +447,13 @@ public class Thud extends JFrame implements  ActionListener
         miShowArmorDiagrams = new JCheckBoxMenuItem("Show Armor Diagram",prefs.tacShowArmorDiagram);
         mapMenu.add(miShowArmorDiagrams).setEnabled(true);
         miShowArmorDiagrams.setState(prefs.tacShowArmorDiagram);
+        
+        miShowLOSInfo = new JCheckBoxMenuItem("Show LOS Info",prefs.tacShowLOSInfo);
+        miShowLOSInfo.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L,
+                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        mapMenu.add(miShowLOSInfo).setEnabled(true);
+        miShowLOSInfo.setState(prefs.tacShowLOSInfo);
+        
         
         // ---
         mapMenu.addSeparator();
@@ -825,6 +834,7 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miShowArcs.getActionCommand())) doShowArcs();
         else if (newEvent.getActionCommand().equals(miDarkenElevations.getActionCommand())) doDarkenElevations();
         else if (newEvent.getActionCommand().equals(miShowArmorDiagrams.getActionCommand())) doShowArmorDiagrams();
+        else if (newEvent.getActionCommand().equals(miShowLOSInfo.getActionCommand())) doShowLOSInfo();
         else if (newEvent.getActionCommand().equals(miShowCliffs.getActionCommand())) doShowCliffs();
         else if (newEvent.getActionCommand().equals(miShowIndicators.getActionCommand())) doShowIndicators();
         else if (newEvent.getActionCommand().equals(miMoveLeft.getActionCommand())) doChangeXOffset(-1);
@@ -1224,6 +1234,14 @@ public class Thud extends JFrame implements  ActionListener
     {
     	prefs.tacShowArmorDiagram = !prefs.tacShowArmorDiagram;
     	miShowArmorDiagrams.setState(prefs.tacShowArmorDiagram);
+    	tacMap.newPreferences(prefs);
+    }
+    
+    /** Show LOS info? */
+    public void doShowLOSInfo()
+    {
+    	prefs.tacShowLOSInfo = !prefs.tacShowLOSInfo;
+    	miShowLOSInfo.setState(prefs.tacShowLOSInfo);
     	tacMap.newPreferences(prefs);
     }
 

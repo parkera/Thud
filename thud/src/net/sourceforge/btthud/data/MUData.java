@@ -52,6 +52,9 @@ public class MUData {
     // We store the contact data in a ArrayList, because we need to iterate over it efficiently
     ArrayList<MUUnitInfo>		contacts = null;
     ArrayList<MUUnitInfo>		buildings = null;
+    
+    // LOS info is in a Hashtable since we don't iterate, we query it
+    public Hashtable			LOSinfo = new Hashtable();	    
 
     // Weather info
     public MUWeather			weather;
@@ -73,6 +76,8 @@ public class MUData {
         clearData();
 
         createHexCache();
+        
+        LOSinfo = new Hashtable();
         
         map = new MUHex[MAX_X][MAX_Y];		// individual hexes will be allocated if they are needed.. this is not very memory efficient still
         
@@ -280,6 +285,7 @@ public class MUData {
         this.mapName = "";
         weather = new MUWeather();
         lastDataTime = 0;					// clear our last recieved data
+        LOSinfo = new Hashtable();
     }
     
     /**

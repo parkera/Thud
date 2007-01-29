@@ -42,7 +42,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     public boolean				highlightMyHex;
     public int					hexHeight;
     public float				elevationColorMultiplier;
-    public boolean				overwriteWithUnknown;			// Replace established terrain with '?'s if true
+    public boolean				tacShowLOSInfo;
     
     public int					arcIndicatorRange;
     public boolean				tacShowArcs;
@@ -139,7 +139,7 @@ public class MUPrefs extends Object implements Serializable, Cloneable
         tacShowArmorDiagram = true;
         highlightMyHex = true;
         speedIndicatorLength = 3.0f;
-        overwriteWithUnknown = true;	// Ie, don't save terrain we already know about in the underground
+        tacShowLOSInfo = false;	
         
         makeArcsWeaponRange = false;
         tacShowArcs = true;
