@@ -270,6 +270,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             for (int j = 0; j < 10; j++)
             {
             	for (int k = 0; k < 2; k++) {
+            		boolean darkHex = false; // used for determining white or black writing
+            		
 	                BufferedImage	newImage = new BufferedImage(hexPoly.getBounds().width, hexPoly.getBounds().height, BufferedImage.TYPE_INT_ARGB);
 	
 	                // Get the graphics context for this BufferedImage
@@ -281,18 +283,26 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 	                else
 	                    g.setColor(colorForTerrain(i));
 	                
+	                Color terrainColor = g.getColor();
+	                if(terrainColor.getRed() < 128 && terrainColor.getGreen() < 128 && terrainColor.getBlue() < 128)
+	                	darkHex = true;
+	                
 	                // Fill the hex
 	                g.fill(hexPoly);
 	
 	                // Draw the line around the hex
 	                g.setColor(Color.gray);
 	                g.draw(hexPoly);                    
-	
+	                
 	                // Draw the elevation number (lower right corner)
 	                if (prefs.tacShowTerrainElev && h >= 20)
 	                {
 	                    // Draw the elevation
-	                    g.setColor(Color.black);
+	                	if(darkHex) {
+	                		g.setColor(Color.white);
+	                	} else {
+	                		g.setColor(Color.black);
+	                	}
 	                    g.setFont(elevFont);
 	
 	                    if (j != 0)			// We don't draw zero elevation numbers
@@ -327,6 +337,11 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 	                    
 	                }
 	                
+	                // Shade for no-LOS
+	                if (k == 0) {
+	                	g.setColor(new Color(0, 255, 255, 64));
+	                	g.fill(hexPoly);
+	                }
 	                hexImages[i][j][k] = newImage;
             	}
             }
@@ -708,27 +723,6 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                         // Set our transform for the rest of the info
 
                         // Optional stuff -----------------------
-/*                        if (prefs.tacShowLOSInfo) {
-                            // Draw LOS info
-                            if(data.LOSinfo != null ) {                            	
-    	                        String hashkey = String.valueOf(hexX + j) + " " + String.valueOf(hexY + i);
-    	                        if(data.LOSinfo.get(hashkey) != null && (Boolean) data.LOSinfo.get(hashkey) == false) {
-    	                        	AffineTransform			beforeNumberRot = g.getTransform();
-	                                AffineTransform			baseTrans2 = g.getTransform();
-	                                String					hexString = " ?";
-	                                //baseTrans2.rotate(-PI / 2, hexPoly.getX(1), hexPoly.getY(1));
-	                                
-	                                g.setColor(new Color(0.0f, 0.0f, 0.0f, 1.0f));
-	                                g.setFont(terrainFont);
-	                                //g.setTransform(baseTrans2);
-	                                g.drawString(hexString,
-	                                             (float) (hexPoly.getX(0)),
-	                                             (float) (hexPoly.getY(0) + (terrainFont.getLineMetrics(hexString, frc)).getAscent()));
-	                                g.setTransform(beforeNumberRot);
-                            	}
-                            }
-                        }
-    */                    	
                         if (prefs.tacShowHexNumbers)
                         {
                             AffineTransform			beforeNumberRot = g.getTransform();
