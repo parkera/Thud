@@ -284,7 +284,11 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 	                    g.setColor(colorForTerrain(i));
 	                
 	                Color terrainColor = g.getColor();
+	                // Dark-colored hexes get white text
 	                if(terrainColor.getRed() < 128 && terrainColor.getGreen() < 128 && terrainColor.getBlue() < 128)
+	                	darkHex = true;
+	                // So do all water hexes
+	                if(i == MUHex.WATER)
 	                	darkHex = true;
 	                
 	                // Fill the hex
