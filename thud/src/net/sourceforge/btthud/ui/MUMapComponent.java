@@ -343,7 +343,11 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 	                
 	                // Shade for no-LOS
 	                if (k == 0) {
-	                	g.setColor(new Color(0, 255, 255, 64));
+	                	if(i == MUHex.LIGHT_FOREST || i == MUHex.HEAVY_FOREST) {
+	                		g.setColor(new Color(0, 0, 255, 64)); // forests get blue
+	                	} else {
+		                	g.setColor(new Color(0, 255, 255, 64)); // most hexes get cyan
+	                	}
 	                	g.fill(hexPoly);
 	                }
 	                hexImages[i][j][k] = newImage;
