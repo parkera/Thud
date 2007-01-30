@@ -1431,7 +1431,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         g.setColor(Color.black);
         nextStartsAt += spacingDiff;
                 
-        tempString = "Weather: " + data.weather.lightString(data.weather.light) + 
+        tempString = "Weather: " + MUWeather.lightString(data.weather.light) + 
         			 " : Vis " + data.weather.visibility + 
         			 " : Temp " + data.weather.ambientTemperature +
         			 "°C : Gravity " + data.weather.gravity + "%";

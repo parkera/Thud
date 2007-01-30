@@ -28,7 +28,6 @@ public class PrefsDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox 		echoCheckBox;
     private javax.swing.JCheckBox		antiAliasTextCheckBox;
     private javax.swing.JCheckBox 		highlightMyHexCheckBox;
-    private javax.swing.JCheckBox		overwriteWithUnknownCheckBox;
     private javax.swing.JLabel 			speedLengthLabel;
     private javax.swing.JComboBox 		speedLengthBox;
     private javax.swing.JLabel 			scrollbackSizeLabel;
