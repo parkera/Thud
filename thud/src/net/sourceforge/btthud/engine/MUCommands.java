@@ -41,6 +41,7 @@ public class MUCommands
     public void forceTactical()
     {
         commandSendingTask.forceTactical = true;
+        commandSendingTask.forceLOS = true;
     }
     
     public void startTimers()

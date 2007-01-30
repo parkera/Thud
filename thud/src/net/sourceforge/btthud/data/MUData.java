@@ -54,7 +54,8 @@ public class MUData {
     ArrayList<MUUnitInfo>		buildings = null;
     
     // LOS info is in a Hashtable since we don't iterate, we query it
-    public Hashtable			LOSinfo = new Hashtable();	    
+    public Hashtable			LOSinfo = new Hashtable();	  
+    public int					lastLOSX = 0, lastLOSY = 0, lastLOSZ = 0;
 
     // Weather info
     public MUWeather			weather;
@@ -285,7 +286,7 @@ public class MUData {
         this.mapName = "";
         weather = new MUWeather();
         lastDataTime = 0;					// clear our last recieved data
-        LOSinfo = new Hashtable();
+        clearLOS();
     }
     
     /**
@@ -294,6 +295,14 @@ public class MUData {
     public void clearMap()
     {
     	map = new MUHex[MAX_X][MAX_Y];
+    }
+    
+    /**
+     * Clear LOS data.
+     */
+    public void clearLOS()
+    {
+    	LOSinfo = new Hashtable();
     }
     /**
       * Sets the map changed flag.

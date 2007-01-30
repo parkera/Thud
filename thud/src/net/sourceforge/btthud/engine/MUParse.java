@@ -722,9 +722,7 @@ public class MUParse implements Runnable {
             // Is this a LOS-only map? 
             if (st.hasMoreTokens())
                 data.mapLOSOnly = st.nextToken().equals("l");
-        }
-        
-        data.LOSinfo= new Hashtable(); // Clear out old LOS
+        }              
     }
 
     /**
