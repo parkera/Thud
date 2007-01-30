@@ -11,6 +11,7 @@ Version History:
   New Features:
    * MUX-format map files can now be loaded via File -> Load Map.
    * Weather information is retrieved and displayed on the bottom of the tactical window.
+   * A LOS overlay has been added. Under 'Map', select 'Show LOS Info' and hexes not in your current LOS will have a cyan/blue overlay added to them.
 
   Bug Fixes:
    * Cliff detection now functions properly between water and land hexes.
