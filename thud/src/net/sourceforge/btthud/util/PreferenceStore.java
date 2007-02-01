@@ -17,9 +17,12 @@ import java.util.ArrayList;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.prefs.Preferences;
+import java.util.prefs.BackingStoreException;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.SortedSet;
 
 public class PreferenceStore
 {
@@ -168,93 +171,145 @@ abstract class TypeHandler {
     static protected void savePref (final Preferences store, final Field field, final String value) {
         store.put(field.getName(), value);
     }
+}
 
+/**
+ * Sequence-type preference reader.  Sequences are stored as
+ * baseName/subName.&lt;index&gt;, where &lt;index&gt; ranges consecutively
+ * from 0 to N - 1 (with N being the number of elements in the list).
+ *
+ * Note that since the sequence is stored in a subnode, names should be chosen
+ * as not to conflict with future package names that may also want to use the
+ * preference store.  It's unlikely this will be a problem for Thud.
+ *
+ * The constructor may throw a BackingStoreException if it can't communicate
+ * with the backing store, or an IllegalStateException if the sequence node
+ * doesn't exist.
+ */
+class SequenceLoader {
+    private final Preferences store;
 
-    /**
-     * Utility method for creating an array of StringTokenizers.
-     *
-     * TODO: Should make a class for this.
-     */
-    static StringTokenizer[] newTokenArray (final int width, final String[] stringArray) {
-        return newTokenArray(width, stringArray, ' ');
-    }
+    private final int size;
 
-    static StringTokenizer[] newTokenArray (final int width, final String[] stringArray, final char tokenSep) {
-        final String tokenSepStr = Character.toString(tokenSep);
-
-        StringTokenizer[] tokenizerArray = new StringTokenizer[width];
-
-        for (int ii = 0; ii < width; ii++) {
-            tokenizerArray[ii] = new StringTokenizer (stringArray[ii], tokenSepStr);
+    public SequenceLoader (final Preferences store, final String baseName) throws BackingStoreException {
+        if (!store.nodeExists(baseName)) {
+            throw new IllegalStateException (baseName + " doesn't exist");
         }
 
-        // Quick check for malformed input.
-        final int tokenCount = tokenizerArray[0].countTokens();
+        this.store = store.node(baseName);
 
-        for (int ii = 1; ii < width; ii++) {
-            if (tokenizerArray[ii].countTokens() != tokenCount) {
-                throw new IllegalArgumentException ("Element count mismatch");
+        // The "size" of this sequence is the maximum consecutive index of any
+        // of the subnames.  In other words, if we sort the keys, we should be
+        // able to count consecutively from 0 to <size> for at least one
+        // subname.  Note that some subnames may not be valid for the full
+        // range; this eases compatibility.
+        final Map<String,SortedSet<Integer>> maxIndex = new java.util.HashMap<String,SortedSet<Integer>> ();
+
+        for (final String key: this.store.keys()) {
+            // Explode key.
+            final String[] keySplit = key.split("\\.", 2);
+
+            if (keySplit.length != 2) {
+                // Not an index key, ignore.
+                System.err.println("Load warning: Preference '" + baseName + "[]': Unindexed element '" + key + "'.");
+                continue;
             }
+
+            int tmpIndex;
+
+            try {
+                tmpIndex = Integer.parseInt(keySplit[0]);
+            } catch (NumberFormatException e) {
+                // Bad index.
+                System.err.println("Load warning: Preference '" + baseName + "[]': Unindexed element '" + key + "'.");
+                continue;
+            }
+
+            // Tally index.
+            SortedSet<Integer> indexSet = maxIndex.get(keySplit[1]);
+            if (indexSet == null) {
+                indexSet = new java.util.TreeSet<Integer> ();
+                maxIndex.put(keySplit[1], indexSet);
+            }
+
+            indexSet.add(tmpIndex);
         }
 
-        return tokenizerArray;
-    }
+        // Compute size.
+        int tmpSize = 0;
 
-    /**
-     * Utility method for extracting tokens using an array of StringTokenizers.
-     */
-    static boolean extractTokenArray (final StringTokenizer[] tokenArray, final String[] outputArray) {
-        if (tokenArray[0].hasMoreTokens()) {
-            for (int ii = 0; ii < tokenArray.length; ii++) {
-                outputArray[ii] = tokenArray[ii].nextToken();
+        for (final SortedSet<Integer> indexSet: maxIndex.values()) {
+            int lastIndex = -1;
+
+            for (int index: indexSet) {
+                if (index != lastIndex + 1)
+                    break;
+
+                lastIndex = index;
             }
 
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-    /**
-     * Utility method for creating an array of StringBuilders.
-     *
-     * TODO: Should make a class for this.
-     */
-    static StringBuilder[] newStringArray (final int width) {
-        StringBuilder[] builderArray = new StringBuilder[width];
-
-        for (int ii = 0; ii < width; ii++) {
-            builderArray[ii] = new StringBuilder ();
+            if (tmpSize <= lastIndex)
+                tmpSize = lastIndex + 1;
         }
 
-        return builderArray;
+        size = tmpSize;
     }
 
-    /**
-     * Utility method for appending to an array of StringBuilders.
-     */
-    static void appendStringArray (final StringBuilder[] builderArray, final String[] tokenArray) {
-        appendStringArray(builderArray, tokenArray, ' ');
+    public int size () {
+        return size;
     }
 
-    static void appendStringArray (final StringBuilder[] builderArray, final String[] tokenArray, char tokenSep) {
-        // TODO: Should check that the tokenArray strings don't contain
-        // tokenSep, just for sanity purposes.  In practice, we're not going to
-        // use it on data values where tokenSep should occur, because otherwise
-        // we'd need to implement icky escaping in the general case.
-        if (builderArray[0].length() == 0) {
-            for (int ii = 0; ii < builderArray.length; ii++) {
-                builderArray[ii].append(tokenArray[ii]);
-            }
-        } else {
-            for (int ii = 0; ii < builderArray.length; ii++) {
-                builderArray[ii].append(tokenSep);
-                builderArray[ii].append(tokenArray[ii]);
-            }
+    public List<String> loadSequence (final String subName) {
+        final List<String> valueList = new java.util.LinkedList<String> ();
+
+        for (int ii = 0; ii < size(); ii++) {
+            final String value = store.get(ii + "." + subName, null);
+
+            if (value == null)
+                break;
+
+            valueList.add(value);
+        }
+
+        return valueList;
+    }
+}
+
+/**
+ * Sequence-type preference writer.  Sequences are stored as
+ * baseName/subName.&lt;index&gt;, where &lt;index&gt; ranges consecutively
+ * from 0 to N - 1 (with N being the number of elements in the list).
+ *
+ * Note that since the sequence is stored in a subnode, names should be chosen
+ * as not to conflict with future package names that may also want to use the
+ * preference store.  It's unlikely this will be a problem for Thud.
+ *
+ * The constructor may throw a BackingStoreException if it can't communicate
+ * with the backing store.
+ *
+ * The constructor clears the entire contents of the associated preference
+ * node.
+ */
+class SequenceStorer {
+    private final Preferences store;
+
+    public SequenceStorer (final Preferences store, final String baseName) throws BackingStoreException {
+        this.store = store.node(baseName);
+
+        // TODO: Instead of clearing all preferences, we might just want to
+        // clear those keys which match the <index>.subkey template.
+        this.store.clear();
+    }
+
+    public void saveSequence (final String subName, final List<String> valueList) {
+        int ii = 0;
+        for (String value: valueList) {
+            assert value != null;
+            store.put(ii++ + "." + subName, value);
         }
     }
 }
+
 
 /**
  * Boolean type handler.
@@ -396,49 +451,62 @@ class ColorTypeHandler extends TypeHandler {
 
 /**
  * Terrain colors Color[] array type handler.
+ *
+ * TODO: Make this more generic, or the type more specific.
  */
 class ColorArrayTypeHandler extends TypeHandler {
     public void load (final Preferences store, final MUPrefs prefs, final Field field) {
-        final String[] strValue = new String[4];
-
-        strValue[0] = store.get(field.getName() + ".r", null);
-        strValue[1] = store.get(field.getName() + ".g", null);
-        strValue[2] = store.get(field.getName() + ".b", null);
-        strValue[3] = store.get(field.getName() + ".a", null);
-
-        if (strValue[0] == null || strValue[1] == null || strValue[2] == null || strValue[3] == null) {
-            System.err.println("Load warning: Preference '" + field.getName() + "' has mismatched elements.");
+        SequenceLoader colorLoader;
+        
+        try {
+            colorLoader = new SequenceLoader (store, field.getName());
+        } catch (BackingStoreException e) {
+            // Can't get node keys.
+            System.err.println("Load error: Preference '" + field.getName() + "[]': " + e);
+            return;
+        } catch (IllegalStateException e) {
+            // Missing node.
             return;
         }
 
-        StringTokenizer[] tokenArray;
+        final List<String> rList = colorLoader.loadSequence("r");
+        final List<String> gList = colorLoader.loadSequence("g");
+        final List<String> bList = colorLoader.loadSequence("b");
+        final List<String> aList = colorLoader.loadSequence("a");
         
-        try {
-            tokenArray = newTokenArray(4, strValue);
-        } catch (IllegalArgumentException e) {
-            System.err.println("Load warning: Preference '" + field.getName() + "': " + e + ".");
+        if (rList.size() != gList.size() || rList.size() != bList.size()
+            || rList.size() != aList.size()) {
+            System.err.println("Load error: Preference '" + field.getName() + "[]' has mismatched elements.");
             return;
         }
 
         // FIXME: Generalize the array length check.
         // We assume we can upgrade if there are more terrain colors later.
-        if (tokenArray[0].countTokens() > prefs.terrainColors.length) {
-            System.err.println("Load warning: Preference '" + field.getName() + "' has too many elements.");
+        if (rList.size() > prefs.terrainColors.length) {
+            System.err.println("Load error: Preference '" + field.getName() + "' has too many elements.");
             return;
         }
 
-        final Color[] colorArray = new Color[tokenArray[0].countTokens()];
+        // FIXME: Generalize copy.
+        final Color[] colorArray = prefs.terrainColors.clone();
 
-        for (int ii = 0; ii < colorArray.length; ii++) {
-            // Assert this is true.
-            extractTokenArray(tokenArray, strValue);
+        final Iterator<String> rIter = rList.iterator();
+        final Iterator<String> gIter = gList.iterator();
+        final Iterator<String> bIter = bList.iterator();
+        final Iterator<String> aIter = aList.iterator();
 
-            final int rValue = Integer.valueOf(strValue[0]);
-            final int gValue = Integer.valueOf(strValue[1]);
-            final int bValue = Integer.valueOf(strValue[2]);
-            final int aValue = Integer.valueOf(strValue[3]);
+        for (int ii = 0; ii < rList.size(); ii++) {
+            try {
+                final int r = Integer.parseInt(rIter.next());
+                final int g = Integer.parseInt(gIter.next());
+                final int b = Integer.parseInt(bIter.next());
+                final int a = Integer.parseInt(aIter.next());
 
-            colorArray[ii] = new Color (rValue, gValue, bValue, aValue);
+                colorArray[ii] = new Color (r, g, b, a);
+            } catch (NumberFormatException e) {
+                System.err.println("Load error: Preference '" + field.getName() + "' has malformed element.");
+                return;
+            }
         }
 
         setPrefField(prefs, field, colorArray);
@@ -450,56 +518,78 @@ class ColorArrayTypeHandler extends TypeHandler {
         if (colorArray == null)
             return;
 
-        final StringBuilder[] stringArray = newStringArray (4);
-        final String[] strValue = new String[4];
-
-        for (Color color: colorArray) {
-            strValue[0] = Integer.toString(color.getRed());
-            strValue[1] = Integer.toString(color.getGreen());
-            strValue[2] = Integer.toString(color.getBlue());
-            strValue[3] = Integer.toString(color.getAlpha());
-
-            appendStringArray(stringArray, strValue);
+        SequenceStorer colorStorer;
+        
+        try {
+            colorStorer = new SequenceStorer (store, field.getName());
+        } catch (BackingStoreException e) {
+            // Can't clear removed node.
+            System.err.println("Save error: Preference '" + field.getName() + "[]': " + e);
+            return;
         }
 
-        store.put(field.getName() + ".r", stringArray[0].toString());
-        store.put(field.getName() + ".g", stringArray[1].toString());
-        store.put(field.getName() + ".b", stringArray[2].toString());
-        store.put(field.getName() + ".a", stringArray[3].toString());
+        final List<String> rList = new java.util.LinkedList<String> ();
+        final List<String> gList = new java.util.LinkedList<String> ();
+        final List<String> bList = new java.util.LinkedList<String> ();
+        final List<String> aList = new java.util.LinkedList<String> ();
+
+        for (Color color: colorArray) {
+            rList.add(Integer.toString(color.getRed()));
+            gList.add(Integer.toString(color.getGreen()));
+            bList.add(Integer.toString(color.getBlue()));
+            aList.add(Integer.toString(color.getAlpha()));
+        }
+
+        colorStorer.saveSequence("r", rList);
+        colorStorer.saveSequence("g", gList);
+        colorStorer.saveSequence("b", bList);
+        colorStorer.saveSequence("a", aList);
     }
 }
 
 /**
  * ArrayList&lt;MUHost&gt; type handler.
+ *
+ * TODO: Make this more geneirc, or the type more specific.
  */
 class HostListTypeHandler extends TypeHandler {
     public void load (final Preferences store, final MUPrefs prefs, final Field field) {
-        final String[] strValue = new String[2];
-
-        strValue[0] = store.get(field.getName() + ".host", null);
-        strValue[1] = store.get(field.getName() + ".port", null);
-
-        if (strValue[0] == null || strValue[1] == null) {
-            System.err.println("Load warning: Preference '" + field.getName() + "' has mismatched elements.");
+        SequenceLoader hostLoader;
+        
+        try {
+            hostLoader = new SequenceLoader (store, field.getName());
+        } catch (BackingStoreException e) {
+            // Can't get node keys.
+            System.err.println("Load error: Preference '" + field.getName() + "[]': " + e);
+            return;
+        } catch (IllegalStateException e) {
+            // Missing node.
             return;
         }
 
-        StringTokenizer[] tokenArray;
+        final List<String> hostList = hostLoader.loadSequence("host");
+        final List<String> portList = hostLoader.loadSequence("port");
 
-        try {
-            tokenArray = newTokenArray(2, strValue);
-        } catch (IllegalArgumentException e) {
-            System.err.println("Load warning: Preference '" + field.getName() + "': " + e + ".");
+        if (hostList.size() != portList.size()) {
+            System.err.println("Load error: Preference '" + field.getName() + "[]' has mismatched elements.");
             return;
         }
 
         final ArrayList<MUHost> hostArray = new ArrayList<MUHost> ();
 
-        while (extractTokenArray(tokenArray, strValue)) {
-            final String host = strValue[0];
-            final int port = Integer.valueOf(strValue[1]);
+        final Iterator<String> hostIter = hostList.iterator();
+        final Iterator<String> portIter = portList.iterator();
 
-            hostArray.add(new MUHost (host, port));
+        for (int ii = 0; ii < hostList.size(); ii++) {
+            try {
+                final String host = hostIter.next();
+                final int port = Integer.parseInt(portIter.next());
+
+                hostArray.add(new MUHost (host, port));
+            } catch (NumberFormatException e) {
+                System.err.println("Load error: Preference '" + field.getName() + "' has malformed element.");
+                return;
+            }
         }
 
         setPrefField(prefs, field, hostArray);
@@ -511,17 +601,25 @@ class HostListTypeHandler extends TypeHandler {
         if (hostArray == null)
             return;
 
-        final StringBuilder[] stringArray = newStringArray (2);
-        final String[] strValue = new String[2];
-
-        for (MUHost host: hostArray) {
-            strValue[0] = host.getHost();
-            strValue[1] = Integer.toString(host.getPort());
-
-            appendStringArray(stringArray, strValue);
+        SequenceStorer hostStorer;
+        
+        try {
+            hostStorer = new SequenceStorer (store, field.getName());
+        } catch (BackingStoreException e) {
+            // Can't clear removed node.
+            System.err.println("Save error: Preference '" + field.getName() + "[]': " + e);
+            return;
         }
 
-        store.put(field.getName() + ".host", stringArray[0].toString());
-        store.put(field.getName() + ".port", stringArray[1].toString());
+        final List<String> hostList = new java.util.LinkedList<String> ();
+        final List<String> portList = new java.util.LinkedList<String> ();
+
+        for (MUHost host: hostArray) {
+            hostList.add(host.getHost());
+            portList.add(Integer.toString(host.getPort()));
+        }
+
+        hostStorer.saveSequence("host", hostList);
+        hostStorer.saveSequence("port", portList);
     }
 }
