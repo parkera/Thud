@@ -215,8 +215,8 @@ public class MUStatus extends JFrame
                     int barHeat = mydata.heat / 10;
                     int minHeat = mydata.heatDissipation / 10;                    
                     int heatCounter = 1; // counter
-                    if(minHeat > MUPrefs.HEAT_LEVEL_NONE) 
-                    	heatCounter = minHeat - MUPrefs.HEAT_LEVEL_NONE;
+                    if(minHeat > MUConstants.HEAT_LEVEL_NONE) 
+                    	heatCounter = minHeat - MUConstants.HEAT_LEVEL_NONE;
                     
                     addString("Temp:",conRegular);
                     if(heatCounter > 1)
@@ -237,7 +237,7 @@ public class MUStatus extends JFrame
                     StyleConstants.setForeground(conIrregular, MUColors.hg); // Divider
                     addString("|",conIrregular);
                     
-                    for (; heatCounter < minHeat + MUPrefs.HEAT_LEVEL_BGREEN; heatCounter++) // Green portion
+                    for (; heatCounter < minHeat + MUConstants.HEAT_LEVEL_BGREEN; heatCounter++) // Green portion
                     	if(barHeat >= heatCounter)
                     		s = s + ":";
                     	else
@@ -246,7 +246,7 @@ public class MUStatus extends JFrame
                     addString(s,conIrregular);
                     s = "";
                     
-                    for (; heatCounter < minHeat + MUPrefs.HEAT_LEVEL_LYELLOW; heatCounter++) // Bright green portion
+                    for (; heatCounter < minHeat + MUConstants.HEAT_LEVEL_LYELLOW; heatCounter++) // Bright green portion
                     	if(barHeat >= heatCounter)
                     		s = s + ":";
                     	else
@@ -258,7 +258,7 @@ public class MUStatus extends JFrame
                     StyleConstants.setForeground(conIrregular, MUColors.hy); // Divider
                     addString("|",conIrregular);
 
-                    for (; heatCounter < minHeat + MUPrefs.HEAT_LEVEL_BYELLOW; heatCounter++) // Yellow portion
+                    for (; heatCounter < minHeat + MUConstants.HEAT_LEVEL_BYELLOW; heatCounter++) // Yellow portion
                     	if(barHeat >= heatCounter)
                     		s = s + ":";
                     	else
@@ -267,7 +267,7 @@ public class MUStatus extends JFrame
                     addString(s,conIrregular);
                     s = "";
                     
-                    for (; heatCounter < minHeat + MUPrefs.HEAT_LEVEL_LRED; heatCounter++) // Bright yellow portion
+                    for (; heatCounter < minHeat + MUConstants.HEAT_LEVEL_LRED; heatCounter++) // Bright yellow portion
                     	if(barHeat >= heatCounter)
                     		s = s + ":";
                     	else
@@ -279,7 +279,7 @@ public class MUStatus extends JFrame
                     StyleConstants.setForeground(conIrregular, MUColors.hr); // Divider
                     addString("|",conIrregular);
                     
-                    for (; heatCounter < minHeat + MUPrefs.HEAT_LEVEL_BRED; heatCounter++) // Red portion
+                    for (; heatCounter < minHeat + MUConstants.HEAT_LEVEL_BRED; heatCounter++) // Red portion
                     	if(barHeat >= heatCounter)
                     		s = s + ":";
                     	else
@@ -288,7 +288,7 @@ public class MUStatus extends JFrame
                     addString(s,conIrregular);
                     s = "";
                     
-                    for (; heatCounter < minHeat + MUPrefs.HEAT_LEVEL_TOP; heatCounter++) // Bright red portion
+                    for (; heatCounter < minHeat + MUConstants.HEAT_LEVEL_TOP; heatCounter++) // Bright red portion
                     	if(barHeat >= heatCounter)
                     		s = s + ":";
                     	else

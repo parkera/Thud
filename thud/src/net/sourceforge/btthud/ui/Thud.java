@@ -847,9 +847,9 @@ public class Thud extends JFrame implements  ActionListener
         else if (newEvent.getActionCommand().equals(miAddNewHost.getActionCommand())) doAddNewHost();
         else if (newEvent.getActionCommand().equals(miRemoveHost.getActionCommand())) doRemoveHost();
         else if (newEvent.getActionCommand().equals(miDisconnect.getActionCommand())) doDisconnect();
-        else if (newEvent.getActionCommand().equals(miFastUpdate.getActionCommand())) doChangeUpdate(MUPrefs.FAST_UPDATE);
-        else if (newEvent.getActionCommand().equals(miNormalUpdate.getActionCommand())) doChangeUpdate(MUPrefs.NORMAL_UPDATE);
-        else if (newEvent.getActionCommand().equals(miSlowUpdate.getActionCommand())) doChangeUpdate(MUPrefs.SLOW_UPDATE);
+        else if (newEvent.getActionCommand().equals(miFastUpdate.getActionCommand())) doChangeUpdate(MUConstants.FAST_UPDATE);
+        else if (newEvent.getActionCommand().equals(miNormalUpdate.getActionCommand())) doChangeUpdate(MUConstants.NORMAL_UPDATE);
+        else if (newEvent.getActionCommand().equals(miSlowUpdate.getActionCommand())) doChangeUpdate(MUConstants.SLOW_UPDATE);
         else if (newEvent.getActionCommand().equals(miSendTacticalUpdate.getActionCommand())) doSendTacUpdate();
         else if (newEvent.getActionCommand().equals(miDumpDocument.getActionCommand())) doDumpDocumentStructure();
         else if (newEvent.getActionCommand().equals(miWindowContacts.getActionCommand())) doWindowContacts();    	
@@ -1314,7 +1314,7 @@ public class Thud extends JFrame implements  ActionListener
     {
         switch (whichSpeed)
         {
-            case MUPrefs.FAST_UPDATE:
+            case MUConstants.FAST_UPDATE:
                 prefs.fastCommandUpdate = 1.0;
                 prefs.mediumCommandUpdate = 2.0;
                 prefs.slowCommandUpdate = 3.0;
@@ -1324,7 +1324,7 @@ public class Thud extends JFrame implements  ActionListener
                 miSlowUpdate.setState(false);
                 break;
 
-            case MUPrefs.NORMAL_UPDATE:
+            case MUConstants.NORMAL_UPDATE:
                 prefs.fastCommandUpdate = 3.0;
                 prefs.mediumCommandUpdate = 5.0;
                 prefs.slowCommandUpdate = 10.0;
@@ -1334,7 +1334,7 @@ public class Thud extends JFrame implements  ActionListener
                 miSlowUpdate.setState(false);
                 break;
 
-            case MUPrefs.SLOW_UPDATE:
+            case MUConstants.SLOW_UPDATE:
                 prefs.fastCommandUpdate = 5.0;
                 prefs.mediumCommandUpdate = 10.0;
                 prefs.slowCommandUpdate = 15.0;
@@ -1367,37 +1367,21 @@ public class Thud extends JFrame implements  ActionListener
     /** Read our prefs from disk */
     public void readPrefs()
     {
-        try
-        {
-            File	prefsFile = new File("thudprefs.prf");
+        prefs = new MUPrefs();
+        prefs.defaultPrefs();
 
-            if (prefsFile.createNewFile())
-            {
-                prefs = new MUPrefs();
-                prefs.defaultPrefs();
+        PreferenceStore.load(prefs);
 
-                firstLaunch = true;
-            }
-            else
-            {
-                FileInputStream		fis = new FileInputStream(prefsFile);
-                ObjectInputStream 	ois = new ObjectInputStream(fis);
-                
-                prefs = (MUPrefs) ois.readObject();
-                mainFontChanged();
-                fis.close();
-            }
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error reading preferences file. You probably have an updated version of Thud with incompatible preferences file. Creating new file with default preferences...");            
-            // Maybe the file format changed. Let's just create some new prefs
-            prefs = new MUPrefs();
-            prefs.defaultPrefs();
+        // FIXME: New code doesn't know if this is the first launch or not, so
+        // I'm going to disable showing release notes on first run for now.
+        //
+        // This really should be more like 'newVersion' to show release notes.
+        // Also, we need a way to upgrade preferences when new versions suggest
+        // better defaults.
+        firstLaunch = false;
 
-            firstLaunch = true;
-        }
-        
+        // FIXME: Only change font if we load something from preferences.
+        mainFontChanged();
     }
     
     /** Re-show contacts window */
@@ -1418,51 +1402,37 @@ public class Thud extends JFrame implements  ActionListener
     /** Write our prefs to disk */
     public void writePrefs()
     {
-        try
+        // We should really be listening for events to determine when the size/location of each
+        // window has changed, and then they can set these values themselves
+        // For now though, I'm putting the code here that just gets the info and puts it into the
+        // prefs object
+
+        prefs.mainLoc = getLocation();
+        prefs.mainSizeX = getSize().width;
+        prefs.mainSizeY = getSize().height;
+
+        if (tacMap != null)
         {
-            File	prefsFile = new File("thudprefs.prf");
-            prefsFile.createNewFile();
-
-            // We should really be listening for events to determine when the size/location of each
-            // window has changed, and then they can set these values themselves
-            // For now though, I'm putting the code here that just gets the info and puts it into the
-            // prefs object
-            
-            prefs.mainLoc = getLocation();
-            prefs.mainSizeX = getSize().width;
-            prefs.mainSizeY = getSize().height;
-
-            if (tacMap != null)
-            {
-                prefs.tacLoc = tacMap.getLocation();
-                prefs.tacSizeX = tacMap.getSize().width;
-                prefs.tacSizeY = tacMap.getSize().height;
-            }
-
-            if (conList != null)
-            {
-                prefs.contactsLoc = conList.getLocation();
-                prefs.contactsSizeX = conList.getSize().width;
-                prefs.contactsSizeY = conList.getSize().height;
-            }
-            
-            if(status != null)
-            {
-            	prefs.statusLoc = status.getLocation();
-            	prefs.statusSizeX = status.getSize().width;
-            	prefs.statusSizeY = status.getSize().height;
-            }
-
-            FileOutputStream	fis = new FileOutputStream(prefsFile);
-            ObjectOutputStream 	oos = new ObjectOutputStream(fis);
-            oos.writeObject(prefs);
-            oos.flush();
-            fis.close();
+            prefs.tacLoc = tacMap.getLocation();
+            prefs.tacSizeX = tacMap.getSize().width;
+            prefs.tacSizeY = tacMap.getSize().height;
         }
-        catch (Exception e)
+
+        if (conList != null)
         {
-            System.out.println("Error: writePrefs: " + e);
+            prefs.contactsLoc = conList.getLocation();
+            prefs.contactsSizeX = conList.getSize().width;
+            prefs.contactsSizeY = conList.getSize().height;
         }
+
+        if(status != null)
+        {
+            prefs.statusLoc = status.getLocation();
+            prefs.statusSizeX = status.getSize().width;
+            prefs.statusSizeY = status.getSize().height;
+        }
+
+        PreferenceStore.save(prefs);
     }
 
     public static void main(String args[]) {

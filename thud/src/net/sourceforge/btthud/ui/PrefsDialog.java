@@ -80,7 +80,7 @@ public class PrefsDialog extends javax.swing.JDialog {
             prefs = new MUPrefs();
 
         try {
-            this.prefs = (MUPrefs) ObjectCloner.deepCopy(thudClass.prefs);
+            this.prefs = (MUPrefs)thudClass.prefs.clone();
         } catch (Exception e) {
             System.out.println("Error: prefsDialog: " + e);
         }

@@ -8,12 +8,19 @@
 //
 package net.sourceforge.btthud.data;
 
-import java.io.*;
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Color;
+import java.awt.Font;
+import java.util.ArrayList;
 
-import java.util.*;
+import java.io.Serializable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
-public class MUPrefs extends Object implements Serializable, Cloneable
+public class MUPrefs implements Cloneable, Serializable
 {
     public boolean				showTacMap, showContacts;
 
@@ -55,8 +62,6 @@ public class MUPrefs extends Object implements Serializable, Cloneable
 
     public int					yOffset, xOffset;
 
-    public Properties			theSystem;
-
     public Color				terrainColors[] = new Color[MUHex.TOTAL_TERRAIN];
 
     public int					mainFontSize, tacStatusFontSize, hexNumberFontSize, infoFontSize, elevationFontSize, contactFontSize, statusFontSize;
@@ -64,20 +69,6 @@ public class MUPrefs extends Object implements Serializable, Cloneable
     
     public ArrayList<MUHost>	hosts = new ArrayList<MUHost>();
 
-    public static final int			FAST_UPDATE = 1;
-    public static final int			NORMAL_UPDATE = 2;
-    public static final int			SLOW_UPDATE = 3;
-    
-    /* Heat levels taken from MUX mech.status.c */
-    public static final int			HEAT_LEVEL_LGREEN=0;
-    public static final int			HEAT_LEVEL_BGREEN=7;
-    public static final int			HEAT_LEVEL_LYELLOW=13;
-    public static final int			HEAT_LEVEL_BYELLOW=16;
-    public static final int			HEAT_LEVEL_LRED=18;
-    public static final int			HEAT_LEVEL_BRED=24;
-    public static final int			HEAT_LEVEL_TOP=40;    
-    public static final int			HEAT_LEVEL_NONE=17; // This one is different than the MUX to account for THUD's smaller status window     
-    
     public boolean mainAlwaysOnTop, contactsAlwaysOnTop, statusAlwaysOnTop, tacticalAlwaysOnTop;
     public MUPrefs()
     {
@@ -210,5 +201,49 @@ public class MUPrefs extends Object implements Serializable, Cloneable
 
     public void removeHost(MUHost oldHost) {
         hosts.remove(hosts.indexOf(oldHost));
+    }
+
+
+    /**
+     * Deep clone the preferences object. (This used to be ObjectCloner.java.)
+     *
+     * From: http://www.javaworld.com/javaworld/javatips/jw-javatip76-p2.html
+     * Provides a class useful for making deep copies of objects that are
+     * serializable... ie MUPrefs.
+     */
+    public Object clone () {
+        ByteArrayOutputStream bos = null;
+        ObjectOutputStream oos = null;
+
+        ByteArrayInputStream bin = null;
+        ObjectInputStream ois = null;
+
+        try {
+            // Serialize.
+            bos = new ByteArrayOutputStream ();
+            oos = new ObjectOutputStream (bos);
+
+            oos.writeObject(this);
+            oos.flush();
+
+            // Unserialize.
+            bin = new ByteArrayInputStream (bos.toByteArray());
+            ois = new ObjectInputStream (bin);
+
+            return ois.readObject();
+        } catch (Exception e) {
+            System.err.println("Exception in MUPrefs.clone(): " + e);
+            throw new Error (e);
+        } finally {
+            try {
+                if (bos != null) bos.close();
+                if (oos != null) oos.close();
+                if (bin != null) bin.close();
+                if (ois != null) ois.close();
+            } catch (IOException e) {
+                System.err.println("Exception in MUPrefs.clone(): " + e);
+                throw new Error (e);
+            }
+        }
     }
 }
