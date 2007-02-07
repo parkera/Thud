@@ -26,4 +26,9 @@
 		</jar>
 		<delete file="MANIFEST.MF"/>
 	</target>
+	<target name="sign" depends="package">		
+		<input message="Enter key name (alias):" addproperty="sign.alias" defaultvalue="mykey"/>
+		<input message="Enter passphrase for keystore:" addproperty="sign.keystorepw"/>
+		<signjar jar="Thud.jar" alias="${sign.alias}" storepass="${sign.keystorepw}"/>
+	</target>
 </project>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<jnlp codebase="http://bt-thud.sourceforge.net/" href="Thud.jnlp"> 
+   <information> 
+       <title>Thud - BattleTechMUX HUD</title> 
+	   <vendor>The Thud Team</vendor> 
+       <offline-allowed/> 
+   </information> 
+   <security> 
+	   <all-permissions/>
+   </security>
+   <resources> 
+       <j2se version="1.5+"/> 
+       <jar href="Thud.jar"/> 
+   </resources> 
+   <application-desc main-class="net.sourceforge.btthud.ui.Thud"/>
+</jnlp>
