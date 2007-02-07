@@ -105,10 +105,19 @@ class NumpadAction extends ThudKeyAction {
 	}
 	
     public void actionPerformed(ActionEvent e) {
-    	try {    		
-        	textField.setText("heading 120");
-        	thud.actionPerformed(new ActionEvent(this, 1001, ""));
-        	textField.setText("");
+    	try {
+    		int direction = 0;
+    		switch(key) {
+    			case 1: direction = 240; break;
+    			case 2: direction = 180; break;
+    			case 3: direction = 120; break;
+    			case 4: direction = 270; break;
+    			case 6: direction = 90; break;
+    			case 7: direction = 300; break;
+    			case 8: direction = 0; break;
+    			case 9: direction = 60; break;
+    		}
+    		this.thud.conn.sendCommand("heading " + direction);
     	} catch (Exception ex) {
     		System.out.println(ex);
     	}
