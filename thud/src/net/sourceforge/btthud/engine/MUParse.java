@@ -336,9 +336,9 @@ public class MUParse implements Runnable {
             info.id = st.nextToken();
             //info.id = "**";		// we don't want our own ID for now
             
-            info.x = Integer.parseInt(st.nextToken());
-            info.y = Integer.parseInt(st.nextToken());
-            info.z = Integer.parseInt(st.nextToken());
+            final int hex_x = Integer.parseInt(st.nextToken());
+            final int hex_y = Integer.parseInt(st.nextToken());
+            final int hex_z = Integer.parseInt(st.nextToken());
     
             info.heading = Integer.parseInt(st.nextToken());
             info.desiredHeading = Integer.parseInt(st.nextToken());
@@ -355,8 +355,10 @@ public class MUParse implements Runnable {
             info.verticalSpeed = Float.parseFloat(st.nextToken());
             info.desiredVerticalSpeed = Float.parseFloat(st.nextToken());
     
-            info.rangeToCenter = Float.parseFloat(st.nextToken());
-            info.bearingToCenter = Integer.parseInt(st.nextToken());
+            final float rtc = Float.parseFloat(st.nextToken());
+            final int ibtc = Integer.parseInt(st.nextToken());
+
+            info.position.setFromCenterLocation(hex_x, hex_y, hex_z, rtc, ibtc);
 
             tempStr = st.nextToken().intern();
             if (tempStr != "-")
@@ -577,9 +579,9 @@ public class MUParse implements Runnable {
                 con.name = "Unknown";
             // need to split name up into name, team
             
-            con.x = Integer.parseInt(st.nextToken());
-            con.y = Integer.parseInt(st.nextToken());
-            con.z = Integer.parseInt(st.nextToken());
+            final int hex_x = Integer.parseInt(st.nextToken());
+            final int hex_y = Integer.parseInt(st.nextToken());
+            final int hex_z = Integer.parseInt(st.nextToken());
     
             con.range = Float.parseFloat(st.nextToken());
             con.bearing = Integer.parseInt(st.nextToken());
@@ -599,8 +601,10 @@ public class MUParse implements Runnable {
                 con.jumping = false;
             }
     
-            con.rangeToCenter = Float.parseFloat(st.nextToken());
-            con.bearingToCenter = Integer.parseInt(st.nextToken());
+            final float rtc = Float.parseFloat(st.nextToken());
+            final int ibtc = Integer.parseInt(st.nextToken());
+
+            con.position.setFromCenterLocation(hex_x, hex_y, hex_z, rtc, ibtc);
     
             con.weight = Integer.parseInt(st.nextToken());
     
@@ -672,12 +676,14 @@ public class MUParse implements Runnable {
             building.arc = st.nextToken();
             building.name = st.nextToken();
 
-            building.x = Integer.parseInt(st.nextToken());
-            building.y = Integer.parseInt(st.nextToken());
-            building.z = Integer.parseInt(st.nextToken());
+            final int hex_x = Integer.parseInt(st.nextToken());
+            final int hex_y = Integer.parseInt(st.nextToken());
+            final int hex_z = Integer.parseInt(st.nextToken());
 
-            building.range = Float.parseFloat(st.nextToken());
-            building.bearing = Integer.parseInt(st.nextToken());
+            final float rtc = Float.parseFloat(st.nextToken());
+            final int ibtc = Integer.parseInt(st.nextToken());
+
+            building.position.setFromCenterLocation(hex_x, hex_y, hex_z, rtc, ibtc);
 
             building.cf = Integer.parseInt(st.nextToken());
             building.maxCf = Integer.parseInt(st.nextToken());
@@ -686,7 +692,7 @@ public class MUParse implements Runnable {
                 building.status = st.nextToken();
 
             // We don't have any way to uniquely id a building, so we'll just stick with the name and coords for now
-            building.id = building.name + building.x + building.y;
+            building.id = building.name + building.position.getHexX() + building.position.getHexY();
             
             data.newContact(building);
             

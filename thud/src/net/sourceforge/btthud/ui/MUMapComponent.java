@@ -61,14 +61,9 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
     GeneralPath				gp = new GeneralPath();
     HexShape				hexPoly;
 
-    static final float		tan60 = (float) Math.tan(toRadians(60.0f));
-    static final float		sin60 = (float) Math.sin(toRadians(60.0f));
-
     int						h = 40;
-    float					w = h / (2 * sin60);
-    float					l = h / (2 * tan60);
-
-    int						myLocX, myLocY;
+    float					w = h * 2f * MUConstants.ALPHA;
+    float					l = h *      MUConstants.ALPHA;
 
     int						barHeight = 15;
     int						heatBarMaxLength = 50;
@@ -257,8 +252,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         else
             h = newHeight;
 
-        w = -h / (2 * sin60);
-        l = h / (2 * tan60);
+        w = h * 2f * MUConstants.ALPHA;
+        l = h *      MUConstants.ALPHA;
 
         terrainFont = new Font("Monospaced", Font.PLAIN, h/2 - 2);
 
@@ -395,9 +390,6 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         if (prefs.hexHeight != h)
             changeHeight(prefs.hexHeight);
 
-        myLocX = data.myUnit.x;
-        myLocY = data.myUnit.y;
-        
         // First, let's do some initial setup on our tactical map area
         g.setColor(Color.blue);
         g.fill(bounds);
@@ -459,8 +451,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             Stroke				saveStroke = g.getStroke();
             AffineTransform		saveTrans = g.getTransform();
             AffineTransform		newTrans = new AffineTransform(saveTrans);
-            Point2D				hexPt = hexPoly.hexToReal(data.myUnit.x, data.myUnit.y, false);
-            //Point2D				offsets = offsetsForCentering(data.myUnit.bearingToCenter, data.myUnit.rangeToCenter);
+
+            final Point2D hexPt = getHexToReal(data.myUnit.position);
             
             g.setStroke(new BasicStroke(2.0f));
             newTrans.translate(hexPt.getX() - l, hexPt.getY());
@@ -630,23 +622,23 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 			// Get the next unit...
 			MUUnitInfo unit = (MUUnitInfo) contacts.next();
 			if (unit.type.equals("D") || unit.type.equals("A")) { // is it a dropship?  
-				if(unit.z == data.getHexElevation(unit.x, unit.y)) { // is it landed?
-					data.setHexDS(unit.x, unit.y); // center
-					data.setHexDS(unit.x - 1, unit.y - 1); // top left
-					data.setHexDS(unit.x, unit.y - 1); // top
-					data.setHexDS(unit.x + 1, unit.y - 1); // top right
-					data.setHexDS(unit.x - 1, unit.y); // left
-					data.setHexDS(unit.x + 1, unit.y); // right
-					data.setHexDS(unit.x, unit.y + 1); // bottom
+				if(unit.getZ() == data.getHexElevation(unit.getX(), unit.getY())) { // is it landed?
+					data.setHexDS(unit.getX(), unit.getY()); // center
+					data.setHexDS(unit.getX() - 1, unit.getY() - 1); // top left
+					data.setHexDS(unit.getX(), unit.getY() - 1); // top
+					data.setHexDS(unit.getX() + 1, unit.getY() - 1); // top right
+					data.setHexDS(unit.getX() - 1, unit.getY()); // left
+					data.setHexDS(unit.getX() + 1, unit.getY()); // right
+					data.setHexDS(unit.getX(), unit.getY() + 1); // bottom
 				} else { // not landed
 					// Clear DS flag from these hexes, just to be sure.
-					data.setHexNoDS(unit.x, unit.y); // center
-					data.setHexNoDS(unit.x - 1, unit.y - 1); // top left
-					data.setHexNoDS(unit.x, unit.y - 1); // top
-					data.setHexNoDS(unit.x + 1, unit.y - 1); // top right
-					data.setHexNoDS(unit.x - 1, unit.y); // left
-					data.setHexNoDS(unit.x + 1, unit.y); // right
-					data.setHexNoDS(unit.x, unit.y + 1); // bottom
+					data.setHexNoDS(unit.getX(), unit.getY()); // center
+					data.setHexNoDS(unit.getX() - 1, unit.getY() - 1); // top left
+					data.setHexNoDS(unit.getX(), unit.getY() - 1); // top
+					data.setHexNoDS(unit.getX() + 1, unit.getY() - 1); // top right
+					data.setHexNoDS(unit.getX() - 1, unit.getY()); // left
+					data.setHexNoDS(unit.getX() + 1, unit.getY()); // right
+					data.setHexNoDS(unit.getX(), unit.getY() + 1); // bottom
 				}	
 			}
 		}
@@ -677,8 +669,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         
         AffineTransform			oldTrans = g.getTransform();
 
-        int						hexX = myLocX - (numAcross / 2);
-        int						hexY = myLocY - (numDown / 2);
+        int						hexX = data.myUnit.getX() - (numAcross / 2);
+        int						hexY = data.myUnit.getY() - (numDown / 2);
 
         Point2D					realHex = new Point2D.Float();
 
@@ -707,7 +699,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                             hexAbsoluteElevation = -hexAbsoluteElevation;
                         
                         // This gives us the x,y location of this hex
-                        hexPoly.hexToReal(hexX + j, hexY + i, false, realHex);
+                        getHexToReal(realHex, hexX + j, hexY + i);
                         
                         // Set the transform to our previously setup one
                         trans.setTransform(oldTrans);
@@ -825,57 +817,40 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
       */
     protected Point2D realForUnit(MUUnitInfo unit)
     {
-        Point2D		p = new Point2D.Float();
-
-        // Get the centering info
-        Point2D		up = offsetsForCentering(unit.bearingToCenter, unit.rangeToCenter);
-
-        // Find out where the center of the hex they're in is at
-        Point2D		hp = hexPoly.hexToReal(unit.x, unit.y, true);
-
-        p.setLocation(hp.getX() + up.getX(),
-                      hp.getY() + up.getY());
-
-        return p;
+        return getMapToReal(unit.position.getFX(), unit.position.getFY());
     }
-    
+
     /**
-      * Return a Point2D with the x and y offsets for a given bearing to center and range to center.
-      * @param btc Bearing of unit to center of hex
-      * @param rtc Range of unit to center of hex
-      * @param reverse True if we should reverse the negative signs
-      */
-    protected Point2D offsetsForCentering(int ibtc, double rtc)
-    {
-        double					fcOffsetX = 0;
-        double					fcOffsetY = 0;
-        int						btc = ibtc;
-        
-        if (btc >= 0 && btc <= 90)
-        {
-            fcOffsetX =  (rtc * h * Math.sin(toRadians(btc)));
-            fcOffsetY = -(rtc * h * Math.cos(toRadians(btc)));
-        }
-        else if (btc >= 91 && btc <= 180)
-        {
-            btc -= 90;
-            fcOffsetX =  (rtc * h * Math.cos(toRadians(btc)));
-            fcOffsetY =  (rtc * h * Math.sin(toRadians(btc)));
-        }
-        else if (btc >= 181 && btc <= 270)
-        {
-            btc -= 180;
-            fcOffsetX = -(rtc * h * Math.sin(toRadians(btc)));
-            fcOffsetY =  (rtc * h * Math.cos(toRadians(btc)));
-        }
-        else if (btc >= 271 && btc <= 359)
-        {
-            btc -= 270;
-            fcOffsetX = -(rtc * h * Math.cos(toRadians(btc)));
-            fcOffsetY = -(rtc * h * Math.sin(toRadians(btc)));
-        }
-        
-        return new Point2D.Double(fcOffsetX, fcOffsetY);
+     * Returns a Point2D representing the (upper left corner) screen
+     * coordinates for a given map coordinate.
+     */
+    protected Point2D getHexToReal (final MUPoint pt) {
+        return getMapToReal(pt.getCenterFX() - MUConstants.ALPHA,
+                            pt.getCenterFY() - 0.5f);
+    }
+
+    /**
+     * Sets a Point2D representing the (upper left corner) screen coordinates
+     * for a given hex.
+     */
+    protected void getHexToReal (final Point2D rv, final int hx, final int hy) {
+        pvtMapPt.setHexLocation(hx, hy);
+
+        // XXX: MUPoint map coordinates go as low (up) as -0.5, but the old
+        // hexToReal() started from 0, so we need to shift fy by +0.5.  Then we
+        // shift back by -0.5 to get the upper left corner, resulting in no net
+        // shift.
+        rv.setLocation(h * (pvtMapPt.getCenterFX() - MUConstants.ALPHA),
+                       h * (pvtMapPt.getCenterFY()));
+    }
+
+    // TODO: Temporary stuff to get rid of after coordinate cleanup.
+    private final MUPoint pvtMapPt = new MUPoint ();
+
+    private Point2D getMapToReal (final float fx, final float fy) {
+        // XXX: MUPoint map coordinates go as low (up) as -0.5, but the old
+        // hexToReal() started from 0, so we need to shift fy by +0.5.
+        return new Point2D.Float (h * fx, h * (fy + 0.5f));
     }
     
     /**
@@ -908,8 +883,8 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         Point2D					realHex = new Point2D.Float();
         Point2D					unitPos = realForUnit(data.myUnit);
         
-        int						startX = (int) (myLocX - (numAcross / 2) + prefs.xOffset);
-        int						startY = (int) (myLocY - (numDown / 2) + prefs.yOffset);
+        int						startX = (int) (data.myUnit.getX() - (numAcross / 2) + prefs.xOffset);
+        int						startY = (int) (data.myUnit.getY() - (numDown / 2) + prefs.yOffset);
         int						endX = startX + numAcross;
         int						endY = startY + numDown;
         int						skip = 1;
@@ -967,7 +942,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
                 g.setColor(Color.lightGray);
 
             trans.setTransform(winTrans);
-            hexPoly.hexToReal(0, i - prefs.yOffset, false, realHex);
+            getHexToReal(realHex, 0, i - prefs.yOffset);
             trans.translate(4, realHex.getY());
             trans.rotate(PI / 2);
             g.setTransform(trans);
@@ -1003,7 +978,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
             if ((i - prefs.xOffset) % 2 == 0)
                 trans.translate(0, h/2);
             
-            hexPoly.hexToReal(i - prefs.xOffset, 0, false, realHex);
+            getHexToReal(realHex, i - prefs.xOffset, 0);
             trans.translate(realHex.getX(), -realHex.getY() + stringRectY.getHeight() - 2);
             g.setTransform(trans);
             g.drawString(Integer.toString(i), 0, 0);
@@ -1419,7 +1394,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         nextStartsAt += spacingDiff;
 
         // Location information
-        tempString = "Loc: " + data.myUnit.x + ", " + data.myUnit.y + ", " + data.myUnit.z;
+        tempString = "Loc: " + data.myUnit.getX() + ", " + data.myUnit.getY() + ", " + data.myUnit.getZ();
         tempRect = tacStatusFont.getStringBounds(tempString, frc);
         g.setColor(Color.white);
         g.drawString(tempString, nextStartsAt, barRect.y + 11);
@@ -1434,7 +1409,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         tempString = "Weather: " + MUWeather.lightString(data.weather.light) + 
         			 " : Vis " + data.weather.visibility + 
         			 " : Temp " + data.weather.ambientTemperature +
-        			 "°C : Gravity " + data.weather.gravity + "%";
+        			 "\u00B0C : Gravity " + data.weather.gravity + "%";
         tempRect = tacStatusFont.getStringBounds(tempString, frc);
         g.setColor(Color.white);
         g.drawString(tempString, nextStartsAt, barRect.y + 11);
@@ -2147,9 +2122,5 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("AS"));
         g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(asOutline);	
-    }
-    static public float toRadians(float a)
-    {
-        return (float) ((a / 180.0f) * Math.PI + Math.PI);
     }
 }

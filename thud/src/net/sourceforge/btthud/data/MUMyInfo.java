@@ -55,11 +55,6 @@ public class MUMyInfo extends MUUnitInfo {
         
     }
     
-    public String toString()
-    {
-        return (super.toString() + " RTC: " + String.valueOf(rangeToCenter) + " BTC: " + String.valueOf(bearingToCenter));
-    }
-
     /**
      * Adds a new weapon to our unit-specific list of weapons, or updates an existing one
      */

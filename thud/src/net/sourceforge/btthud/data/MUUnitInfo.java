@@ -31,12 +31,10 @@ public class MUUnitInfo extends Object implements Comparable {
     public String		arc = null;
     public String		status = " ";
     public float		range, speed, verticalSpeed;
-    public int			x, y, z;
+    public final MUPoint position = new MUPoint ();
     public int			heading, desiredHeading, bearing, jumpHeading;
     public int			maxFuel;
     public int			turretHeading;
-    public float		rangeToCenter;
-    public int			bearingToCenter;
 
     public int			weight;
     public int			apparentHeat;
@@ -155,9 +153,8 @@ public class MUUnitInfo extends Object implements Comparable {
         
         return (out + "ID:" + id + " Team:" + team + " Type:" + type + " Name:" + name +
                 " Range:" + String.valueOf(range) + " Speed:" + String.valueOf(speed) +
-                " XYZ:" + String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(z) +
+                " Position:" + position +
                 " Heading:" + String.valueOf(heading) + " Bearing:" + String.valueOf(bearing) +
-                " RTC:" + String.valueOf(rangeToCenter) + " BTC:" + String.valueOf(bearingToCenter) +
                 " Friend:" + String.valueOf(friend));
     }
 
@@ -274,13 +271,13 @@ public class MUUnitInfo extends Object implements Comparable {
         sb.append(' ');
 
         sb.append('x'); sb.append(':');
-        sb.append(rightJust(String.valueOf(x), 3, false));
+        sb.append(rightJust(String.valueOf(position.getHexX()), 3, false));
         sb.append(' ');
         sb.append('y'); sb.append(':');
-        sb.append(rightJust(String.valueOf(y), 3, false));
+        sb.append(rightJust(String.valueOf(position.getHexY()), 3, false));
         sb.append(' ');
         sb.append('z'); sb.append(':');
-        sb.append(rightJust(String.valueOf(z), 3, false));
+        sb.append(rightJust(String.valueOf(position.getHexZ()), 3, false));
         sb.append(' ');
 
         sb.append('r'); sb.append(':');
@@ -903,5 +900,22 @@ public class MUUnitInfo extends Object implements Comparable {
             System.out.println("Error: getWeapon: " + e);
             return null;
         }
+    }
+
+
+    //
+    // Convenience methods for getting the hex positions.  Because they're a
+    // bit of a pain to type out in full each time.
+    //
+    public int getX () {
+        return position.getHexX();
+    }
+
+    public int getY () {
+        return position.getHexY();
+    }
+
+    public int getZ () {
+        return position.getHexZ();
     }
 }

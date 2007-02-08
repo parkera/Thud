@@ -145,11 +145,11 @@ public class MUStatus extends JFrame
 	                	mydata.id +
 	                	"]" +
 	                	"  XYZ:" +
-	                	mydata.rightJust(String.valueOf(mydata.x), 4, false) +
+	                	mydata.rightJust(String.valueOf(mydata.getX()), 4, false) +
 	                	"," +
-	                	mydata.rightJust(String.valueOf(mydata.y), 4, false) +
+	                	mydata.rightJust(String.valueOf(mydata.getY()), 4, false) +
 	                	"," +
-	                	mydata.rightJust(String.valueOf(mydata.z), 4, false) +
+	                	mydata.rightJust(String.valueOf(mydata.getZ()), 4, false) +
 	                	"  " +	                	
                         "Heat Prod:  " + 
                     	mydata.rightJust(String.valueOf(mydata.heat),3,false) +

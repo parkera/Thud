@@ -93,16 +93,16 @@ public class MUCommandsTask extends TimerTask {
                     forceTactical = false;                    		
                 }
                 
-                if(data.hudRunning && (data.lastLOSX != data.myUnit.x || 
-                					   data.lastLOSY != data.myUnit.y || 
-                					   data.lastLOSZ != data.myUnit.z ||
+                if(data.hudRunning && (data.lastLOSX != data.myUnit.position.getHexX() || 
+                					   data.lastLOSY != data.myUnit.position.getHexY() || 
+                					   data.lastLOSZ != data.myUnit.position.getHexZ() ||
                 					   forceLOS)) {
                 	// We've moved since last LOS update, request one.
                 	data.clearLOS();
                     conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight + " 0 0 l"); //
-                    data.lastLOSX = data.myUnit.x;
-                    data.lastLOSY = data.myUnit.y;
-                    data.lastLOSZ = data.myUnit.z;
+                    data.lastLOSX = data.myUnit.position.getHexX();
+                    data.lastLOSY = data.myUnit.position.getHexY();
+                    data.lastLOSZ = data.myUnit.position.getHexZ();
                     forceLOS = false;
                 }
 

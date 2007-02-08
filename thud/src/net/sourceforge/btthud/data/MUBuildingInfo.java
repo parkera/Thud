@@ -33,13 +33,13 @@ public class MUBuildingInfo extends MUUnitInfo {
         sb.append(' ');
 
         sb.append('x'); sb.append(':');
-        sb.append(rightJust(String.valueOf(x), 3, false));
+        sb.append(rightJust(String.valueOf(position.getHexX()), 3, false));
         sb.append(' ');
         sb.append('y'); sb.append(':');
-        sb.append(rightJust(String.valueOf(y), 3, false));
+        sb.append(rightJust(String.valueOf(position.getHexY()), 3, false));
         sb.append(' ');
         sb.append('z'); sb.append(':');
-        sb.append(rightJust(String.valueOf(z), 3, false));
+        sb.append(rightJust(String.valueOf(position.getHexZ()), 3, false));
         sb.append(' ');
 
         sb.append('r'); sb.append(':');
