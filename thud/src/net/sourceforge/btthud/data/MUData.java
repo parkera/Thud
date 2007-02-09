@@ -465,4 +465,37 @@ public class MUData {
     		return false;
     	}    
     }
+
+
+    /**
+     * Validate state.  Users should validate before using certain kinds of
+     * data.  In particular, this handles dropships, which modify the terrain
+     * they land on.
+     */
+    public void validate () {
+        // Clear terrain around landed dropships.
+        Iterator contacts = getContactsIterator(false);
+
+        while (contacts.hasNext()) {
+            final MUUnitInfo unit = (MUUnitInfo)contacts.next();
+
+            if (unit.type.equals("D") || unit.type.equals("A")) {
+                final int unitX = unit.getX();
+                final int unitY = unit.getY();
+
+                if (unit.getZ() == getHexElevation(unitX, unitY)) {
+                    // Landed dropship.
+                    setHexDS(unitX, unitY);
+                    setHexDS(unitX - 1, unitY - 1);
+                    setHexDS(unitX, unitY - 1);
+                    setHexDS(unitX + 1, unitY - 1);
+                    setHexDS(unitX - 1, unitY);
+                    setHexDS(unitX + 1, unitY);
+                    setHexDS(unitX, unitY + 1);
+
+                    setTerrainChanged(true);
+                }
+            }
+        }
+    }
 }

@@ -240,14 +240,14 @@ public class MUPoint extends Point2D {
 			// [0,1): Region I, IV, or V.
 			if (off_y < 0.5f) {
 				// Region I or IV.
-				if (off_x < 2.f * MUConstants.ALPHA * (0.5f - y)) {
+				if (off_x < 2f * (0.5f - off_y)) {
 					region = HexRegion.IV;
 				} else {
 					region = HexRegion.I;
 				}
 			} else {
 				// Region I or V.
-				if (off_x < 2.f * MUConstants.ALPHA * (y - 0.5f)) {
+				if (off_x < 2f * (off_y - 0.5f)) {
 					region = HexRegion.V;
 				} else {
 					region = HexRegion.I;
@@ -265,14 +265,14 @@ public class MUPoint extends Point2D {
 			// [3,4): Region I, II, or III.
 			if (off_y < 0.5f) {
 				// Region I or III.
-				if ((off_x - 3) < 2.f * MUConstants.ALPHA * y) {
+				if ((off_x - 3f) < 2f * (off_y - 0.0f)) {
 					region = HexRegion.I;
 				} else {
 					region = HexRegion.III;
 				}
 			} else {
 				// Region I or II.
-				if ((off_x - 3) < 2.f * MUConstants.ALPHA * (1.f - y)) {
+				if ((off_x - 3f) < 2f * (1.0f - off_y)) {
 					region = HexRegion.I;
 				} else {
 					region = HexRegion.II;

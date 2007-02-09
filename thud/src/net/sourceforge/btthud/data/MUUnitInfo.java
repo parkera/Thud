@@ -271,13 +271,13 @@ public class MUUnitInfo extends Object implements Comparable {
         sb.append(' ');
 
         sb.append('x'); sb.append(':');
-        sb.append(rightJust(String.valueOf(position.getHexX()), 3, false));
+        sb.append(rightJust(String.valueOf(getX()), 3, false));
         sb.append(' ');
         sb.append('y'); sb.append(':');
-        sb.append(rightJust(String.valueOf(position.getHexY()), 3, false));
+        sb.append(rightJust(String.valueOf(getY()), 3, false));
         sb.append(' ');
         sb.append('z'); sb.append(':');
-        sb.append(rightJust(String.valueOf(position.getHexZ()), 3, false));
+        sb.append(rightJust(String.valueOf(getZ()), 3, false));
         sb.append(' ');
 
         sb.append('r'); sb.append(':');

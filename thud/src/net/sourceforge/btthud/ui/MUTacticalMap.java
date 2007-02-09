@@ -3,11 +3,12 @@
 //  Thud
 //
 //  Created by asp on Wed Nov 28 2001.
-//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  Copyright (c) 2001-2007 Anthony Parker & the THUD team. 
 //  All rights reserved. See LICENSE.TXT for more information.
 //
 package net.sourceforge.btthud.ui;
 
+import net.sourceforge.btthud.ui.map.MUMapComponent;
 import net.sourceforge.btthud.data.*;
 import net.sourceforge.btthud.engine.*;
 

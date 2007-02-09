@@ -3,10 +3,10 @@
 //  Thud
 //
 //  Created by Anthony Parker on Thu Dec 27 2001.
-//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  Copyright (c) 2001-2007 Anthony Parker & the THUD team. 
 //  All rights reserved. See LICENSE.TXT for more information.
 //
-package net.sourceforge.btthud.ui;
+package net.sourceforge.btthud.ui.map;
 
 import net.sourceforge.btthud.data.*;
 
@@ -31,7 +31,7 @@ Also needed; a better way to determine exactly what hexes to draw or not. Right 
 
     */
 
-public class MUMapComponent extends JComponent implements MouseListener, ComponentListener
+public class MUMapComponent extends JComponent implements ComponentListener
 {
     MUData					data;
     MUPrefs					prefs;
@@ -87,7 +87,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
         setDoubleBuffered(true);
 
-        addMouseListener(this);
+        addMouseListener(new MapMouseListener (this));
         addComponentListener(this);
         
         // Do some initial setup
@@ -103,63 +103,6 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         
     }
     
-    /* ---------------------- */
-
-    /**
-     * This function is a hack, and there is a better way to detect hits on certain parts of the map.
-     * Future expansion ideas: click unid ID to bring up scan, lock, other info
-     */
-    public void mouseClicked(MouseEvent e)
-    {
-        //getBounds(bounds);
-
-        // Check to see if the click is in our status bar...
-        if (e.getY() > bounds.height - barHeight)
-        {
-            if (e.getX() > 10 && e.getX() < 20)
-            {
-                // '-' was pressed
-                if (e.isControlDown())
-                    prefs.hexHeight -= 10;	// double the zoom factor
-                else
-                    prefs.hexHeight -= 5;
-
-                repaint();
-            }
-            else if (e.getX() > 25 && e.getX() < 35)
-            {
-                // '+' was pressed
-                if (e.isControlDown())
-                    prefs.hexHeight += 10;	// double the zoom factor
-                else
-                    prefs.hexHeight += 5;
-
-                repaint();
-            }
-        }
-    }
-
-    // Not much to do for these
-    public void mouseEntered(MouseEvent e)
-    {
-
-    }
-
-    public void mouseExited(MouseEvent e)
-    {
-
-    }
-
-    public void mousePressed(MouseEvent e)
-    {
-
-    }
-
-    public void mouseReleased(MouseEvent e)
-    {
-
-    }
-
     // --------------
     
     public void componentHidden(ComponentEvent e)
@@ -617,31 +560,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
          * If there are dropships, change the hexes around them.
          */
     	
-    	Iterator contacts = data.getContactsIterator(false);
-		while (contacts.hasNext()) {
-			// Get the next unit...
-			MUUnitInfo unit = (MUUnitInfo) contacts.next();
-			if (unit.type.equals("D") || unit.type.equals("A")) { // is it a dropship?  
-				if(unit.getZ() == data.getHexElevation(unit.getX(), unit.getY())) { // is it landed?
-					data.setHexDS(unit.getX(), unit.getY()); // center
-					data.setHexDS(unit.getX() - 1, unit.getY() - 1); // top left
-					data.setHexDS(unit.getX(), unit.getY() - 1); // top
-					data.setHexDS(unit.getX() + 1, unit.getY() - 1); // top right
-					data.setHexDS(unit.getX() - 1, unit.getY()); // left
-					data.setHexDS(unit.getX() + 1, unit.getY()); // right
-					data.setHexDS(unit.getX(), unit.getY() + 1); // bottom
-				} else { // not landed
-					// Clear DS flag from these hexes, just to be sure.
-					data.setHexNoDS(unit.getX(), unit.getY()); // center
-					data.setHexNoDS(unit.getX() - 1, unit.getY() - 1); // top left
-					data.setHexNoDS(unit.getX(), unit.getY() - 1); // top
-					data.setHexNoDS(unit.getX() + 1, unit.getY() - 1); // top right
-					data.setHexNoDS(unit.getX() - 1, unit.getY()); // left
-					data.setHexNoDS(unit.getX() + 1, unit.getY()); // right
-					data.setHexNoDS(unit.getX(), unit.getY() + 1); // bottom
-				}	
-			}
-		}
+    	data.validate();
     	
     	/*
         We should go hex by hex from the top left, check what terrain it is, and draw
@@ -822,7 +741,7 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
 
     /**
      * Returns a Point2D representing the (upper left corner) screen
-     * coordinates for a given map coordinate.
+     * coordinates for a given hex.
      */
     protected Point2D getHexToReal (final MUPoint pt) {
         return getMapToReal(pt.getCenterFX() - MUConstants.ALPHA,
@@ -842,6 +761,35 @@ public class MUMapComponent extends JComponent implements MouseListener, Compone
         // shift.
         rv.setLocation(h * (pvtMapPt.getCenterFX() - MUConstants.ALPHA),
                        h * (pvtMapPt.getCenterFY()));
+    }
+
+    /**
+     * Transform component coordinates to center-relative coordinates.
+     */
+    void getScreenToOffset (final Point rv, final int x, final int y) {
+        rv.setLocation(x - bounds.width / 2, y - bounds.height / 2);
+    }
+
+    /**
+     * Transform center-relative coordinates to map coordinates.
+     * TODO: We can cache 1/h, but the optimizer can do it for us, can't it?
+     */
+    void getOffsetToMap (final Point2D rv, final Point offsetPt) {
+        final float myFX = data.myUnit.position.getFX();
+        final float myFY = data.myUnit.position.getFY();
+
+        rv.setLocation(myFX + (1f / h) * (float)offsetPt.x,
+                       myFY + (1f / h) * (float)offsetPt.y);
+    }
+
+    /**
+     * Convenience method to transform map coordinates to hex coordinates.
+     * TODO: Might add this as a static method in MUPoint or something.
+     */
+    void getMapToHex (final Point rv, final Point2D mapPt) {
+        pvtMapPt.setLocation(mapPt);
+
+        rv.setLocation(pvtMapPt.getHexX(), pvtMapPt.getHexY());
     }
 
     // TODO: Temporary stuff to get rid of after coordinate cleanup.

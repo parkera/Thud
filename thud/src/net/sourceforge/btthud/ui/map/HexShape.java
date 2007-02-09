@@ -3,10 +3,10 @@
 //  Thud 
 //
 //  Created by Anthony Parker on Wed Mar 27 2002.
-//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  Copyright (c) 2001-2007 Anthony Parker & the THUD team. 
 //  All rights reserved. See LICENSE.TXT for more information.
 //
-package net.sourceforge.btthud.ui;
+package net.sourceforge.btthud.ui.map;
 
 import net.sourceforge.btthud.data.MUConstants;
 
