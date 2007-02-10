@@ -18,7 +18,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 
-public class MUTacticalMap extends JFrame
+public class MUTacticalMap extends JDialog
                            implements Runnable, ActionListener
 {
 
@@ -31,9 +31,9 @@ public class MUTacticalMap extends JFrame
 
     MUMapComponent			map = null;
         
-    public MUTacticalMap(MUConnection conn, MUData data, MUPrefs prefs)
+    public MUTacticalMap(final Thud owner, MUConnection conn, MUData data, MUPrefs prefs)
     {
-        super("Tactical Map");
+        super(owner, "Tactical Map");
 
         this.data = data;
         this.conn = conn;

@@ -222,7 +222,7 @@ public class MUPoint extends Point2D {
 		// useful for some applications.
 
 		// Guess hex coordinates from "repeatable box".
-		hex_x = (int)(f_x / (MUConstants.ALPHA * 3.f)) & ~0x1;
+		hex_x = (int)Math.floor(f_x / (MUConstants.ALPHA * 6.f)) * 2;
 		hex_y = (int)Math.floor(f_y);
 
 		// Compute "repeatable box" offsets.

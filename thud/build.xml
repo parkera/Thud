@@ -5,7 +5,7 @@
     </path>
 	<target name="compile">
 		<mkdir dir="bin"/>
-		<javac destdir="bin" target="1.5">
+		<javac destdir="bin" target="1.5" debug="on">
 		            <src path="src"/>
 		            <classpath refid="project.classpath"/>
 		           
@@ -13,6 +13,7 @@
 	</target>
 	<target name="package" depends="compile">
 		<copy file="CHANGES.RTF" todir="bin"/>
+		<copy file="media/icon/icon.gif" todir="bin/media/icon/"/>
 		<jar destfile="Thud.jar" basedir="bin">	
 			<manifest>
 			    <attribute name="Built-By" value="${user.name}"/>

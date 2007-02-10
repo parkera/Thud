@@ -12,6 +12,7 @@ import net.sourceforge.btthud.engine.*;
 import net.sourceforge.btthud.util.*;
 
 import java.io.*;
+import java.net.URL;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -656,6 +657,14 @@ public class Thud extends JFrame implements  ActionListener
     {
         super("Thud");
         
+        // Set frame icon.
+        final ClassLoader loader = getClass().getClassLoader();
+        final URL appIconURL = loader.getResource("media/icon/icon.gif");
+        final ImageIcon appIcon = new ImageIcon (appIconURL,
+                                                 "application icon");
+        setIconImage(appIcon.getImage());
+
+        // Read preferences.
         readPrefs();
 
         mainFontChanged();				// setup a new font
@@ -718,21 +727,10 @@ public class Thud extends JFrame implements  ActionListener
             // Setup the connection
             conn = new MUConnection(lh, host, port, this);
 
-            // Setup the rest of the helper classes, adding focus listeners for all
-            FocusListener focusOnInput = new FocusListener() {
-        		public void focusGained(FocusEvent f) {textField.grabFocus();}
-        		public void focusLost(FocusEvent f) {}
-        		};
-        	// This does not work on the status window or contact list, and I have no idea why.
-            status = new MUStatus(conn, data, prefs);
-            status.addFocusListener(focusOnInput);            
-                        
-            conList = new MUContactList(conn, data, prefs);
-            conList.addFocusListener(focusOnInput);            
-            
-            tacMap = new MUTacticalMap(conn, data, prefs);
-            tacMap.addFocusListener(focusOnInput);                
-
+            // Setup the rest of the helper classes.
+            status = new MUStatus(this, conn, data, prefs);
+            conList = new MUContactList(this, conn, data, prefs);
+            tacMap = new MUTacticalMap(this, conn, data, prefs);
             
             commands = new MUCommands(conn, data, prefs);
             
