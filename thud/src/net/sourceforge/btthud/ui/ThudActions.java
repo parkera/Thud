@@ -14,38 +14,24 @@ import javax.swing.*;
 
 // FIXME: All of this stuff probably shouldn't go into one class.
 
-class NumpadAction extends AbstractAction {
+// Action class to send a fixed command string.
+class SendCommandAction extends AbstractAction {
 	private final Thud thud;
+	private final String command;
 
-	NumpadAction (final Thud thud) {
+	SendCommandAction (final Thud thud, final String command) {
+		super(command.intern());
+
 		this.thud = thud;
+		this.command = command.intern();
 	}
 
-	public void actionPerformed (ActionEvent ae) {
+	public void actionPerformed (final ActionEvent ae) {
 		if (thud.conn == null)
 			return;
 
-		int direction = 0;
-
-		// TODO: Check what values getActionCommand() can take.
-		switch (Integer.parseInt(ae.getActionCommand())) {
-			case 1: direction = 240; break;
-			case 2: direction = 180; break;
-			case 3: direction = 120; break;
-			case 4: direction = 270; break;
-			case 6: direction = 90; break;
-			case 7: direction = 300; break;
-			case 8: direction = 0; break;
-			case 9: direction = 60; break;
-
-			default:
-				// We're confused.
-				// FIXME: Don't let this happen.
-				return;
-		}
-
 		try {
-			thud.conn.sendCommand("heading " + direction);
+			thud.conn.sendCommand(command);
 		} catch (Exception e) {
 			// TODO: Seems like it'd be more friendly to report
 			// these errors in the main window, or in a modal
@@ -58,7 +44,7 @@ class NumpadAction extends AbstractAction {
 
 /**
  * An InputMap wrapper to allow us to bind numeric pad keys, without having
- * them generate "typed #"-style KeyStrokes.
+ * them generate "typed #"-style KeyStrokes in JTextComponents.
  */
 class NumpadInputMap extends InputMap {
 	// Various KeyStrokes we're interested in.

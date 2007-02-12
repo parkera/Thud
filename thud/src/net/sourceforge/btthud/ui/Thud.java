@@ -402,6 +402,79 @@ public class Thud extends JFrame implements Runnable {
 	//
 
 	private void registerActions () {
+		//
+		// Key bindings.
+		//
+
+		// Whee, numpad bindings.
+		bindCommand(KeyEvent.VK_NUMPAD1, "heading 240");
+		bindCommand(KeyEvent.VK_NUMPAD1, Event.SHIFT_MASK, "heading 210");
+		bindCommand(KeyEvent.VK_NUMPAD2, "heading 180");
+		bindCommand(KeyEvent.VK_NUMPAD3, Event.SHIFT_MASK, "heading 150");
+		bindCommand(KeyEvent.VK_NUMPAD3, "heading 120");
+
+		bindCommand(KeyEvent.VK_NUMPAD4, "heading 270");
+		bindCommand(KeyEvent.VK_NUMPAD6, "heading 90");
+
+		bindCommand(KeyEvent.VK_NUMPAD7, "heading 300");
+		bindCommand(KeyEvent.VK_NUMPAD7, Event.SHIFT_MASK, "heading 330");
+		bindCommand(KeyEvent.VK_NUMPAD8, "heading 0");
+		bindCommand(KeyEvent.VK_NUMPAD9, Event.SHIFT_MASK, "heading 30");
+		bindCommand(KeyEvent.VK_NUMPAD9, "heading 60");
+
+		// TIC bindings.
+		bindCommand(KeyEvent.VK_F1, "firetic 0");
+		bindCommand(KeyEvent.VK_F2, "firetic 1");
+		bindCommand(KeyEvent.VK_F3, "firetic 2");
+		bindCommand(KeyEvent.VK_F4, "firetic 3");
+		bindCommand(KeyEvent.VK_F1, Event.SHIFT_MASK, "listtic 0");
+		bindCommand(KeyEvent.VK_F2, Event.SHIFT_MASK, "listtic 1");
+		bindCommand(KeyEvent.VK_F3, Event.SHIFT_MASK, "listtic 2");
+		bindCommand(KeyEvent.VK_F4, Event.SHIFT_MASK, "listtic 3");
+		
+		// Weapon bindings.
+		bindCommand(KeyEvent.VK_1, Event.CTRL_MASK, "sight 1");
+		bindCommand(KeyEvent.VK_2, Event.CTRL_MASK, "sight 2");
+		bindCommand(KeyEvent.VK_3, Event.CTRL_MASK, "sight 3");
+		bindCommand(KeyEvent.VK_4, Event.CTRL_MASK, "sight 4");
+		bindCommand(KeyEvent.VK_5, Event.CTRL_MASK, "sight 5");
+		bindCommand(KeyEvent.VK_6, Event.CTRL_MASK, "sight 6");
+		bindCommand(KeyEvent.VK_7, Event.CTRL_MASK, "sight 7");
+		bindCommand(KeyEvent.VK_8, Event.CTRL_MASK, "sight 8");
+		bindCommand(KeyEvent.VK_9, Event.CTRL_MASK, "sight 9");
+		bindCommand(KeyEvent.VK_0, Event.CTRL_MASK, "sight 0");
+
+		bindCommand(KeyEvent.VK_1, Event.ALT_MASK, "fire 1");
+		bindCommand(KeyEvent.VK_2, Event.ALT_MASK, "fire 2");
+		bindCommand(KeyEvent.VK_3, Event.ALT_MASK, "fire 3");
+		bindCommand(KeyEvent.VK_4, Event.ALT_MASK, "fire 4");
+		bindCommand(KeyEvent.VK_5, Event.ALT_MASK, "fire 5");
+		bindCommand(KeyEvent.VK_6, Event.ALT_MASK, "fire 6");
+		bindCommand(KeyEvent.VK_7, Event.ALT_MASK, "fire 7");
+		bindCommand(KeyEvent.VK_8, Event.ALT_MASK, "fire 8");
+		bindCommand(KeyEvent.VK_9, Event.ALT_MASK, "fire 9");
+		bindCommand(KeyEvent.VK_0, Event.ALT_MASK, "fire 0");
+		
+		// Targeting bindings
+		bindCommand(KeyEvent.VK_NUMPAD1, Event.CTRL_MASK, "target ll");
+		bindCommand(KeyEvent.VK_NUMPAD2, Event.CTRL_MASK, "target -");
+		bindCommand(KeyEvent.VK_NUMPAD3, Event.CTRL_MASK, "target rl");
+		bindCommand(KeyEvent.VK_NUMPAD4, Event.CTRL_MASK, "target la");
+		bindCommand(KeyEvent.VK_NUMPAD5, Event.CTRL_MASK, "target ct");
+		bindCommand(KeyEvent.VK_NUMPAD6, Event.CTRL_MASK, "target ra");
+		bindCommand(KeyEvent.VK_NUMPAD7, Event.CTRL_MASK, "target lt");
+		bindCommand(KeyEvent.VK_NUMPAD8, Event.CTRL_MASK, "target h");
+		bindCommand(KeyEvent.VK_NUMPAD9, Event.CTRL_MASK, "target rt");
+		
+		// Misc bindings
+		bindCommand(KeyEvent.VK_NUMPAD7, Event.ALT_MASK, "rottorso l");
+		bindCommand(KeyEvent.VK_NUMPAD8, Event.ALT_MASK, "rottorso c");
+		bindCommand(KeyEvent.VK_NUMPAD9, Event.ALT_MASK, "rottorso r");
+		
+		//
+		// Menu-related actions.
+		//
+
 		// Register file menu actions.
 		taLoadMap = new ThudSimpleAction ("Load Map...") {
 			protected void doAction () {
@@ -685,6 +758,46 @@ public class Thud extends JFrame implements Runnable {
 		final JMenuItem item = new JCheckBoxMenuItem (act);
 		act.addButton(item);
 		menu.add(item);
+	}
+
+	// Helpers to map a KeyStroke to a specific command string.
+	private void bindCommand (final KeyStroke key, final String command) {
+		bindAction(key, new SendCommandAction (this, command));
+	}
+
+	private void bindCommand (final int keycode, final int modmask,
+	                          final String command) {
+		// Convenience.
+		bindCommand(KeyStroke.getKeyStroke(keycode, modmask), command);
+	}
+
+	private void bindCommand (final int keycode, final String command) {
+		// Convenience.
+		bindCommand(keycode, 0, command);
+	}
+
+	// Helpers to map a KeyStroke to an arbitrary Action.
+	private void bindAction (final KeyStroke key, final Action action) {
+		// TODO: WHEN_ANCESTOR_OF_FOCUSED_COMPONENT may not always be
+		// the best choice, but more options might be confusing.
+		final InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		final ActionMap actionMap = getRootPane().getActionMap();
+
+		final Object nameActionKey = action.getValue(Action.NAME);
+
+		inputMap.put(key, nameActionKey);
+		actionMap.put(nameActionKey, action);
+	}
+
+	private void bindAction (final int keycode, final int modmask,
+	                         final Action action) {
+		// Convenience.
+		bindAction(KeyStroke.getKeyStroke(keycode, modmask), action);
+	}
+
+	private void bindAction (final int keycode, final Action action) {
+		// Convenience.
+		bindAction(keycode, 0, action);
 	}
 
 	// XXX: Debugging code that adds empty actions.
@@ -971,32 +1084,6 @@ public class Thud extends JFrame implements Runnable {
 	// XXX: We're making use of the fact that string literals are interned.
 	actionMap.put("PAGE UP", new ActionRedirector (textPane, DefaultEditorKit.pageUpAction));
 	actionMap.put("PAGE DOWN", new ActionRedirector (textPane, DefaultEditorKit.pageDownAction));
-
-	// Whee, num pad bindings.
-	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1, 0), ".h 240");
-	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD2, 0), ".h 180");
-	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD3, 0), ".h 120");
-
-	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD4, 0), ".h 270");
-	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD6, 0), ".h 90");
-
-	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD7, 0), ".h 300");
-	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8, 0), ".h 0");
-	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD9, 0), ".h 60");
-
-	// What, like we need more than one?
-	final NumpadAction theNumpadAction = new NumpadAction (this);
-
-	actionMap.put(".h 240", theNumpadAction);
-	actionMap.put(".h 180", theNumpadAction);
-	actionMap.put(".h 120", theNumpadAction);
-
-	actionMap.put(".h 270", theNumpadAction);
-	actionMap.put(".h 90", theNumpadAction);
-
-	actionMap.put(".h 300", theNumpadAction);
-	actionMap.put(".h 0", theNumpadAction);
-	actionMap.put(".h 60", theNumpadAction);
 
 	// Translate JTextField input to keep it from getting typed numbers
 	// from the numpad events.
