@@ -13,6 +13,8 @@ Version History:
    * Weather information is retrieved and displayed on the bottom of the tactical window.
    * A LOS overlay has been added. Under 'Map', select 'Show LOS Info' and hexes not in your current LOS will have a cyan/blue overlay added to them.
    * Preferences data has been moved to the Java Preferences API, meaning that thudprefs.prf is ancient history and that preferences will no longer get clobbered between versions now.
+   * Thud now has an icon, and its subwindows (contacts, status, tactical) have been converted to dialogs instead of frames, meaning that they won't take up taskbar space.
+   * The number keypad now is bound to issue heading commands corresponding to that number's direction (ie numpad 7 = heading 300, numpad 6 = heading 90, etc).
 
   Bug Fixes:
    * Cliff detection now functions properly between water and land hexes.

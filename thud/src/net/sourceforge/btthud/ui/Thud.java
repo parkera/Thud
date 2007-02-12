@@ -18,77 +18,16 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.Keymap;
 
 import java.util.*;
+import java.lang.ref.WeakReference;
 
-public class Thud extends JFrame implements  ActionListener
-{    
+public class Thud extends JFrame implements Runnable {
+
     Font	mFont = new Font("Monospaced", Font.PLAIN, 10);		// default main font
     AboutBox aboutBox = null;
-    // Declarations for menus
-    
-    JMenuBar mainMenuBar = new JMenuBar();
-	
-    JMenu fileMenu;
-    protected JMenuItem miLoadMap;
-    protected JMenuItem miSaveMapAs;
-    protected JMenuItem miReleaseNotes;
-    protected JMenuItem miQuit;
-	
-    JMenu editMenu;
-    protected JMenuItem miUndo;
-    protected JMenuItem miCut;
-    protected JMenuItem miCopy;
-    protected JMenuItem miPaste;
-    protected JMenuItem miClear;
-    protected JMenuItem miSelectAll;
-    protected JMenuItem miEraseCommand;
-    protected JMenuItem miPreviousCommand;
-    protected JCheckBoxMenuItem	miMuteMainWindow;
-
-    JMenu mapMenu;
-    protected JMenuItem miZoomIn;
-    protected JMenuItem miZoomOut;
-    
-    protected JCheckBoxMenuItem miShowArcs;
-    protected JCheckBoxMenuItem miMakeArcsWeaponRange;
-    protected JMenuItem	miArcRetract;
-    protected JMenuItem miArcExtend;
-
-    protected JCheckBoxMenuItem miShowHexNumbers;
-    protected JCheckBoxMenuItem miShowUnitNames;
-    protected JCheckBoxMenuItem miDarkenElevations;
-    protected JCheckBoxMenuItem miShowArmorDiagrams;
-    protected JCheckBoxMenuItem miShowLOSInfo;
-
-    protected JCheckBoxMenuItem	miShowCliffs;
-    protected JCheckBoxMenuItem miShowIndicators;
-
-    protected JMenuItem	miMoveRight, miMoveLeft, miMoveDown, miMoveUp, miCenterMap;
-
-    JMenu windowMenu;
-    protected JMenuItem miWindowContacts;
-    protected JMenuItem miWindowStatus;
-    protected JMenuItem miWindowTactical;    
-    
-    JMenu hudMenu;
-    protected JMenuItem miStartStop;
-    protected JMenuItem miPreferences;
-    protected JMenuItem[] miConnections = null;
-    protected JMenuItem miAddNewHost;
-    protected JMenuItem miRemoveHost;
-    protected JMenuItem miDisconnect;
-
-    JMenu updateMenu;
-    protected JCheckBoxMenuItem miFastUpdate;
-    protected JCheckBoxMenuItem miNormalUpdate;
-    protected JCheckBoxMenuItem miSlowUpdate;
-    protected JMenuItem miSendTacticalUpdate;
-    
-    JMenu debugMenu;
-    protected JMenuItem miDumpDocument;
-    
-    // ------------------
     
     JTextField				textField;
     JTextPane				textPane;
@@ -113,489 +52,876 @@ public class Thud extends JFrame implements  ActionListener
     static final int		DEBUG = 0;
 
     boolean					firstLaunch = false;
-    
+
+    // ------------------
+
+	// Declarations for menus
+	private JMenuBar mainMenuBar = new JMenuBar();
+
+	private JMenu fileMenu;
+	private ThudAction taLoadMap;
+	private ThudAction taSaveMapAs;
+	private ThudAction taViewReleaseNotes;
+	private ThudAction taQuit;
+
+	private JMenu editMenu;
+	private ThudAction taUndo;
+	private ThudAction taCut;
+	private ThudAction taCopy;
+	private ThudAction taPaste;
+	private ThudAction taClear;
+	private ThudAction taSelectAll;
+	private ThudAction taRepeatPreviousCommand;
+	private ThudAction taEraseCurrentCommand;
+	private ThudAction taMuteMainWindowText;
+
+	private JMenu mapMenu;
+	private ThudAction taZoomIn;
+	private ThudAction taZoomOut;
+	private ThudAction taShowWeaponsArcs;
+	private ThudAction taMakeArcsWeaponRanges;
+	private ThudAction taRetractArcRange;
+	private ThudAction taExtendArcRange;
+	private ThudAction taShowHexNumbers;
+	private ThudAction taShowUnitNames;
+	private ThudAction taDarkenElevations;
+	private ThudAction taShowArmorDiagram;
+	private ThudAction taShowLOSInfo;
+	private ThudAction taMoveMapLeft;
+	private ThudAction taMoveMapRight;
+	private ThudAction taMoveMapUp;
+	private ThudAction taMoveMapDown;
+	private ThudAction taCenterMapOnUnit;
+	private ThudAction taShowCliffs;
+	private ThudAction taShowHeatArmoronTactical;
+
+	private JMenu updateMenu;
+	private ThudAction taFastUpdateSpeed;
+	private ThudAction taNormalUpdateSpeed;
+	private ThudAction taSlowUpdateSpeed;
+	private ThudAction taUpdateTacticalMapNow;
+
+	private JMenu hudMenu;
+	private JMenuItem[] miConnections;
+	private ThudAction taPreferences;
+	private ThudAction taStartStop;
+	private ThudAction taConnect;
+	private ThudAction taAddNewHost;
+	private ThudAction taRemoveHost;
+	private ThudAction taDisconnect;
+
+	private JMenu debugMenu;
+	private ThudAction taDumpDocumentStructure;
+
+	private JMenu windowMenu;
+	private ThudAction taShowContactsWindow;
+	private ThudAction taShowStatusWindow;
+	private ThudAction taShowTacticalWindow;
+
+
+	// Entry point.
+	public static void main (String args[]) {
+		EventQueue.invokeLater(new Thud ());
+	}
+
+	// Initialize main Thud window.
+	private Thud () {
+		super("Thud");
+
+		// Set frame icon.
+		final ClassLoader loader = getClass().getClassLoader();
+		final URL appIconURL = loader.getResource("media/icon/icon.gif");
+		final ImageIcon appIcon = new ImageIcon (appIconURL,
+		                                         "application icon");
+		setIconImage(appIcon.getImage());
+
+		// Read preferences.
+		readPrefs();
+
+		mainFontChanged();			// setup a new font
+
+		// Create an about box
+		aboutBox = new AboutBox();
+
+		// Setup the main text areas
+		setupNewTextFields();
+
+		// Register all our actions.
+		registerActions();
+
+		// Add all of our menus
+		addMenus();
+		setJMenuBar(mainMenuBar);
+		setupListeners();
+
+		// Locate the window properly
+		setSize(prefs.mainSizeX, prefs.mainSizeY);
+		setLocation(prefs.mainLoc);
+		setAlwaysOnTop(prefs.mainAlwaysOnTop);
+
+		// Initialization strings
+		final Package pkg = Package.getPackage("btthud.ui");
+		String buildNumber = null;
+
+		if (pkg != null)
+			buildNumber = pkg.getImplementationVersion();
+
+		if (buildNumber == null)
+			buildNumber = "Unknown";
+
+		bsd.insertPlainString(" *** Thud, (c) 2001-2007 Anthony Parker & the THUD team   ***");
+		bsd.insertPlainString(" *** bt-thud.sourceforge.net                              ***");
+		bsd.insertPlainString(" *** Version: 1.3.2 Beta                                  ***\n");
+	}
+
+	// Finish setting up GUI from event dispatch thread.
+	public void run () {
+		setVisible(true);
+
+		// Show version notes
+		// TODO: Fix PreferenceStore to detect version upgrades.
+		if (firstLaunch) {
+			doReleaseNotes();
+			firstLaunch = false;
+		}
+	}
+
+
+	//
+	// Menus.
+	//
+	// TODO: Convert all these menus to constructors or something.
+
+	// Main menu bar.
+	void addMenus() {
+		// FIXME: All of the menus get re-created every time we
+		// add/remove hosts, which is kinda silly.  At most, we only
+		// need to update the "HUD" menu.
+
+		addFileMenu();
+		addEditMenu();
+		addMapMenu();
+		addUpdateMenu();
+		addHUDMenu();
+		addDebugMenu();
+		addWindowMenu();
+	}
+
+	// "File" menu.
+	private void addFileMenu () {
+		if (fileMenu != null)
+			return;
+
+		fileMenu = new JMenu ("File");
+
+		fileMenu.add(taLoadMap);
+		fileMenu.add(taSaveMapAs);
+
+		fileMenu.addSeparator();
+
+		fileMenu.add(taViewReleaseNotes);
+
+		fileMenu.addSeparator();
+
+		fileMenu.add(taQuit);
+
+		mainMenuBar.add(fileMenu);
+	}
+
+	// "Edit" menu.
+	private void addEditMenu () {
+		if (editMenu != null)
+			return;
+
+		editMenu = new JMenu ("Edit");
+
+		editMenu.add(taUndo);
+
+		editMenu.addSeparator();
+
+		editMenu.add(taCut);
+		editMenu.add(taCopy);
+		editMenu.add(taPaste);
+		editMenu.add(taClear);
+
+		editMenu.addSeparator();
+
+		editMenu.add(taSelectAll);
+
+		editMenu.addSeparator();
+
+		editMenu.add(taRepeatPreviousCommand);
+		editMenu.add(taEraseCurrentCommand);
+
+		editMenu.addSeparator();
+
+		addCheckBoxItem(editMenu, taMuteMainWindowText);
+
+		mainMenuBar.add(editMenu);
+	}
+
+	// "Map" menu.
+	private void addMapMenu () {
+		if (mapMenu != null)
+			return;
+
+		mapMenu = new JMenu ("Map");
+
+		mapMenu.add(taZoomIn);
+		mapMenu.add(taZoomOut);
+
+		mapMenu.addSeparator();
+
+		addCheckBoxItem(mapMenu, taShowWeaponsArcs);
+		addCheckBoxItem(mapMenu, taMakeArcsWeaponRanges);
+		mapMenu.add(taRetractArcRange);
+		mapMenu.add(taExtendArcRange);
+
+		mapMenu.addSeparator();
+
+		addCheckBoxItem(mapMenu, taShowHexNumbers);
+		addCheckBoxItem(mapMenu, taShowUnitNames);
+		addCheckBoxItem(mapMenu, taDarkenElevations);
+		addCheckBoxItem(mapMenu, taShowArmorDiagram);
+		addCheckBoxItem(mapMenu, taShowLOSInfo);
+
+		mapMenu.addSeparator();
+
+		mapMenu.add(taMoveMapLeft);
+		mapMenu.add(taMoveMapRight);
+		mapMenu.add(taMoveMapUp);
+		mapMenu.add(taMoveMapDown);
+		mapMenu.add(taCenterMapOnUnit);
+
+		mapMenu.addSeparator();
+
+		addCheckBoxItem(mapMenu, taShowCliffs);
+		addCheckBoxItem(mapMenu, taShowHeatArmoronTactical);
+
+		// Disable the map menu until we're actually connected
+		mapMenu.setEnabled(false);
+		mainMenuBar.add(mapMenu);
+	}
+
+	// "Update" menu.
+	private void addUpdateMenu () {
+		if (updateMenu != null)
+			return;
+
+		updateMenu = new JMenu ("Update");
+
+		addCheckBoxItem(updateMenu, taFastUpdateSpeed);
+		addCheckBoxItem(updateMenu, taNormalUpdateSpeed);
+		addCheckBoxItem(updateMenu, taSlowUpdateSpeed);
+
+		updateMenu.addSeparator();
+
+		updateMenu.add(taUpdateTacticalMapNow);
+
+		// Disable the update menu until we're actually connected
+		updateMenu.setEnabled(false);
+		mainMenuBar.add(updateMenu);
+	}
+
+	// "HUD" menu.
+	private void addHUDMenu () {
+		boolean firstTime;
+
+		if (hudMenu != null) {
+			firstTime = false;
+			hudMenu.removeAll();
+		} else {
+			firstTime = true;
+			hudMenu = new JMenu ("HUD");
+		}
+
+		// Setup the connection menu items
+		initConnectionMenus();
+
+		hudMenu.add(taPreferences);
+
+		hudMenu.addSeparator();
+
+		hudMenu.add(taStartStop);
+
+		hudMenu.addSeparator();
+
+		for (int ii = 0; ii < prefs.hosts.size(); ii++) {
+			MUHost nextHost = (MUHost)prefs.hosts.get(ii);
+			miConnections[ii] = new JMenuItem (taConnect);
+			miConnections[ii].setText(nextHost.toString());
+			acceleratorForConnectionItem(miConnections[ii], ii);
+			hudMenu.add(miConnections[ii]);
+		}
+
+		hudMenu.addSeparator();
+
+		hudMenu.add(taAddNewHost);
+		hudMenu.add(taRemoveHost);
+
+		hudMenu.addSeparator();
+
+		hudMenu.add(taDisconnect);
+
+		if (firstTime) {
+			mainMenuBar.add(hudMenu);
+		}
+	}
+
+	// "Debug" menu.
+	private void addDebugMenu () {
+		if (DEBUG == 0 || debugMenu != null)
+			return;
+
+		debugMenu = new JMenu("Debug");
+
+		debugMenu.add(taDumpDocumentStructure);
+
+		mainMenuBar.add(debugMenu);
+	}
+
+	// "Window" menu.
+	private void addWindowMenu () {
+		if (windowMenu != null)
+			return;
+
+		windowMenu = new JMenu ("Window");
+
+		windowMenu.add(taShowContactsWindow);
+		windowMenu.add(taShowStatusWindow);
+		windowMenu.add(taShowTacticalWindow);
+
+		// Disable the window menu until we're actually connected
+		windowMenu.setEnabled(false);
+		mainMenuBar.add(windowMenu);
+	}
+
+
+	//
+	// Main Thud window actions.
+	//
+
+	private void registerActions () {
+		// Register file menu actions.
+		taLoadMap = new ThudSimpleAction ("Load Map...") {
+			protected void doAction () {
+				doLoadMap();
+			}
+		};
+
+		taSaveMapAs = new ThudSimpleAction ("Save Map As...") {
+			protected void doAction () {
+				doSaveMapAs();
+			}
+		};
+
+		taViewReleaseNotes = new ThudSimpleAction ("View Release Notes...") {
+			protected void doAction () {
+				doReleaseNotes();
+			}
+		};
+
+		taQuit = new ThudSimpleAction ("Quit", KeyEvent.VK_Q) {
+			protected void doAction () {
+				doQuit();
+			}
+		};
+
+		// Register edit menu actions.
+		// TODO: Use DefaultEditorKit bindings.
+		taUndo = getEmptyAction("Undo", KeyEvent.VK_Z);
+		taUndo.setEnabled(false);
+
+		taCut = getEmptyAction("Cut", KeyEvent.VK_X);
+
+		taCopy = getEmptyAction("Copy", KeyEvent.VK_C);
+
+		taPaste = getEmptyAction("Paste", KeyEvent.VK_V);
+
+		taClear = getEmptyAction("Clear");
+		taClear.setEnabled(false);
+
+		taSelectAll = getEmptyAction("Select All", KeyEvent.VK_A);
+
+		taRepeatPreviousCommand = new ThudSimpleAction ("Repeat Previous Command", KeyEvent.VK_P) {
+			protected void doAction () {
+				doPreviousCommand();
+			}
+		};
+
+		taEraseCurrentCommand = new ThudSimpleAction ("Erase Current Command", KeyEvent.VK_U) {
+			protected void doAction () {
+				doEraseCommand();
+			}
+		};
+
+		taMuteMainWindowText = new ThudSimpleAction ("Mute Main Window Text", KeyEvent.VK_SEMICOLON, Event.SHIFT_MASK) {
+			protected void doAction () {
+				doMuteMainWindow();
+			}
+		};
+
+		// Register map menu actions.
+		// TODO: Maybe we should move these actions to MUTacticalMap.
+		taZoomIn = new ThudSimpleAction ("Zoom In", KeyEvent.VK_CLOSE_BRACKET) {
+			protected void doAction () {
+				doZoom(5);
+			}
+		};
+
+		taZoomOut = new ThudSimpleAction ("Zoom Out", KeyEvent.VK_OPEN_BRACKET) {
+			protected void doAction () {
+				doZoom(-5);
+			}
+		};
+
+		taShowWeaponsArcs = new ThudSimpleAction ("Show Weapons Arcs", KeyEvent.VK_R) {
+			protected void doAction () {
+				doShowArcs();
+			}
+		};
+		taShowWeaponsArcs.setSelected(prefs.tacShowArcs);
+
+		taMakeArcsWeaponRanges = new ThudSimpleAction ("Make Arcs Weapon Ranges", KeyEvent.VK_M) {
+			protected void doAction () {
+				doMakeArcsWeaponRange();
+			}
+		};
+		taMakeArcsWeaponRanges.setSelected(prefs.makeArcsWeaponRange);
+		taMakeArcsWeaponRanges.setEnabled(prefs.tacShowArcs);
+
+		taRetractArcRange = new ThudSimpleAction ("Retract Arc Range", KeyEvent.VK_SEMICOLON) {
+			protected void doAction () {
+				doChangeArc(-1);
+			}
+		};
+		taRetractArcRange.setEnabled(prefs.tacShowArcs && !prefs.makeArcsWeaponRange);
+
+		taExtendArcRange = new ThudSimpleAction ("Extend Arc Range", KeyEvent.VK_QUOTE) {
+			protected void doAction () {
+				doChangeArc(1);
+			}
+		};
+		taExtendArcRange.setEnabled(prefs.tacShowArcs && !prefs.makeArcsWeaponRange);
+
+		taShowHexNumbers = new ThudSimpleAction ("Show Hex Numbers", KeyEvent.VK_B) {
+			protected void doAction () {
+				doShowHexNumbers();
+			}
+		};
+		taShowHexNumbers.setSelected(prefs.tacShowHexNumbers);
+
+		taShowUnitNames = new ThudSimpleAction ("Show Unit Names", KeyEvent.VK_U) {
+			protected void doAction () {
+				doShowUnitNames();
+			}
+		};
+		taShowUnitNames.setSelected(prefs.tacShowUnitNames);
+
+		taDarkenElevations = new ThudSimpleAction ("Darken Elevations", KeyEvent.VK_D) {
+			protected void doAction () {
+				doDarkenElevations();
+			}
+		};
+		taDarkenElevations.setSelected(prefs.tacDarkenElev);
+
+		taShowArmorDiagram = new ThudSimpleAction ("Show Armor Diagram") {
+			protected void doAction () {
+				doShowArmorDiagrams();
+			}
+		};
+		taShowArmorDiagram.setSelected(prefs.tacShowArmorDiagram);
+
+		taShowLOSInfo = new ThudSimpleAction ("Show LOS Info", KeyEvent.VK_L) {
+			protected void doAction () {
+				doShowLOSInfo();
+			}
+		};
+		taShowLOSInfo.setSelected(prefs.tacShowLOSInfo);
+
+		taMoveMapLeft = new ThudSimpleAction ("Move Map Left", KeyEvent.VK_A, Event.SHIFT_MASK) {
+			protected void doAction () {
+				doChangeXOffset(-1);
+			}
+		};
+
+		taMoveMapRight = new ThudSimpleAction ("Move Map Right", KeyEvent.VK_D, Event.SHIFT_MASK) {
+			protected void doAction () {
+				doChangeXOffset(1);
+			}
+		};
+
+		taMoveMapUp = new ThudSimpleAction ("Move Map Up", KeyEvent.VK_W, Event.SHIFT_MASK) {
+			protected void doAction () {
+				doChangeYOffset(-1);
+			}
+		};
+
+		taMoveMapDown = new ThudSimpleAction ("Move Map Down", KeyEvent.VK_S, Event.SHIFT_MASK) {
+			protected void doAction () {
+				doChangeYOffset(1);
+			}
+		};
+
+		taCenterMapOnUnit = new ThudSimpleAction ("Center Map On Unit", KeyEvent.VK_R, Event.SHIFT_MASK) {
+			protected void doAction () {
+				doCenterMap();
+			}
+		};
+
+		taShowCliffs = new ThudSimpleAction ("Show Cliffs", KeyEvent.VK_F) {
+			protected void doAction () {
+				doShowCliffs();
+			}
+		};
+		taShowCliffs.setSelected(prefs.tacShowCliffs);
+
+		taShowHeatArmoronTactical = new ThudSimpleAction ("Show Heat/Armor on Tactical", KeyEvent.VK_I) {
+			protected void doAction () {
+				doShowIndicators();
+			}
+		};
+		taShowHeatArmoronTactical.setSelected(prefs.tacShowIndicators);
+
+		// Register update menu actions.
+		taFastUpdateSpeed = new ThudSimpleAction ("Fast Update Speed", KeyEvent.VK_1, Event.SHIFT_MASK) {
+			protected void doAction () {
+				doChangeUpdate(MUConstants.FAST_UPDATE);
+			}
+		};
+		taFastUpdateSpeed.setSelected(prefs.fastCommandUpdate == 1.0);
+
+		taNormalUpdateSpeed = new ThudSimpleAction ("Normal Update Speed", KeyEvent.VK_2, Event.SHIFT_MASK) {
+			protected void doAction () {
+				doChangeUpdate(MUConstants.NORMAL_UPDATE);
+			}
+		};
+		taNormalUpdateSpeed.setSelected(prefs.fastCommandUpdate == 3.0);
+
+		taSlowUpdateSpeed = new ThudSimpleAction ("Slow Update Speed", KeyEvent.VK_3, Event.SHIFT_MASK) {
+			protected void doAction () {
+				doChangeUpdate(MUConstants.SLOW_UPDATE);
+			}
+		};
+		taSlowUpdateSpeed.setSelected(prefs.fastCommandUpdate == 5.0);
+
+		taUpdateTacticalMapNow =  new ThudSimpleAction ("Update Tactical Map Now", KeyEvent.VK_N) {
+			protected void doAction () {
+				commands.forceTactical();
+			}
+		};
+		taUpdateTacticalMapNow.setEnabled(false);
+
+		// Register HUD menu actions.
+		taPreferences = new ThudSimpleAction ("Preferences...") {
+			protected void doAction () {
+				doPreferences();
+			}
+		};
+
+		taStartStop = new ThudSimpleAction ("Start/Stop", KeyEvent.VK_G) {
+			protected void doAction () {
+				doStartStop();
+			}
+		};
+		taStartStop.setEnabled(false);
+
+		taConnect = new ThudAction ("Connect") {
+			public void actionPerformed (final ActionEvent ae) {
+				doNewConnection(ae.getActionCommand());
+			}
+		};
+
+		taAddNewHost = new ThudSimpleAction ("Add New Host...") {
+			protected void doAction () {
+				doAddNewHost();
+			}
+		};
+
+		taRemoveHost = new ThudSimpleAction ("Remove Host...") {
+			protected void doAction () {
+				doRemoveHost();
+			}
+		};
+
+		taDisconnect = new ThudSimpleAction ("Disconnect", KeyEvent.VK_Q,
+		                          Event.SHIFT_MASK) {
+			protected void doAction () {
+				stopConnection();
+			}
+		};
+		taDisconnect.setEnabled(false);
+
+		// Register debug menu actions.
+		taDumpDocumentStructure = new ThudSimpleAction ("Dump Document Structure") {
+			protected void doAction () {
+				bsd.dump(System.out);        
+			}
+		};
+
+		// Register window menu actions.
+		taShowContactsWindow = new ThudSimpleAction ("Show Contacts Window") {
+			protected void doAction () {
+				conList.setVisible(true);
+			}
+		};
+
+		taShowStatusWindow = new ThudSimpleAction ("Show Status Window") {
+			protected void doAction () {
+				status.setVisible(true);
+			}
+		};
+
+		taShowTacticalWindow = new ThudSimpleAction ("Show Tactical Window") {
+			protected void doAction () {
+				tacMap.setVisible(true);
+			}
+		};
+	}
+
+
+	// TODO: Could add this to a ThudMenu class.
+	private void addCheckBoxItem (final JMenu menu, final ThudAction act) {
+		final JMenuItem item = new JCheckBoxMenuItem (act);
+		act.addButton(item);
+		menu.add(item);
+	}
+
+	// XXX: Debugging code that adds empty actions.
+	private ThudAction getEmptyAction (final String name) {
+		return new ThudAction (name) {
+			public void actionPerformed (final ActionEvent e) {
+				System.err.println("No action: " + e);
+			}
+		};
+	}
+
+	private ThudAction getEmptyAction (final String name, final int accel) {
+		final ThudAction action = getEmptyAction(name);
+
+		action.putValue(Action.ACCELERATOR_KEY,
+		                KeyStroke.getKeyStroke(accel,
+		                                       Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
+		return action;
+	}
+
+
+	// Base class for various main window actions.
+	private static final int menuShortcutMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+
+	private abstract class ThudAction extends AbstractAction {
+		private ThudAction (final String name) {
+			super(name);
+		}
+
+		private ThudAction (final String name, final int accel) {
+			this(name, accel, 0);
+		}
+
+		private ThudAction (final String name, final int accel,
+		                    final int modmask) {
+			this(name);
+
+			putValue(Action.ACCELERATOR_KEY,
+			         KeyStroke.getKeyStroke(accel,
+			                                menuShortcutMask | modmask));
+		}
+
+
+		// Java 6 supports setting the selected state on Actions.
+		// Unfortunately, we have to be compatible with more than just
+		// Java 6, so we sorta implement the same thing here.
+		private Set<WeakReference<AbstractButton>> listeningButtons = new HashSet<WeakReference<AbstractButton>> ();
+
+		public void addButton (final AbstractButton button) {
+			button.setSelected(selected);
+			listeningButtons.add(new WeakReference<AbstractButton> (button));
+		}
+
+
+		private boolean selected = false;
+
+		public boolean isSelected () {
+			return selected;
+		}
+
+		public void setSelected (final boolean selected) {
+			this.selected = selected;
+
+			final Iterator<WeakReference<AbstractButton>> iter = listeningButtons.iterator();
+
+			while (iter.hasNext()) {
+				final AbstractButton button = iter.next().get();
+
+				if (button == null) {
+					iter.remove();
+					continue;
+				}
+
+				button.setSelected(selected);
+			}
+		}
+	}
+
+	private abstract class ThudSimpleAction extends ThudAction {
+		private ThudSimpleAction (final String name) {
+			super(name);
+		}
+
+		private ThudSimpleAction (final String name, final int accel) {
+			super(name, accel, 0);
+		}
+
+		private ThudSimpleAction (final String name, final int accel,
+		                          final int modmask) {
+			super(name, accel, modmask);
+		}
+
+
+		public void actionPerformed (final ActionEvent ae) {
+			doAction();
+		}
+
+		protected abstract void doAction ();
+	}
+
+
+	/** Repaint ourselves */
+	public void paint (Graphics g) {
+		// TODO: Is there a cleaner way to do this?
+		final Graphics2D g2 = (Graphics2D)g;
+		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+		                    prefs.antiAliasText ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+
+		super.paint(g2);
+	}
+
+	// --------------------------------------------------------------------
+	// ACTION IMPLEMENTATION
+	// --------------------------------------------------------------------
+
+	/** Load map from file. */
+	private void doLoadMap () {
+		final JFileChooser fc = new JFileChooser ();
+		final int returnVal = fc.showOpenDialog(this);
+
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			data.mapFileName = fc.getSelectedFile().getAbsolutePath();
+			if (data.loadMapFromDisk()) {
+				parse.messageLine("*** Map " + data.mapFileName + " loaded successfully ***");
+			} else {
+				parse.messageLine("*** Error loading map " + data.mapFileName + " ***");
+			}
+		}
+	}
+
+	/** Save map to file. */
+	private void doSaveMapAs () {
+		final JFileChooser fc = new JFileChooser ();
+		final int returnVal = fc.showSaveDialog(this);
+
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			data.mapFileName = fc.getSelectedFile().getAbsolutePath();
+			if (data.saveMapToDisk()) {
+				parse.messageLine("*** Map " + data.mapFileName + " saved successfully ***");
+			} else {
+				parse.messageLine("*** Error saving map " + data.mapFileName + " ***");
+			}
+		}
+	}
+
+	/** Show the release notes */
+	private void doReleaseNotes () {
+		new ReleaseNotesDialog(this, true).setVisible(true);
+	}
+
+	/** Quit cleanly */
+	private void doQuit () {
+		try {
+			// Close our connection
+			if (connected)
+				stopConnection();
+
+			// Write out our preferences file
+			writePrefs();
+
+			// Write out map
+			//if (data != null)
+			//	data.saveMapToDisk();
+		} catch (final Exception e) {
+			System.out.println("Error: doQuit: " + e);
+		}
+
+		// We're done
+		System.exit(0);
+	}
+
+	private void setupListeners () {
+		addWindowListener(new WindowAdapter () {
+			public void windowClosing (final WindowEvent we) {
+				doQuit();
+			}
+		});
+	}
+
+
     // ------------------------------------------------------------------------
-    // MENU ITEM SETUP
+    // MAIN SETUP
     // ------------------------------------------------------------------------
-
-    /**
-      * Add a specified ActionListener to watch all the menu items.
-      */
-    protected void setupListeners(ActionListener l)
-    {
-    	miLoadMap.addActionListener(l);
-    	miSaveMapAs.addActionListener(l);
-        miReleaseNotes.addActionListener(l);
-        miQuit.addActionListener(l);
-
-        miUndo.addActionListener(l);
-        miCut.addActionListener(l);
-        miCopy.addActionListener(l);
-        miPaste.addActionListener(l);
-        miClear.addActionListener(l);
-        miSelectAll.addActionListener(l);
-        miEraseCommand.addActionListener(l);
-        miPreviousCommand.addActionListener(l);
-        miMuteMainWindow.addActionListener(l);
-
-        miZoomIn.addActionListener(l);
-        miZoomOut.addActionListener(l);
-
-        miShowArcs.addActionListener(l);
-        miMakeArcsWeaponRange.addActionListener(l);
-        miArcRetract.addActionListener(l);
-        miArcExtend.addActionListener(l);
-
-        miShowHexNumbers.addActionListener(l);
-        miShowUnitNames.addActionListener(l);
-        miDarkenElevations.addActionListener(l);
-        miShowArmorDiagrams.addActionListener(l);
-        miShowLOSInfo.addActionListener(l);
-
-        miShowCliffs.addActionListener(l);
-        miShowIndicators.addActionListener(l);
-
-        miMoveRight.addActionListener(l);
-        miMoveLeft.addActionListener(l);
-        miMoveDown.addActionListener(l);
-        miMoveUp.addActionListener(l);
-        miCenterMap.addActionListener(l);
-
-        miStartStop.addActionListener(l);
-        miPreferences.addActionListener(l);
-        for (int i = 0; i < prefs.hosts.size(); i++)
-            miConnections[i].addActionListener(l);
-        miAddNewHost.addActionListener(l);
-        miRemoveHost.addActionListener(l);
-        miDisconnect.addActionListener(l);
-
-        miFastUpdate.addActionListener(l);
-        miNormalUpdate.addActionListener(l);
-        miSlowUpdate.addActionListener(l);
-        miSendTacticalUpdate.addActionListener(l);
-        
-        miWindowContacts.addActionListener(l);
-        miWindowStatus.addActionListener(l);
-        miWindowTactical.addActionListener(l);        
-        
-        miDumpDocument.addActionListener(l);
-        
-        // Create a listener that does a graceful shutdown of the whole shebang when this window is closed.
-        addWindowListener(new WindowAdapter(){//<-----------
-            public void windowClosing(WindowEvent we){
-              doQuit();}});
-    }
     
-    /** File Menu Items */
-    public void addFileMenuItems()
-    {
-        fileMenu = new JMenu("File");
-
-        // ----------
-        miLoadMap = new JMenuItem("Load Map...");
-        fileMenu.add(miLoadMap).setEnabled(true);
-        
-        miSaveMapAs = new JMenuItem("Save Map As...");
-        fileMenu.add(miSaveMapAs).setEnabled(true);
-        
-        fileMenu.addSeparator();
-        
-        miReleaseNotes = new JMenuItem("View Release Notes...");
-        fileMenu.add(miReleaseNotes).setEnabled(true);
-
-        fileMenu.addSeparator();
-        
-        miQuit = new JMenuItem("Quit");
-        miQuit.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q,
-                                                     Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        fileMenu.add(miQuit).setEnabled(true);
-        
-        mainMenuBar.add(fileMenu);
-    }
-
-    /** HUD Menu Items */
-    public void addHUDMenuItems()
-    {
-        hudMenu = new JMenu("HUD");
-
-        // Setup the connection menu items
-        initConnectionMenus();
-        
-        // -------------
-        
-        miPreferences = new JMenuItem("Preferences...");
-        hudMenu.add(miPreferences).setEnabled(true);
-
-        hudMenu.addSeparator();
-        
-        miStartStop = new JMenuItem("Start/Stop");
-        miStartStop.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G,
-                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        hudMenu.add(miStartStop).setEnabled(false);
-
-        hudMenu.addSeparator();
-
-        for (int i = 0; i < prefs.hosts.size(); i++)
-        {
-            MUHost		nextHost = (MUHost) prefs.hosts.get(i);
-            miConnections[i] = new JMenuItem(nextHost.toString());
-            acceleratorForConnectionItem(miConnections[i], i);
-            hudMenu.add(miConnections[i]).setEnabled(true);
-        }
-
-        hudMenu.addSeparator();
-
-        miAddNewHost = new JMenuItem("Add New Host...");
-        hudMenu.add(miAddNewHost).setEnabled(true);
-
-        miRemoveHost = new JMenuItem("Remove Host...");
-        hudMenu.add(miRemoveHost).setEnabled(true);
-        
-        hudMenu.addSeparator();
-
-        miDisconnect = new JMenuItem("Disconnect");
-        miDisconnect.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X,
-                                                           java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        hudMenu.add(miDisconnect).setEnabled(false);
-        
-        mainMenuBar.add(hudMenu);
-    }
-
-    /** Update Menu Items */
-    public void addUpdateMenuItems()
-    {
-        updateMenu = new JMenu("Update");
-
-        // ----------
-
-        miFastUpdate = new JCheckBoxMenuItem("Fast Update Speed");
-        miFastUpdate.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_1,
-                                                           java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        updateMenu.add(miFastUpdate).setEnabled(true);
-        miFastUpdate.setState(prefs.fastCommandUpdate == 1.0 ? true : false);
-
-        miNormalUpdate = new JCheckBoxMenuItem("Normal Update Speed");
-        miNormalUpdate.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_2,
-                                                           java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        updateMenu.add(miNormalUpdate).setEnabled(true);
-        miNormalUpdate.setState(prefs.fastCommandUpdate == 3.0 ? true : false);
-
-        miSlowUpdate = new JCheckBoxMenuItem("Slow Update Speed");
-        miSlowUpdate.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_3,
-                                                           java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        updateMenu.add(miSlowUpdate).setEnabled(true);
-        miSlowUpdate.setState(prefs.fastCommandUpdate == 5.0 ? true : false);
-
-        // ----------
-
-        updateMenu.addSeparator();
-
-        
-        miSendTacticalUpdate = new JMenuItem("Update Tactical Map Now");
-        miSendTacticalUpdate.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N,
-                                                              Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        updateMenu.add(miSendTacticalUpdate).setEnabled(false);
-
-        // Disable the update menu until we're actually connected
-        updateMenu.setEnabled(false);
-        mainMenuBar.add(updateMenu);
-    }
-    
-    /** Debug Menu Items */
-    public void addDebugMenuItems()
-    {
-        debugMenu = new JMenu("Debug");
-
-        // ----------
-
-        miDumpDocument = new JMenuItem("Dump Document Structure");
-        debugMenu.add(miDumpDocument).setEnabled(true);
-
-        if (DEBUG == 1)
-            mainMenuBar.add(debugMenu);
-    }
-    
-    /** Window Menu items */
-    public void addWindowMenuItems()
-    {
-    	windowMenu = new JMenu("Window");
-    	
-        miWindowContacts = new JMenuItem("Show Contacts Window");
-        windowMenu.add(miWindowContacts).setEnabled(true);
-        
-        miWindowStatus = new JMenuItem("Show Status Window");
-        windowMenu.add(miWindowStatus).setEnabled(true);
-
-        miWindowTactical = new JMenuItem("Show Tactical Window");
-        windowMenu.add(miWindowTactical).setEnabled(true);
-        
-        // Disable the window menu until we're actually connected
-        windowMenu.setEnabled(false);
-        mainMenuBar.add(windowMenu);
-    }
-
     /** Utility function to get the proper accelerator for connection items in the HUD menu */
     protected void acceleratorForConnectionItem(JMenuItem mi, int i)
     {
         switch (i)
         {
             case 0:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_1,
+                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1,
                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 1:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_2,
+                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2,
                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 2:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_3,
+                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3,
                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 3:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_4,
+                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4,
                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 4:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_5,
+                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_5,
                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 5:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_6,
+                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6,
                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 6:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_7,
+                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_7,
                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 7:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_8,
+                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_8,
                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 8:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_9,
+                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9,
                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
             case 9:
-                mi.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_0,
+                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0,
                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
                 break;
         }
     }
 
-    /** Map Menu items (mostly options) */
-    public void addMapMenuItems()
-    {
-        mapMenu = new JMenu("Map");
-
-        // -------------
-
-        miZoomIn = new JMenuItem("Zoom In");
-        miZoomIn.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_CLOSE_BRACKET,
-                                                       Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miZoomIn).setEnabled(true);
-        
-        miZoomOut = new JMenuItem("Zoom Out");
-        miZoomOut.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_OPEN_BRACKET,
-                                                        Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miZoomOut).setEnabled(true);
-
-        // ----
-        mapMenu.addSeparator();
-
-        miShowArcs = new JCheckBoxMenuItem("Show Weapons Arcs", prefs.tacShowUnitNames);
-        miShowArcs.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R,
-                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miShowArcs).setEnabled(true);
-        miShowArcs.setState(prefs.tacShowArcs);
-        
-        miMakeArcsWeaponRange = new JCheckBoxMenuItem("Make Arcs Weapon Ranges");
-        miMakeArcsWeaponRange.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M,
-                                                                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miMakeArcsWeaponRange).setEnabled(prefs.tacShowArcs);
-        miMakeArcsWeaponRange.setState(prefs.makeArcsWeaponRange);
-        
-        miArcRetract = new JMenuItem("Retract Arc Range");
-        miArcRetract.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SEMICOLON,
-                                                           Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miArcRetract).setEnabled(!prefs.makeArcsWeaponRange && prefs.tacShowArcs);
-
-        miArcExtend = new JMenuItem("Extend Arc Range");
-        miArcExtend.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_QUOTE,
-                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miArcExtend).setEnabled(!prefs.makeArcsWeaponRange && prefs.tacShowArcs);
-
-        // ----
-        mapMenu.addSeparator();
-        
-        miShowHexNumbers = new JCheckBoxMenuItem("Show Hex Numbers", prefs.tacShowHexNumbers);
-        miShowHexNumbers.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B,
-                                                               Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miShowHexNumbers).setEnabled(true);
-        miShowHexNumbers.setState(prefs.tacShowHexNumbers);
-        
-        miShowUnitNames = new JCheckBoxMenuItem("Show Unit Names", prefs.tacShowUnitNames);
-        miShowUnitNames.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U,
-                                                              Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miShowUnitNames).setEnabled(true);
-        miShowUnitNames.setState(prefs.tacShowUnitNames);
-        
-        miDarkenElevations = new JCheckBoxMenuItem("Darken Elevations", prefs.tacDarkenElev);
-        miDarkenElevations.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D,
-                                                                 Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miDarkenElevations).setEnabled(true);
-        miDarkenElevations.setState(prefs.tacDarkenElev);
-
-        miShowArmorDiagrams = new JCheckBoxMenuItem("Show Armor Diagram",prefs.tacShowArmorDiagram);
-        mapMenu.add(miShowArmorDiagrams).setEnabled(true);
-        miShowArmorDiagrams.setState(prefs.tacShowArmorDiagram);
-        
-        miShowLOSInfo = new JCheckBoxMenuItem("Show LOS Info",prefs.tacShowLOSInfo);
-        miShowLOSInfo.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L,
-                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miShowLOSInfo).setEnabled(true);
-        miShowLOSInfo.setState(prefs.tacShowLOSInfo);
-        
-        
-        // ---
-        mapMenu.addSeparator();
-
-        miMoveLeft = new JMenuItem("Move Map Left");
-        miMoveLeft.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A,
-                                                         java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miMoveLeft);
-
-        miMoveRight = new JMenuItem("Move Map Right");
-        miMoveRight.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D,
-                                                          java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miMoveRight);
-
-        miMoveUp = new JMenuItem("Move Map Up");
-        miMoveUp.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W,
-                                                       java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miMoveUp);
-
-        miMoveDown = new JMenuItem("Move Map Down");
-        miMoveDown.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S,
-                                                         java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miMoveDown);
-
-        miCenterMap = new JMenuItem("Center Map On Unit");
-        miCenterMap.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R,
-                                                          java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miCenterMap);
-
-        // ---
-        mapMenu.addSeparator();
-
-        miShowCliffs = new JCheckBoxMenuItem("Show Cliffs", prefs.tacShowCliffs);
-        miShowCliffs.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F,
-                                                           Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miShowCliffs).setEnabled(true);
-        miShowCliffs.setState(prefs.tacShowCliffs);
-        
-        miShowIndicators = new JCheckBoxMenuItem("Show Heat/Armor on Tactical", prefs.tacShowIndicators);
-        miShowIndicators.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I,
-                                                           Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        mapMenu.add(miShowIndicators).setEnabled(true);
-        miShowIndicators.setState(prefs.tacShowIndicators);
-
-        // Disable the map menu until we're actually connected
-        mapMenu.setEnabled(false);
-        mainMenuBar.add(mapMenu);
-    }
-    
-	/** Edit menu items */
-    public void addEditMenuItems()
-    {
-        editMenu = new JMenu("Edit");
-
-        // -------------
-        
-        miUndo = new JMenuItem("Undo");
-        miUndo.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z,
-                                                     Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        editMenu.add(miUndo).setEnabled(false);
-        
-        editMenu.addSeparator();
-
-        miCut = new JMenuItem("Cut");
-        miCut.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X,
-                                                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        editMenu.add(miCut).setEnabled(true);
-
-        miCopy = new JMenuItem("Copy");
-        miCopy.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C,
-                                                     Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        editMenu.add(miCopy).setEnabled(true);
-
-        miPaste = new JMenuItem("Paste");
-        miPaste.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V,
-                                                      Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        editMenu.add(miPaste).setEnabled(true);
-
-        miClear = new JMenuItem("Clear");
-        editMenu.add(miClear).setEnabled(false);
-
-        // ----
-        editMenu.addSeparator();
-
-        miSelectAll = new JMenuItem("Select All");
-        miSelectAll.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A,
-                                                          Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        editMenu.add(miSelectAll).setEnabled(true);
-
-        // ----
-        editMenu.addSeparator();
-        
-        miPreviousCommand = new JMenuItem("Repeat Previous Command");
-        miPreviousCommand.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.Event.CTRL_MASK));
-        editMenu.add(miPreviousCommand).setEnabled(true);
-
-        miEraseCommand = new JMenuItem("Erase Current Command");
-        miEraseCommand.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.Event.CTRL_MASK));
-        editMenu.add(miEraseCommand).setEnabled(true);
-
-        // ----
-        editMenu.addSeparator();
-
-        miMuteMainWindow = new JCheckBoxMenuItem("Mute Main Window Text");
-        miMuteMainWindow.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SEMICOLON,
-                                                               java.awt.Event.SHIFT_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        editMenu.add(miMuteMainWindow).setEnabled(true);
-        miMuteMainWindow.setState(false);		// Main window is never muted on starting up
-        
-        mainMenuBar.add(editMenu);
-    }
-    
     /** Initialize the connection items for the HUD menu */
     public void initConnectionMenus()
     {        
         miConnections = new JMenuItem[prefs.hosts.size()];
-    }
-    
-    /** Add all of the menus */
-    public void addMenus()
-    {
-        clearMenus();
-        
-        addFileMenuItems();
-        addEditMenuItems();
-        addMapMenuItems();
-        addUpdateMenuItems();
-        addHUDMenuItems();
-        addDebugMenuItems();
-        addWindowMenuItems();
-
-        // Make sure our menus are listening to us
-        setupListeners(this);
-        
-        setJMenuBar(mainMenuBar);
-    }
-
-    /** Clear menu bar */
-    public void clearMenus()
-    {
-        mainMenuBar.removeAll();
     }
     
     protected void setupNewTextFields()
@@ -603,7 +929,6 @@ public class Thud extends JFrame implements  ActionListener
         bsd = new BulkStyledDocument(prefs.mainFontSize, prefs.maxScrollbackSize, mFont);
 
         textField = new JTextField(80);
-        textField.addActionListener(this);
         textField.setFont(mFont);
         textField.setEnabled(true);
         
@@ -612,103 +937,119 @@ public class Thud extends JFrame implements  ActionListener
         textPane.setBackground(Color.black);
         textPane.setEditable(false);
         textPane.setFont(mFont);
-        // Add listener to give focus to textfield when click on textpane
-        textPane.addFocusListener(new FocusListener() {
-        		public void focusGained(FocusEvent f) {textField.grabFocus();}
-        		public void focusLost(FocusEvent f) {}
-        		});
         
         JScrollPane scrollPane = new JScrollPane(textPane,
                                                  JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                                                  JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        Container contentPane = getContentPane();
-        contentPane.setLayout(new BorderLayout());
-
         // Setup the text pane
-        contentPane.add(scrollPane, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
 
         // Setup the text field
-        contentPane.add(textField, BorderLayout.SOUTH);
+        add(textField, BorderLayout.SOUTH);
 
-        // Add listeners for PageUp, PageDown, Home, End
-        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0), new PageUpAction(textPane));               
-        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0), new PageDownAction(textPane));
-        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), new HomeAction(textPane));        
-        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_END, 0), new EndAction(textPane));        
-        
-        // Add numpad listeners
-        textField.getKeymap().removeKeyStrokeBinding(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1,0));
-        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1, 0), new NumpadAction(textField,1,this));
-        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD2, 0), new NumpadAction(textField,2,this));
-        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD3, 0), new NumpadAction(textField,3,this));
-        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD4, 0), new NumpadAction(textField,4,this));        
-        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD6, 0), new NumpadAction(textField,6,this));
-        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD7, 0), new NumpadAction(textField,7,this));
-        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8, 0), new NumpadAction(textField,8,this));
-        textField.getKeymap().addActionForKeyStroke (KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD9, 0), new NumpadAction(textField,9,this));       
+	// Add key bindings.
+	// FIXME: This is a bit of a hack.  We should do this in a more
+	// organized way, and maybe not on the root pane.
+	//
+	// We'll want some sort of KeyBindingManager, that will provide a GUI
+	// for the user to set/save/restore custom bindings, and also supply
+	// input/action maps to inherit from.
+	//
+	// Probably just input maps, as action maps will be fixed for any
+	// particular component, although having an Action manager might be
+	// useful for enabling/disabling all related actions simultaneously
+	// (for connections, for example).
+	final InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT); // we can also use WHEN_IN_FOCUSED_WINDOW in any subcomponent, but it's messier
+	final ActionMap actionMap = getRootPane().getActionMap();
+
+	// TODO: Relate these to DefaultEditorKit?
+	// so they compare equal as Objects.
+	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0), "PAGE UP");
+	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0), "PAGE DOWN");
+
+	// XXX: We're making use of the fact that string literals are interned.
+	actionMap.put("PAGE UP", new ActionRedirector (textPane, DefaultEditorKit.pageUpAction));
+	actionMap.put("PAGE DOWN", new ActionRedirector (textPane, DefaultEditorKit.pageDownAction));
+
+	// Whee, num pad bindings.
+	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1, 0), ".h 240");
+	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD2, 0), ".h 180");
+	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD3, 0), ".h 120");
+
+	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD4, 0), ".h 270");
+	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD6, 0), ".h 90");
+
+	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD7, 0), ".h 300");
+	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8, 0), ".h 0");
+	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD9, 0), ".h 60");
+
+	// What, like we need more than one?
+	final NumpadAction theNumpadAction = new NumpadAction (this);
+
+	actionMap.put(".h 240", theNumpadAction);
+	actionMap.put(".h 180", theNumpadAction);
+	actionMap.put(".h 120", theNumpadAction);
+
+	actionMap.put(".h 270", theNumpadAction);
+	actionMap.put(".h 90", theNumpadAction);
+
+	actionMap.put(".h 300", theNumpadAction);
+	actionMap.put(".h 0", theNumpadAction);
+	actionMap.put(".h 60", theNumpadAction);
+
+	// Translate JTextField input to keep it from getting typed numbers
+	// from the numpad events.
+	// TODO: We probably want to make this configurable, for people who
+	// like to use their numeric pads to, you know, type in numbers.
+	final InputMap tfInputMap = textField.getInputMap();
+	textField.setInputMap(JComponent.WHEN_FOCUSED,
+	                      new NumpadInputMap (tfInputMap));
+
+	// FIXME: This is an even bigger hack.  Mostly because we're meddling
+	// directly with the textField; the ginormous anonymous class we can
+	// obviously always refactor later.
+	textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "btthud.ENTER");
+	textField.getActionMap().put("btthud.ENTER", new AbstractAction () {
+		public void actionPerformed (final ActionEvent ae) {
+			final String text = textField.getText();
+
+			if (conn != null && text != null && conn.connected) {
+				if (prefs.echoCommands)
+					parse.commandLine("> " + text);
+
+				if (!parse.isHudCommand(text)) {
+					try {
+						conn.sendCommand(text);
+					} catch (IOException e) {
+						parse.commandLine("> Couldn't send: " + e);
+						// TODO: Break connection?
+					}
+				}
+
+				// Clear the text field
+				textField.setText(null);
+
+				// Add this command to our history
+				if (commandHistory.size() == 0
+				    || (String)commandHistory.getLast() != text)
+					commandHistory.add(text);
+
+				// If we're over our preferred history size,
+				// remove the next line (in FIFO order).
+				if (commandHistory.size() > prefs.commandHistory)
+					commandHistory.removeFirst();
+
+				// Reset our history location counter
+				historyLoc = 1;
+			} else {
+				// Trying to talk while not connected
+				bsd.insertMessageString("*** Can't Send Text: Not Connected ***");
+			}
+		}
+	});
     }
 
-    // ------------------------------------------------------------------------
-    // MAIN SETUP
-    // ------------------------------------------------------------------------
-    
-    public Thud()
-    {
-        super("Thud");
-        
-        // Set frame icon.
-        final ClassLoader loader = getClass().getClassLoader();
-        final URL appIconURL = loader.getResource("media/icon/icon.gif");
-        final ImageIcon appIcon = new ImageIcon (appIconURL,
-                                                 "application icon");
-        setIconImage(appIcon.getImage());
-
-        // Read preferences.
-        readPrefs();
-
-        mainFontChanged();				// setup a new font
-        
-        this.getContentPane().setLayout(null);
-
-        // Add all of our menus
-        addMenus();
-
-        // Create an about box
-        aboutBox = new AboutBox();
-
-        // Setup the main text areas
-        setupNewTextFields();
-
-        // Locate the window properly
-        setSize(prefs.mainSizeX, prefs.mainSizeY);
-        setLocation(prefs.mainLoc);
-        setAlwaysOnTop(prefs.mainAlwaysOnTop);
-        
-        // Initilization strings
-        Package			pkg = Package.getPackage("btthud.ui");
-        String			buildNumber = null;
-        if (pkg != null)
-            buildNumber = pkg.getImplementationVersion();
-
-        if (buildNumber == null)
-            buildNumber = "Unknown";
-        
-        bsd.insertPlainString(" *** Thud, (c) 2001-2006 Anthony Parker & the THUD team   ***");
-        bsd.insertPlainString(" *** bt-thud.sourceforge.net                              ***");
-        bsd.insertPlainString(" *** Version: 1.3.2 Beta                                  ***\n");        
-
-        // Show ourselves
-        setVisible(true);
-
-        // Show version notes
-        if (firstLaunch)
-        {
-            doReleaseNotes();
-            firstLaunch = false;
-        }
-    }
-    
     /** Start the connection, including creating new objects */
     public void startConnection(String host, int port)
     {        
@@ -745,8 +1086,8 @@ public class Thud extends JFrame implements  ActionListener
             connected = true;
 
             // Enable some menu stuff
-            miStartStop.setEnabled(true);
-            miDisconnect.setEnabled(true);
+            taStartStop.setEnabled(true);
+            taDisconnect.setEnabled(true);
             mapMenu.setEnabled(true);
             updateMenu.setEnabled(true);
             windowMenu.setEnabled(true);
@@ -784,110 +1125,11 @@ public class Thud extends JFrame implements  ActionListener
                 parse.messageLine("*** Disconnected ***");
 
             // Disable some menu stuff
-            miStartStop.setEnabled(false);
-            miDisconnect.setEnabled(false);
+            taStartStop.setEnabled(false);
+            taDisconnect.setEnabled(false);
             mapMenu.setEnabled(false);
             updateMenu.setEnabled(false);
             windowMenu.setEnabled(false);
-        }
-    }
-
-    // ------------------------------------------------------------------------
-    // ACTION AND MENU HANDLING
-    // ------------------------------------------------------------------------
-
-    /** Repaint ourselves */
-    public void paint(Graphics g) {
-
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                            prefs.antiAliasText ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-        super.paint(g2);
-    }
-     
-    /** ActionListener interface (for menus) */
-    public void actionPerformed(ActionEvent newEvent)
-    {
-    	if (newEvent.getActionCommand().equals(miLoadMap.getActionCommand())) doLoadMap();        
-    	else if (newEvent.getActionCommand().equals(miSaveMapAs.getActionCommand())) doSaveMapAs();    	
-    	else if (newEvent.getActionCommand().equals(miReleaseNotes.getActionCommand())) doReleaseNotes();
-        else if (newEvent.getActionCommand().equals(miQuit.getActionCommand())) doQuit();
-        else if (newEvent.getActionCommand().equals(miUndo.getActionCommand())) doUndo();
-        else if (newEvent.getActionCommand().equals(miCut.getActionCommand())) doCut();
-        else if (newEvent.getActionCommand().equals(miCopy.getActionCommand())) doCopy();
-        else if (newEvent.getActionCommand().equals(miPaste.getActionCommand())) doPaste();
-        else if (newEvent.getActionCommand().equals(miClear.getActionCommand())) doClear();
-        else if (newEvent.getActionCommand().equals(miPreviousCommand.getActionCommand())) doPreviousCommand();
-        else if (newEvent.getActionCommand().equals(miEraseCommand.getActionCommand())) doEraseCommand();
-        else if (newEvent.getActionCommand().equals(miMuteMainWindow.getActionCommand())) doMuteMainWindow();
-        else if (newEvent.getActionCommand().equals(miSelectAll.getActionCommand())) doSelectAll();
-        else if (newEvent.getActionCommand().equals(miStartStop.getActionCommand())) doStartStop();
-        else if (newEvent.getActionCommand().equals(miZoomIn.getActionCommand())) doZoom(5);
-        else if (newEvent.getActionCommand().equals(miZoomOut.getActionCommand())) doZoom(-5);
-        else if (newEvent.getActionCommand().equals(miMakeArcsWeaponRange.getActionCommand())) doMakeArcsWeaponRange();
-        else if (newEvent.getActionCommand().equals(miArcRetract.getActionCommand())) doChangeArc(-1);
-        else if (newEvent.getActionCommand().equals(miArcExtend.getActionCommand())) doChangeArc(1);
-        else if (newEvent.getActionCommand().equals(miShowHexNumbers.getActionCommand())) doShowHexNumbers();
-        else if (newEvent.getActionCommand().equals(miShowUnitNames.getActionCommand())) doShowUnitNames();
-        else if (newEvent.getActionCommand().equals(miShowArcs.getActionCommand())) doShowArcs();
-        else if (newEvent.getActionCommand().equals(miDarkenElevations.getActionCommand())) doDarkenElevations();
-        else if (newEvent.getActionCommand().equals(miShowArmorDiagrams.getActionCommand())) doShowArmorDiagrams();
-        else if (newEvent.getActionCommand().equals(miShowLOSInfo.getActionCommand())) doShowLOSInfo();
-        else if (newEvent.getActionCommand().equals(miShowCliffs.getActionCommand())) doShowCliffs();
-        else if (newEvent.getActionCommand().equals(miShowIndicators.getActionCommand())) doShowIndicators();
-        else if (newEvent.getActionCommand().equals(miMoveLeft.getActionCommand())) doChangeXOffset(-1);
-        else if (newEvent.getActionCommand().equals(miMoveRight.getActionCommand())) doChangeXOffset(1);
-        else if (newEvent.getActionCommand().equals(miMoveUp.getActionCommand())) doChangeYOffset(-1);
-        else if (newEvent.getActionCommand().equals(miMoveDown.getActionCommand())) doChangeYOffset(1);
-        else if (newEvent.getActionCommand().equals(miCenterMap.getActionCommand())) doCenterMap();
-        else if (newEvent.getActionCommand().equals(miPreferences.getActionCommand())) doPreferences();
-        else if (matchesConnectionMenu(newEvent.getActionCommand())) doNewConnection(newEvent.getActionCommand());
-        else if (newEvent.getActionCommand().equals(miAddNewHost.getActionCommand())) doAddNewHost();
-        else if (newEvent.getActionCommand().equals(miRemoveHost.getActionCommand())) doRemoveHost();
-        else if (newEvent.getActionCommand().equals(miDisconnect.getActionCommand())) doDisconnect();
-        else if (newEvent.getActionCommand().equals(miFastUpdate.getActionCommand())) doChangeUpdate(MUConstants.FAST_UPDATE);
-        else if (newEvent.getActionCommand().equals(miNormalUpdate.getActionCommand())) doChangeUpdate(MUConstants.NORMAL_UPDATE);
-        else if (newEvent.getActionCommand().equals(miSlowUpdate.getActionCommand())) doChangeUpdate(MUConstants.SLOW_UPDATE);
-        else if (newEvent.getActionCommand().equals(miSendTacticalUpdate.getActionCommand())) doSendTacUpdate();
-        else if (newEvent.getActionCommand().equals(miDumpDocument.getActionCommand())) doDumpDocumentStructure();
-        else if (newEvent.getActionCommand().equals(miWindowContacts.getActionCommand())) doWindowContacts();    	
-        else if (newEvent.getActionCommand().equals(miWindowStatus.getActionCommand())) doWindowStatus();
-        else if (newEvent.getActionCommand().equals(miWindowTactical.getActionCommand())) doWindowTactical();    	
-        else if (newEvent.getID() == 1001) 		// this is sorta bad, we assume that if it's not a menu item they hit return in the text field. need to fix
-        			// NumpadAction now depends on this sorta-bad behavior, so if this is fixed, fix it too or numpad bindings will break
-        {
-            String text = textField.getText();
-            try
-            {
-            	if (conn != null && text != null && conn.connected)
-                {
-                    if (prefs.echoCommands)
-                        parse.commandLine("> " + text); 
-                    if (!parse.isHudCommand(text))
-                        conn.sendCommand(text);
-
-                    // Clear the text field
-                    textField.setText("");
-                    
-                    // Add this command to our history
-                    if (commandHistory.size() == 0 || (String) commandHistory.getLast() != text)
-                        commandHistory.add(text);
-
-                    // If we're over our preferred history size, remove the first
-                    if (commandHistory.size() > prefs.commandHistory)
-                        commandHistory.removeFirst();
-
-                    // Reset our history location counter
-                    historyLoc = 1;
-                } else {
-                	// Trying to talk while not connected
-                	bsd.insertMessageString("*** Can't Send Text: Not Connected ***");            	
-                }
-            }
-            catch (Exception e)
-            {
-                System.out.println("Error: " + e);
-            }
         }
     }
 
@@ -897,71 +1139,6 @@ public class Thud extends JFrame implements  ActionListener
         aboutBox.setVisible(true);        
     }
 
-    /** Show the release notes */
-    public void doLoadMap()
-    {
-        final JFileChooser fc = new JFileChooser();
-        int returnVal = fc.showOpenDialog(this);
-        
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
-        	data.mapFileName = fc.getSelectedFile().getAbsolutePath();
-        	if(data.loadMapFromDisk()) {
-        		parse.messageLine("*** Map " + data.mapFileName + " loaded successfully ***");
-        	} else {
-        		parse.messageLine("*** Error loading map " + data.mapFileName + " ***");
-        	}
-        }
-    }
-    
-    public void doSaveMapAs()
-    {
-        final JFileChooser fc = new JFileChooser();
-        int returnVal = fc.showSaveDialog(this);
-        
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
-        	data.mapFileName = fc.getSelectedFile().getAbsolutePath();
-        	if(data.saveMapToDisk()) {
-        		parse.messageLine("*** Map " + data.mapFileName + " saved successfully ***");
-        	} else {
-        		parse.messageLine("*** Error saving map " + data.mapFileName + " ***");
-        	}
-        }
-    	
-    }
-
-    
-    /** Show the release notes */
-    public void doReleaseNotes()
-    {
-        ReleaseNotesDialog		notesDialog = new ReleaseNotesDialog(this, true);
-        notesDialog.setVisible(true);
-    }
-
-    /** Quit cleanly */
-    public void doQuit()
-    {    	
-        try
-        {
-            // Close our connection
-            if (connected)
-                stopConnection();
-
-            // Write out our preferences file
-            writePrefs();
-            
-            // Write out map
-            //if(data != null)
-            	//data.saveMapToDisk();
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error: doQuit: " + e);
-        }
-
-        // We're done
-        System.exit(0);
-    }
-    
     /** Display the preferences dialog */
     public void doPreferences()
     {
@@ -999,18 +1176,6 @@ public class Thud extends JFrame implements  ActionListener
     }
     
     // -----------------------
-    // Here's a whole slew of things we don't support	
-    public void doUndo() {}
-	
-    public void doCut() {}
-	
-    public void doCopy() {}
-	
-    public void doPaste() {}
-	
-    public void doClear() {}
-	
-    public void doSelectAll() {}
 
     /** Insert the previous command into the text box */
     public void doPreviousCommand()
@@ -1030,14 +1195,14 @@ public class Thud extends JFrame implements  ActionListener
     /** Erase the current command from the text box */
     public void doEraseCommand()
     {
-        textField.setText("");
+        textField.setText(null);
     }
 
     /** Mute the text in the main window */
     public void doMuteMainWindow()
     {
         data.mainWindowMuted = !data.mainWindowMuted;
-        miMuteMainWindow.setState(data.mainWindowMuted);
+        taMuteMainWindowText.setSelected(data.mainWindowMuted);
 
         if (parse != null)
         {
@@ -1085,7 +1250,7 @@ public class Thud extends JFrame implements  ActionListener
              // Start sending commands
              commands.startTimers();
 
-             miSendTacticalUpdate.setEnabled(true);    		
+             taUpdateTacticalMapNow.setEnabled(true);
     	}    	
     }
     
@@ -1096,7 +1261,7 @@ public class Thud extends JFrame implements  ActionListener
             parse.messageLine("*** Display Stopped ***");
             data.hudRunning = false;
             commands.endTimers();            
-            miSendTacticalUpdate.setEnabled(false);
+            taUpdateTacticalMapNow.setEnabled(false);
     	}
     }
     
@@ -1174,11 +1339,11 @@ public class Thud extends JFrame implements  ActionListener
     {
         prefs.tacShowArcs = !prefs.tacShowArcs;
         
-        miShowArcs.setState(prefs.tacShowArcs);
+        taShowWeaponsArcs.setSelected(prefs.tacShowArcs);
 
-        miMakeArcsWeaponRange.setEnabled(prefs.tacShowArcs);
-        miArcRetract.setEnabled(!prefs.makeArcsWeaponRange && prefs.tacShowArcs);
-        miArcExtend.setEnabled(!prefs.makeArcsWeaponRange && prefs.tacShowArcs);
+        taMakeArcsWeaponRanges.setEnabled(prefs.tacShowArcs);
+        taRetractArcRange.setEnabled(!prefs.makeArcsWeaponRange && prefs.tacShowArcs);
+        taExtendArcRange.setEnabled(!prefs.makeArcsWeaponRange && prefs.tacShowArcs);
         
         tacMap.newPreferences(prefs);
     }
@@ -1187,9 +1352,9 @@ public class Thud extends JFrame implements  ActionListener
     public void doMakeArcsWeaponRange()
     {
         prefs.makeArcsWeaponRange = !prefs.makeArcsWeaponRange;
-        miMakeArcsWeaponRange.setState(prefs.makeArcsWeaponRange);
-        miArcRetract.setEnabled(!prefs.makeArcsWeaponRange);
-        miArcExtend.setEnabled(!prefs.makeArcsWeaponRange);
+        taMakeArcsWeaponRanges.setSelected(prefs.makeArcsWeaponRange);
+        taRetractArcRange.setEnabled(!prefs.makeArcsWeaponRange);
+        taExtendArcRange.setEnabled(!prefs.makeArcsWeaponRange);
     }
 
     /** Handle changing of arc length */
@@ -1207,7 +1372,7 @@ public class Thud extends JFrame implements  ActionListener
     public void doShowHexNumbers()
     {
         prefs.tacShowHexNumbers = !prefs.tacShowHexNumbers;
-        miShowHexNumbers.setState(prefs.tacShowHexNumbers);
+        taShowHexNumbers.setSelected(prefs.tacShowHexNumbers);
         tacMap.newPreferences(prefs);
     }
 
@@ -1215,7 +1380,7 @@ public class Thud extends JFrame implements  ActionListener
     public void doShowUnitNames()
     {
         prefs.tacShowUnitNames = !prefs.tacShowUnitNames;
-        miShowUnitNames.setState(prefs.tacShowUnitNames);
+        taShowUnitNames.setSelected(prefs.tacShowUnitNames);
         tacMap.newPreferences(prefs);
     }
 
@@ -1223,7 +1388,7 @@ public class Thud extends JFrame implements  ActionListener
     public void doDarkenElevations()
     {
         prefs.tacDarkenElev = !prefs.tacDarkenElev;
-        miDarkenElevations.setState(prefs.tacDarkenElev);
+        taDarkenElevations.setSelected(prefs.tacDarkenElev);
         tacMap.newPreferences(prefs);
     }
     
@@ -1231,7 +1396,7 @@ public class Thud extends JFrame implements  ActionListener
     public void doShowArmorDiagrams()
     {
     	prefs.tacShowArmorDiagram = !prefs.tacShowArmorDiagram;
-    	miShowArmorDiagrams.setState(prefs.tacShowArmorDiagram);
+    	taShowArmorDiagram.setSelected(prefs.tacShowArmorDiagram);
     	tacMap.newPreferences(prefs);
     }
     
@@ -1239,7 +1404,7 @@ public class Thud extends JFrame implements  ActionListener
     public void doShowLOSInfo()
     {
     	prefs.tacShowLOSInfo = !prefs.tacShowLOSInfo;
-    	miShowLOSInfo.setState(prefs.tacShowLOSInfo);
+    	taShowLOSInfo.setSelected(prefs.tacShowLOSInfo);
     	tacMap.newPreferences(prefs);
     }
 
@@ -1247,7 +1412,7 @@ public class Thud extends JFrame implements  ActionListener
     public void doShowCliffs()
     {
         prefs.tacShowCliffs = !prefs.tacShowCliffs;
-        miShowCliffs.setState(prefs.tacShowCliffs);
+        taShowCliffs.setSelected(prefs.tacShowCliffs);
         tacMap.newPreferences(prefs);
     }
 
@@ -1255,15 +1420,10 @@ public class Thud extends JFrame implements  ActionListener
     public void doShowIndicators()
     {
         prefs.tacShowIndicators = !prefs.tacShowIndicators;
-        miShowIndicators.setState(prefs.tacShowIndicators);
+        taShowHeatArmoronTactical.setSelected(prefs.tacShowIndicators);
         tacMap.newPreferences(prefs);
     }
 
-    public void doDumpDocumentStructure()
-    {
-        bsd.dump(System.out);        
-    }
-    
     // These two are for future expansion of setting the colors in the main window
     public void doGetBackgroundColor()
     {
@@ -1301,12 +1461,6 @@ public class Thud extends JFrame implements  ActionListener
         startConnection(st.nextToken(), Integer.parseInt(st.nextToken().trim()));
     }
 
-    /** Disconnect from a connection */
-    public void doDisconnect()
-    {
-        stopConnection();
-    }
-
     /** Change the update speed */
     public void doChangeUpdate(int whichSpeed)
     {
@@ -1317,9 +1471,9 @@ public class Thud extends JFrame implements  ActionListener
                 prefs.mediumCommandUpdate = 2.0;
                 prefs.slowCommandUpdate = 3.0;
                 prefs.slugCommandUpdate = 15.0;
-                miFastUpdate.setState(true);
-                miNormalUpdate.setState(false);
-                miSlowUpdate.setState(false);
+                taFastUpdateSpeed.setSelected(true);
+                taNormalUpdateSpeed.setSelected(false);
+                taSlowUpdateSpeed.setSelected(false);
                 break;
 
             case MUConstants.NORMAL_UPDATE:
@@ -1327,9 +1481,9 @@ public class Thud extends JFrame implements  ActionListener
                 prefs.mediumCommandUpdate = 5.0;
                 prefs.slowCommandUpdate = 10.0;
                 prefs.slugCommandUpdate = 30.0;
-                miFastUpdate.setState(false);
-                miNormalUpdate.setState(true);
-                miSlowUpdate.setState(false);
+                taFastUpdateSpeed.setSelected(false);
+                taNormalUpdateSpeed.setSelected(true);
+                taSlowUpdateSpeed.setSelected(false);
                 break;
 
             case MUConstants.SLOW_UPDATE:
@@ -1337,19 +1491,13 @@ public class Thud extends JFrame implements  ActionListener
                 prefs.mediumCommandUpdate = 10.0;
                 prefs.slowCommandUpdate = 15.0;
                 prefs.slugCommandUpdate = 45.0;
-                miFastUpdate.setState(false);
-                miNormalUpdate.setState(false);
-                miSlowUpdate.setState(true);
+                taFastUpdateSpeed.setSelected(false);
+                taNormalUpdateSpeed.setSelected(false);
+                taSlowUpdateSpeed.setSelected(true);
                 break;
         }
     }
 
-    /** Forces a tactical update */
-    public void doSendTacUpdate()
-    {
-        commands.forceTactical();
-    }
-    
     /** Called when main font size changes */
     public void mainFontChanged()
     {
@@ -1382,21 +1530,6 @@ public class Thud extends JFrame implements  ActionListener
         mainFontChanged();
     }
     
-    /** Re-show contacts window */
-    public void doWindowContacts() {
-    	conList.setVisible(true);
-    }
-    
-    /** Re-show status window */
-    public void doWindowStatus() {
-    	status.setVisible(true);
-    }
-    
-    /** Re-show tactical window */
-    public void doWindowTactical() {
-    	tacMap.setVisible(true);
-    }
-
     /** Write our prefs to disk */
     public void writePrefs()
     {
@@ -1432,9 +1565,4 @@ public class Thud extends JFrame implements  ActionListener
 
         PreferenceStore.save(prefs);
     }
-
-    public static void main(String args[]) {
-        new Thud();
-    }
-
 }
