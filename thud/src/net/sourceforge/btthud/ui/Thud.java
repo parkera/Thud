@@ -57,6 +57,9 @@ public class Thud extends JFrame implements Runnable {
 
     // ------------------
 
+	// Private InputMap for numeric keypad.
+	private final InputMap numpadInputMap = new InputMap ();
+
 	// Declarations for menus
 	private JMenuBar mainMenuBar = new JMenuBar();
 
@@ -424,20 +427,38 @@ public class Thud extends JFrame implements Runnable {
 		//
 		// Key bindings.
 		//
+		// FIXME: This is a bit of a hack.  We should do this in a more
+		// organized way, and maybe not on the root pane.
+		//
+		// We'll want some sort of KeyBindingManager, that will provide
+		// a GUI for the user to set/save/restore custom bindings, and
+		// also supply input/action maps to inherit from.
+		//
+		// Probably just input maps, as action maps will be fixed for
+		// any particular component, although having an Action manager
+		// might be useful for enabling/disabling all related actions
+		// simultaneously (for connections, for example).
 
-		// Whee, numpad bindings.
 		bindCommand(KeyEvent.VK_NUMPAD1, "heading 240");
 		bindCommand(KeyEvent.VK_NUMPAD1, Event.SHIFT_MASK, "heading 210");
+
 		bindCommand(KeyEvent.VK_NUMPAD2, "heading 180");
+
 		bindCommand(KeyEvent.VK_NUMPAD3, Event.SHIFT_MASK, "heading 150");
 		bindCommand(KeyEvent.VK_NUMPAD3, "heading 120");
 
 		bindCommand(KeyEvent.VK_NUMPAD4, "heading 270");
+
+		bindAction(KeyEvent.VK_NUMPAD5, new StayHeadingAction (this));
+		bindAction(KeyEvent.VK_NUMPAD5, Event.SHIFT_MASK, new ReverseHeadingAction (this));
+
 		bindCommand(KeyEvent.VK_NUMPAD6, "heading 90");
 
 		bindCommand(KeyEvent.VK_NUMPAD7, "heading 300");
 		bindCommand(KeyEvent.VK_NUMPAD7, Event.SHIFT_MASK, "heading 330");
+
 		bindCommand(KeyEvent.VK_NUMPAD8, "heading 0");
+
 		bindCommand(KeyEvent.VK_NUMPAD9, Event.SHIFT_MASK, "heading 30");
 		bindCommand(KeyEvent.VK_NUMPAD9, "heading 60");
 
@@ -446,12 +467,16 @@ public class Thud extends JFrame implements Runnable {
 		bindCommand(KeyEvent.VK_F2, "firetic 1");
 		bindCommand(KeyEvent.VK_F3, "firetic 2");
 		bindCommand(KeyEvent.VK_F4, "firetic 3");
+
 		bindCommand(KeyEvent.VK_F1, Event.SHIFT_MASK, "listtic 0");
 		bindCommand(KeyEvent.VK_F2, Event.SHIFT_MASK, "listtic 1");
 		bindCommand(KeyEvent.VK_F3, Event.SHIFT_MASK, "listtic 2");
 		bindCommand(KeyEvent.VK_F4, Event.SHIFT_MASK, "listtic 3");
-		
+
 		// Weapon bindings.
+		// FIXME: We were already using CTRL + # (or rather, menu
+		// shortcut + #) for host accelerators.  Changed the host
+		// accelerators to menu shortcut + SHIFT + # for now.
 		bindCommand(KeyEvent.VK_1, Event.CTRL_MASK, "sight 1");
 		bindCommand(KeyEvent.VK_2, Event.CTRL_MASK, "sight 2");
 		bindCommand(KeyEvent.VK_3, Event.CTRL_MASK, "sight 3");
@@ -473,8 +498,9 @@ public class Thud extends JFrame implements Runnable {
 		bindCommand(KeyEvent.VK_8, Event.ALT_MASK, "fire 8");
 		bindCommand(KeyEvent.VK_9, Event.ALT_MASK, "fire 9");
 		bindCommand(KeyEvent.VK_0, Event.ALT_MASK, "fire 0");
-		
+
 		// Targeting bindings
+		// TODO: If we're locked on a tank/VTOL/whatever, adapt.
 		bindCommand(KeyEvent.VK_NUMPAD1, Event.CTRL_MASK, "target ll");
 		bindCommand(KeyEvent.VK_NUMPAD2, Event.CTRL_MASK, "target -");
 		bindCommand(KeyEvent.VK_NUMPAD3, Event.CTRL_MASK, "target rl");
@@ -484,12 +510,13 @@ public class Thud extends JFrame implements Runnable {
 		bindCommand(KeyEvent.VK_NUMPAD7, Event.CTRL_MASK, "target lt");
 		bindCommand(KeyEvent.VK_NUMPAD8, Event.CTRL_MASK, "target h");
 		bindCommand(KeyEvent.VK_NUMPAD9, Event.CTRL_MASK, "target rt");
-		
+
 		// Misc bindings
+		// TODO: If we're in a tank, rotate turret instead.
 		bindCommand(KeyEvent.VK_NUMPAD7, Event.ALT_MASK, "rottorso l");
 		bindCommand(KeyEvent.VK_NUMPAD8, Event.ALT_MASK, "rottorso c");
 		bindCommand(KeyEvent.VK_NUMPAD9, Event.ALT_MASK, "rottorso r");
-		
+
 		//
 		// Menu-related actions.
 		//
@@ -799,7 +826,30 @@ public class Thud extends JFrame implements Runnable {
 	private void bindAction (final KeyStroke key, final Action action) {
 		// TODO: WHEN_ANCESTOR_OF_FOCUSED_COMPONENT may not always be
 		// the best choice, but more options might be confusing.
-		final InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		InputMap inputMap;
+
+		switch (key.getKeyCode()) {
+		case KeyEvent.VK_NUMPAD0:
+		case KeyEvent.VK_NUMPAD1:
+		case KeyEvent.VK_NUMPAD2:
+		case KeyEvent.VK_NUMPAD3:
+		case KeyEvent.VK_NUMPAD4:
+		case KeyEvent.VK_NUMPAD5:
+		case KeyEvent.VK_NUMPAD6:
+		case KeyEvent.VK_NUMPAD7:
+		case KeyEvent.VK_NUMPAD8:
+		case KeyEvent.VK_NUMPAD9:
+			// Numeric keypad input map.
+			// TODO: Add support for non-digit keypad keys.
+			inputMap = numpadInputMap;
+			break;
+
+		default:
+			// Regular input map.
+			inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+			break;
+		}
+
 		final ActionMap actionMap = getRootPane().getActionMap();
 
 		final Object nameActionKey = action.getValue(Action.NAME);
@@ -1002,53 +1052,34 @@ public class Thud extends JFrame implements Runnable {
     // MAIN SETUP
     // ------------------------------------------------------------------------
     
-    /** Utility function to get the proper accelerator for connection items in the HUD menu */
-    protected void acceleratorForConnectionItem(JMenuItem mi, int i)
-    {
-        switch (i)
-        {
-            case 0:
-                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1,
-                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-                break;
-            case 1:
-                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2,
-                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-                break;
-            case 2:
-                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3,
-                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-                break;
-            case 3:
-                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4,
-                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-                break;
-            case 4:
-                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_5,
-                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-                break;
-            case 5:
-                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_6,
-                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-                break;
-            case 6:
-                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_7,
-                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-                break;
-            case 7:
-                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_8,
-                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-                break;
-            case 8:
-                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_9,
-                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-                break;
-            case 9:
-                mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0,
-                                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-                break;
-        }
-    }
+	/**
+	 * Utility function to get the proper accelerator for connection items
+	 * in the HUD menu
+	 */
+	private void acceleratorForConnectionItem (JMenuItem mi, int i) {
+		// TODO: Find a keycode that always doesn't exist.
+		int keycode = KeyEvent.VK_ENTER;
+
+		switch (i) {
+		case 0: keycode = KeyEvent.VK_1; break;
+		case 1: keycode = KeyEvent.VK_2; break;
+		case 2: keycode = KeyEvent.VK_3; break;
+		case 3: keycode = KeyEvent.VK_4; break;
+		case 4: keycode = KeyEvent.VK_5; break;
+		case 5: keycode = KeyEvent.VK_6; break;
+		case 6: keycode = KeyEvent.VK_7; break;
+		case 7: keycode = KeyEvent.VK_8; break;
+		case 8: keycode = KeyEvent.VK_9; break;
+		case 9: keycode = KeyEvent.VK_0; break;
+		}
+
+		// TODO: We could have just computed this and used the String
+		// (or even char) version of getKeyStroke().
+		if (keycode != KeyEvent.VK_ENTER) {
+			mi.setAccelerator(KeyStroke.getKeyStroke(keycode,
+			                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | Event.SHIFT_MASK));
+		}
+	}
 
     /** Initialize the connection items for the HUD menu */
     public void initConnectionMenus()
@@ -1080,18 +1111,7 @@ public class Thud extends JFrame implements Runnable {
         // Setup the text field
         add(textField, BorderLayout.SOUTH);
 
-	// Add key bindings.
-	// FIXME: This is a bit of a hack.  We should do this in a more
-	// organized way, and maybe not on the root pane.
-	//
-	// We'll want some sort of KeyBindingManager, that will provide a GUI
-	// for the user to set/save/restore custom bindings, and also supply
-	// input/action maps to inherit from.
-	//
-	// Probably just input maps, as action maps will be fixed for any
-	// particular component, although having an Action manager might be
-	// useful for enabling/disabling all related actions simultaneously
-	// (for connections, for example).
+	// Link a few key bindings.
 	final InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT); // we can also use WHEN_IN_FOCUSED_WINDOW in any subcomponent, but it's messier
 	final ActionMap actionMap = getRootPane().getActionMap();
 
@@ -1104,10 +1124,14 @@ public class Thud extends JFrame implements Runnable {
 	actionMap.put("PAGE UP", new ActionRedirector (textPane, DefaultEditorKit.pageUpAction));
 	actionMap.put("PAGE DOWN", new ActionRedirector (textPane, DefaultEditorKit.pageDownAction));
 
-	// Translate JTextField input to keep it from getting typed numbers
-	// from the numpad events.
+	// Install our custom numeric keypad handling on focusable components.
 	// TODO: We probably want to make this configurable, for people who
 	// like to use their numeric pads to, you know, type in numbers.
+	final NumpadKeyListener numpadListener = new NumpadKeyListener (getRootPane(), numpadInputMap);
+
+	textField.addKeyListener(numpadListener);
+	textPane.addKeyListener(numpadListener);
+
 	final InputMap tfInputMap = textField.getInputMap();
 	textField.setInputMap(JComponent.WHEN_FOCUSED,
 	                      new NumpadInputMap (tfInputMap));
