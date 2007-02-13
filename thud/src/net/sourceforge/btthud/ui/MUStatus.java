@@ -224,6 +224,8 @@ public class MUStatus extends JDialog
                     else
                     	addString(" ",conRegular);
                     
+                    s = "";
+                    
                     for(; heatCounter < minHeat; heatCounter++) { // Black portion
                     	if(barHeat >= heatCounter)
                     		s = s + ":";
