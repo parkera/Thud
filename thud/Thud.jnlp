@@ -11,6 +11,12 @@
    <resources> 
        <j2se version="1.5+"/> 
        <jar href="Thud.jar"/> 
-   </resources> 
-   <application-desc main-class="net.sourceforge.btthud.ui.Thud"/>
+   </resources>
+   <application-desc main-class="net.sourceforge.btthud.ui.Thud">
+   		<!-- To enable auto-connection, uncomment the lines below.
+   		<!--
+   		<argument>myhost.com</argument>
+   		<argument>1234</argument>
+   		-->
+   </application-desc>
 </jnlp>

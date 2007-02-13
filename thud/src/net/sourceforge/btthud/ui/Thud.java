@@ -50,6 +50,8 @@ public class Thud extends JFrame implements Runnable {
     int						historyLoc = 1;							// how far we are from end of history list
     
     static final int		DEBUG = 0;
+    
+    private String[]		args;
 
     boolean					firstLaunch = false;
 
@@ -121,19 +123,24 @@ public class Thud extends JFrame implements Runnable {
 
 	// Entry point.
 	public static void main (String args[]) {
-		EventQueue.invokeLater(new Thud ());
+		EventQueue.invokeLater(new Thud (args));
 	}
 
 	// Initialize main Thud window.
-	private Thud () {
+	private Thud (String[] arguments) {		
 		super("Thud");
+		this.args = arguments;
 
 		// Set frame icon.
-		final ClassLoader loader = getClass().getClassLoader();
-		final URL appIconURL = loader.getResource("media/icon/icon.gif");
-		final ImageIcon appIcon = new ImageIcon (appIconURL,
-		                                         "application icon");
-		setIconImage(appIcon.getImage());
+		try {
+			final ClassLoader loader = getClass().getClassLoader();
+			final URL appIconURL = loader.getResource("media/icon/icon.gif");
+			final ImageIcon appIcon = new ImageIcon (appIconURL,
+			                                         "application icon");
+			setIconImage(appIcon.getImage());
+		} catch(Exception e) {
+			System.out.println("Couldn't load Thud icon");
+		}
 
 		// Read preferences.
 		readPrefs();
@@ -169,9 +176,21 @@ public class Thud extends JFrame implements Runnable {
 		if (buildNumber == null)
 			buildNumber = "Unknown";
 
-		bsd.insertPlainString(" *** Thud, (c) 2001-2007 Anthony Parker & the THUD team   ***");
-		bsd.insertPlainString(" *** bt-thud.sourceforge.net                              ***");
-		bsd.insertPlainString(" *** Version: 1.3.2 Beta                                  ***\n");
+		bsd.insertPlainString(" *** Thud, (c) 2001-2007 Anthony Parker & the THUD team      ***");
+		bsd.insertPlainString(" *** bt-thud.sourceforge.net                                 ***");
+		bsd.insertPlainString(" *** Version: 1.4 Beta                                       ***");
+		bsd.insertPlainString(" *** To get started, connect to a MUX via the HUD menu,      ***");
+		bsd.insertPlainString(" *** then hit Ctrl-G when in a combat unit to activate Thud! ***\n");
+
+		// Attempt auto-connect, if given parameters
+		if(args.length == 2) {
+			try {
+				bsd.insertPlainString(" *** Auto-connecting to " + args[0] + " port " + args[1] + "...\n");
+				startConnection(args[0],Integer.parseInt(args[1]));
+			} catch (Exception e) {
+				System.out.println("Error auto-connecting to " + args[0] + "  port " + args[1]);
+			}
+		}
 	}
 
 	// Finish setting up GUI from event dispatch thread.
