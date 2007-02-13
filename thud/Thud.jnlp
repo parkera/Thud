@@ -13,7 +13,7 @@
        <jar href="Thud.jar"/> 
    </resources>
    <application-desc main-class="net.sourceforge.btthud.ui.Thud">
-   		<!-- To enable auto-connection, uncomment the lines below.
+   		<!-- To enable auto-connection, uncomment the lines below. -->
    		<!--
    		<argument>myhost.com</argument>
    		<argument>1234</argument>
