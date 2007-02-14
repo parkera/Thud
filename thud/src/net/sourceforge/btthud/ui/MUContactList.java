@@ -21,7 +21,7 @@ import javax.swing.text.DefaultStyledDocument.ElementSpec;
 
 import java.util.*;
 
-public class MUContactList extends JDialog
+public class MUContactList extends JFrame
                            implements Runnable,
                                       ActionListener
 {
@@ -45,7 +45,8 @@ public class MUContactList extends JDialog
     
     public MUContactList(final Thud owner, MUConnection conn, MUData data, MUPrefs prefs)
     {
-        super(owner, "Contact List");
+        super("Contact List");
+        setIconImage(owner.getIconImage());
         
         this.data = data;
         this.conn = conn;

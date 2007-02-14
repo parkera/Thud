@@ -26,7 +26,7 @@ import java.text.*;
  * very similar to the MUX's 'status'.
  * @author tkrajcar
  */
-public class MUStatus extends JDialog
+public class MUStatus extends JFrame
                            implements Runnable,
                                       ActionListener
 {
@@ -46,7 +46,8 @@ public class MUStatus extends JDialog
     
     public MUStatus(final Thud owner, MUConnection conn, MUData data, MUPrefs prefs)
     {
-        super(owner, "Status Report");
+        super("Status Report");
+        setIconImage(owner.getIconImage());
         
         this.data = data;
         this.conn = conn;
