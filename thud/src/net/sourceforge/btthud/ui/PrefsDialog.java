@@ -17,10 +17,10 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import java.util.*;
 
-public class PrefsDialog extends javax.swing.JDialog {
+public class PrefsDialog extends JDialog {
     
     private MUPrefs     prefs = null;
-    private Thud		thudClass = null;
+    private Thud	thud = null;
 
     private javax.swing.JTabbedPane 	TabbedPane;
 
@@ -70,24 +70,32 @@ public class PrefsDialog extends javax.swing.JDialog {
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     Font[] fonts = ge.getAllFonts();
     
-    /** Creates new form PrefsDialog */
-    public PrefsDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+	/** Creates new form PrefsDialog */
+	public PrefsDialog (Thud thud) {
+		super(thud, true);
 
-        thudClass = (Thud) parent;
-        
-        if (thudClass.prefs == null)
-            prefs = new MUPrefs();
+		this.thud = thud;
 
-        try {
-            this.prefs = (MUPrefs)thudClass.prefs.clone();
-        } catch (Exception e) {
-            System.out.println("Error: prefsDialog: " + e);
-        }
-        
-        initComponents();
-        setMapColorIcons();
-    }
+		if (thud.prefs == null)
+			prefs = new MUPrefs();
+
+		try {
+			prefs = (MUPrefs)thud.prefs.clone();
+		} catch (Exception e) {
+			System.err.println("Error: prefsDialog: " + e);
+		}
+
+		initComponents();
+		setMapColorIcons();
+
+		// Note that this may make the dialog displayable as a side
+		// effect; we might want to let the user of this class do this
+		// themselves.  In practice, they'll pretty much do this almost
+		// immediately anyway.
+		pack();
+
+		setLocationByPlatform(true);
+	}
 
     private void initComponents() {
         TabbedPane = new javax.swing.JTabbedPane();
@@ -129,12 +137,7 @@ public class PrefsDialog extends javax.swing.JDialog {
         CancelButton = new javax.swing.JButton();
         SaveButton = new javax.swing.JButton();
 
-        // Set the content pane to a null layout
-        getContentPane().setLayout(null);
-
         // Set the size of our dialog box, and some other stuff
-        setSize(405, 325);
-        setResizable(false);
         setTitle("Thud Preferences");
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Thud Preferences");
@@ -335,17 +338,20 @@ public class PrefsDialog extends javax.swing.JDialog {
         
         // done with tabs
         getContentPane().add(TabbedPane);
-        TabbedPane.setBounds(10, 10, 390, 250);
         
+        //
+        // Buttons.
+        //
+        final JPanel buttonPanel = new JPanel (new FlowLayout (FlowLayout.TRAILING));
+
         CancelButton.setText("Cancel");
         CancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CancelButtonActionPerformed(evt);
             }
         });
-        
-        getContentPane().add(CancelButton);
-        CancelButton.setBounds(190, 270, 100, 23);
+       
+        buttonPanel.add(CancelButton);
         
         SaveButton.setText("Save");
         SaveButton.addActionListener(new java.awt.event.ActionListener() {
@@ -353,9 +359,14 @@ public class PrefsDialog extends javax.swing.JDialog {
                 SaveButtonActionPerformed(evt);
             }
         });
-        
-        getContentPane().add(SaveButton);
-        SaveButton.setBounds(297, 270, 100, 23);
+       
+        buttonPanel.add(SaveButton);
+
+        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+
+	// TODO: This is a lot of work to repeat every time we want to show a
+	// Preferences dialog.  Is it possible to create the dialog once, and
+	// refresh it with new values right before invocation?
     }
 
     private void SaveButtonActionPerformed(java.awt.event.ActionEvent evt) {
@@ -374,7 +385,7 @@ public class PrefsDialog extends javax.swing.JDialog {
         prefs.maxScrollbackSize = ((Integer) scrollbackSizeBox.getSelectedItem()).intValue();
         prefs.contactsAge = ((Integer) contactsAgeBox.getSelectedItem()).intValue();
         
-        thudClass.prefs = prefs;
+        thud.prefs = prefs;
         
         closeDialog(null);
     }
