@@ -309,13 +309,14 @@ class NumpadInputMap extends InputMap {
 	}
 
 	private KeyStroke translateKeyStroke (final KeyStroke keyStroke) {
+		// Only translate unmodified number keys.
+		if (keyStroke.getModifiers() != 0)
+			return keyStroke;
+
 		switch (keyStroke.getKeyEventType()) {
 		case KeyEvent.KEY_PRESSED:
 			// Treat pressed numbers like typed numbers.
 			// TODO: It'd be nice to ignore NUMLOCK'd, too.
-			if (keyStroke.getModifiers() != 0)
-				break;
-
 			switch (keyStroke.getKeyCode()) {
 			case KeyEvent.VK_0: return TYPED_0;
 			case KeyEvent.VK_1: return TYPED_1;
@@ -327,8 +328,6 @@ class NumpadInputMap extends InputMap {
 			case KeyEvent.VK_7: return TYPED_7;
 			case KeyEvent.VK_8: return TYPED_8;
 			case KeyEvent.VK_9: return TYPED_9;
-
-			default: break;
 			}
 			break;
 
@@ -347,12 +346,7 @@ class NumpadInputMap extends InputMap {
 			case '7':
 			case '8':
 			case '9': return null;
-
-			default: break;
 			}
-			break;
-
-		default:
 			break;
 		}
 
@@ -375,7 +369,7 @@ class NumpadInputMap extends InputMap {
 
 	public Object get (final KeyStroke keyStroke) {
 		final KeyStroke translated = translateKeyStroke(keyStroke);
-		return (translated == null) ? "none" : realMap.get(translated);
+		return (translated == null) ? null : realMap.get(translated);
 	}
 
 	public InputMap getParent () {

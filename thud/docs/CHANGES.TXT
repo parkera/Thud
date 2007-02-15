@@ -7,17 +7,19 @@ For basic help on how to use Thud, please visit the web site at: http://bt-thud.
 
 Version History:
 
-1.3.2 (not yet released)
+1.4 (not yet released)
   New Features:
    * MUX-format map files can now be loaded via File -> Load Map.
    * Weather information is retrieved and displayed on the bottom of the tactical window.
    * A LOS overlay has been added. Under 'Map', select 'Show LOS Info' and hexes not in your current LOS will have a cyan/blue overlay added to them.
    * Preferences data has been moved to the Java Preferences API, meaning that thudprefs.prf is ancient history and that preferences will no longer get clobbered between versions now.
-   * Thud now has an icon, and its subwindows (contacts, status, tactical) have been converted to dialogs instead of frames, meaning that they won't take up taskbar space.
-   * The number keypad now is bound to issue heading commands corresponding to that number's direction (ie numpad 7 = heading 300, numpad 6 = heading 90, etc).
+   * Thud now has an icon!
+   * Keybindings have been implemented, mirroring XpertMUD's keys for users' convenience. The number pad is bound to headings, F1-F3 fires tics, shift-F1-F3 lists tics, ctrl-number keys sights weapons, alt-number keys fires weapons, ctrl-numpad targets body parts, alt-numpad-7/8/9 rotates torso.
+   * Connection shortcuts (formerly ctrl-#) have been moved to ctrl-shift-# to allow keybindings to function. They no longer work while you're already connected somewhere else. The 'Update' menu has been removed, with 'Update Tactical Map Now' moved to the HUD menu.
 
   Bug Fixes:
    * Cliff detection now functions properly between water and land hexes.
+   * Fixed a minor issue with the heat scale for turreted units.
 
 1.3.1 January 22, 2007
   New Features:

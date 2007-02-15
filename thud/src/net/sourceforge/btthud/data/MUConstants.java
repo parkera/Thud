@@ -14,10 +14,6 @@ import java.util.*;
 
 public class MUConstants
 {
-    public static final int			FAST_UPDATE = 1;
-    public static final int			NORMAL_UPDATE = 2;
-    public static final int			SLOW_UPDATE = 3;
-    
     /* Heat levels taken from MUX mech.status.c */
     public static final int			HEAT_LEVEL_LGREEN=0;
     public static final int			HEAT_LEVEL_BGREEN=7;

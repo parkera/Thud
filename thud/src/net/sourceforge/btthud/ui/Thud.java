@@ -100,16 +100,11 @@ public class Thud extends JFrame implements Runnable {
 	private ThudAction taShowCliffs;
 	private ThudAction taShowHeatArmoronTactical;
 
-	private JMenu updateMenu;
-	private ThudAction taFastUpdateSpeed;
-	private ThudAction taNormalUpdateSpeed;
-	private ThudAction taSlowUpdateSpeed;
-	private ThudAction taUpdateTacticalMapNow;
-
 	private JMenu hudMenu;
 	private JMenuItem[] miConnections;
 	private ThudAction taPreferences;
 	private ThudAction taStartStop;
+	private ThudAction taUpdateTacticalMapNow;
 	private ThudAction taConnect;
 	private ThudAction taAddNewHost;
 	private ThudAction taRemoveHost;
@@ -223,7 +218,6 @@ public class Thud extends JFrame implements Runnable {
 		addFileMenu();
 		addEditMenu();
 		addMapMenu();
-		addUpdateMenu();
 		addHUDMenu();
 		addDebugMenu();
 		addWindowMenu();
@@ -325,26 +319,6 @@ public class Thud extends JFrame implements Runnable {
 		mainMenuBar.add(mapMenu);
 	}
 
-	// "Update" menu.
-	private void addUpdateMenu () {
-		if (updateMenu != null)
-			return;
-
-		updateMenu = new JMenu ("Update");
-
-		addCheckBoxItem(updateMenu, taFastUpdateSpeed);
-		addCheckBoxItem(updateMenu, taNormalUpdateSpeed);
-		addCheckBoxItem(updateMenu, taSlowUpdateSpeed);
-
-		updateMenu.addSeparator();
-
-		updateMenu.add(taUpdateTacticalMapNow);
-
-		// Disable the update menu until we're actually connected
-		updateMenu.setEnabled(false);
-		mainMenuBar.add(updateMenu);
-	}
-
 	// "HUD" menu.
 	private void addHUDMenu () {
 		boolean firstTime;
@@ -365,6 +339,7 @@ public class Thud extends JFrame implements Runnable {
 		hudMenu.addSeparator();
 
 		hudMenu.add(taStartStop);
+		hudMenu.add(taUpdateTacticalMapNow);
 
 		hudMenu.addSeparator();
 
@@ -702,35 +677,6 @@ public class Thud extends JFrame implements Runnable {
 		};
 		taShowHeatArmoronTactical.setSelected(prefs.tacShowIndicators);
 
-		// Register update menu actions.
-		taFastUpdateSpeed = new ThudSimpleAction ("Fast Update Speed", KeyEvent.VK_1, Event.SHIFT_MASK) {
-			protected void doAction () {
-				doChangeUpdate(MUConstants.FAST_UPDATE);
-			}
-		};
-		taFastUpdateSpeed.setSelected(prefs.fastCommandUpdate == 1.0);
-
-		taNormalUpdateSpeed = new ThudSimpleAction ("Normal Update Speed", KeyEvent.VK_2, Event.SHIFT_MASK) {
-			protected void doAction () {
-				doChangeUpdate(MUConstants.NORMAL_UPDATE);
-			}
-		};
-		taNormalUpdateSpeed.setSelected(prefs.fastCommandUpdate == 3.0);
-
-		taSlowUpdateSpeed = new ThudSimpleAction ("Slow Update Speed", KeyEvent.VK_3, Event.SHIFT_MASK) {
-			protected void doAction () {
-				doChangeUpdate(MUConstants.SLOW_UPDATE);
-			}
-		};
-		taSlowUpdateSpeed.setSelected(prefs.fastCommandUpdate == 5.0);
-
-		taUpdateTacticalMapNow =  new ThudSimpleAction ("Update Tactical Map Now", KeyEvent.VK_N) {
-			protected void doAction () {
-				commands.forceTactical();
-			}
-		};
-		taUpdateTacticalMapNow.setEnabled(false);
-
 		// Register HUD menu actions.
 		taPreferences = new ThudSimpleAction ("Preferences...") {
 			protected void doAction () {
@@ -744,6 +690,13 @@ public class Thud extends JFrame implements Runnable {
 			}
 		};
 		taStartStop.setEnabled(false);
+
+		taUpdateTacticalMapNow =  new ThudSimpleAction ("Update Tactical Map Now", KeyEvent.VK_N) {
+			protected void doAction () {
+				commands.forceTactical();
+			}
+		};
+		taUpdateTacticalMapNow.setEnabled(false);
 
 		taConnect = new ThudAction ("Connect") {
 			public void actionPerformed (final ActionEvent ae) {
@@ -1057,8 +1010,7 @@ public class Thud extends JFrame implements Runnable {
 	 * in the HUD menu
 	 */
 	private void acceleratorForConnectionItem (JMenuItem mi, int i) {
-		// TODO: Find a keycode that always doesn't exist.
-		int keycode = KeyEvent.VK_ENTER;
+		int keycode = KeyEvent.VK_UNDEFINED;
 
 		switch (i) {
 		case 0: keycode = KeyEvent.VK_1; break;
@@ -1075,7 +1027,7 @@ public class Thud extends JFrame implements Runnable {
 
 		// TODO: We could have just computed this and used the String
 		// (or even char) version of getKeyStroke().
-		if (keycode != KeyEvent.VK_ENTER) {
+		if (keycode != KeyEvent.VK_UNDEFINED) {
 			mi.setAccelerator(KeyStroke.getKeyStroke(keycode,
 			                                         Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | Event.SHIFT_MASK));
 		}
@@ -1217,9 +1169,9 @@ public class Thud extends JFrame implements Runnable {
 
             // Enable some menu stuff
             taStartStop.setEnabled(true);
+            taUpdateTacticalMapNow.setEnabled(true);
             taDisconnect.setEnabled(true);
             mapMenu.setEnabled(true);
-            updateMenu.setEnabled(true);
             windowMenu.setEnabled(true);
         }
         catch (Exception e)
@@ -1256,9 +1208,9 @@ public class Thud extends JFrame implements Runnable {
 
             // Disable some menu stuff
             taStartStop.setEnabled(false);
+            taUpdateTacticalMapNow.setEnabled(false);
             taDisconnect.setEnabled(false);
             mapMenu.setEnabled(false);
-            updateMenu.setEnabled(false);
             windowMenu.setEnabled(false);
         }
     }
@@ -1272,7 +1224,7 @@ public class Thud extends JFrame implements Runnable {
     /** Display the preferences dialog */
     public void doPreferences()
     {
-        PrefsDialog		prefsDialog = new PrefsDialog(this, true);
+        PrefsDialog prefsDialog = new PrefsDialog(this);
         prefsDialog.setVisible(true);
 
         // Send messages around in case something changed
@@ -1589,43 +1541,6 @@ public class Thud extends JFrame implements Runnable {
         
         StringTokenizer st = new StringTokenizer(action);
         startConnection(st.nextToken(), Integer.parseInt(st.nextToken().trim()));
-    }
-
-    /** Change the update speed */
-    public void doChangeUpdate(int whichSpeed)
-    {
-        switch (whichSpeed)
-        {
-            case MUConstants.FAST_UPDATE:
-                prefs.fastCommandUpdate = 1.0;
-                prefs.mediumCommandUpdate = 2.0;
-                prefs.slowCommandUpdate = 3.0;
-                prefs.slugCommandUpdate = 15.0;
-                taFastUpdateSpeed.setSelected(true);
-                taNormalUpdateSpeed.setSelected(false);
-                taSlowUpdateSpeed.setSelected(false);
-                break;
-
-            case MUConstants.NORMAL_UPDATE:
-                prefs.fastCommandUpdate = 3.0;
-                prefs.mediumCommandUpdate = 5.0;
-                prefs.slowCommandUpdate = 10.0;
-                prefs.slugCommandUpdate = 30.0;
-                taFastUpdateSpeed.setSelected(false);
-                taNormalUpdateSpeed.setSelected(true);
-                taSlowUpdateSpeed.setSelected(false);
-                break;
-
-            case MUConstants.SLOW_UPDATE:
-                prefs.fastCommandUpdate = 5.0;
-                prefs.mediumCommandUpdate = 10.0;
-                prefs.slowCommandUpdate = 15.0;
-                prefs.slugCommandUpdate = 45.0;
-                taFastUpdateSpeed.setSelected(false);
-                taNormalUpdateSpeed.setSelected(false);
-                taSlowUpdateSpeed.setSelected(true);
-                break;
-        }
     }
 
     /** Called when main font size changes */
