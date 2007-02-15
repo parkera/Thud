@@ -24,7 +24,7 @@ public class PrefsDialog extends JDialog {
 
     private javax.swing.JTabbedPane 	TabbedPane;
 
-    private javax.swing.JPanel 			GeneralOptionsTab;
+    private javax.swing.JComponent		GeneralOptionsTab;
     private javax.swing.JCheckBox 		echoCheckBox;
     private javax.swing.JCheckBox		antiAliasTextCheckBox;
     private javax.swing.JCheckBox 		highlightMyHexCheckBox;
@@ -56,7 +56,7 @@ public class PrefsDialog extends JDialog {
     private javax.swing.JLabel 			hexNumbersLabel;
     private javax.swing.JComboBox 		hexNumberSizeBox;
 
-    private javax.swing.JPanel			WindowTab;
+    private javax.swing.JComponent		WindowTab;
     private javax.swing.JCheckBox		mainAlwaysOnTopCheckBox;
     private javax.swing.JCheckBox		contactsAlwaysOnTopCheckBox;
     private javax.swing.JCheckBox		statusAlwaysOnTopCheckBox;
@@ -65,8 +65,6 @@ public class PrefsDialog extends JDialog {
     private javax.swing.JButton 		CancelButton;
     private javax.swing.JButton 		SaveButton;
 
-    private javax.swing.JLabel			nullLabel;
-    
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     Font[] fonts = ge.getAllFonts();
     
@@ -100,7 +98,9 @@ public class PrefsDialog extends JDialog {
     private void initComponents() {
         TabbedPane = new javax.swing.JTabbedPane();
         
-        GeneralOptionsTab = new javax.swing.JPanel();
+        GeneralOptionsTab = new JPanel ();
+        GeneralOptionsTab.setLayout(new BoxLayout (GeneralOptionsTab, BoxLayout.PAGE_AXIS));
+
         speedLengthLabel = new javax.swing.JLabel();
         speedLengthBox = new javax.swing.JComboBox();
         scrollbackSizeLabel = new javax.swing.JLabel();
@@ -130,10 +130,9 @@ public class PrefsDialog extends JDialog {
         tacStatusBarLabel = new javax.swing.JLabel();
         tacStatusBarSizeBox = new javax.swing.JComboBox();
         
-        WindowTab = new JPanel();
+        WindowTab = new JPanel ();
+        WindowTab.setLayout(new BoxLayout (WindowTab, BoxLayout.PAGE_AXIS));
                 
-        nullLabel = new javax.swing.JLabel();
-        
         CancelButton = new javax.swing.JButton();
         SaveButton = new javax.swing.JButton();
 
@@ -148,10 +147,8 @@ public class PrefsDialog extends JDialog {
         });
         
         // --- GENERAL OPTIONS ---
-        JPanel generalOptionsTopPanel = new JPanel();        
-        generalOptionsTopPanel.setLayout(new GridLayout(0,3));        
-        JPanel generalOptionsBottomPanel = new JPanel();
-        generalOptionsBottomPanel.setLayout(new GridLayout(0,2));
+        final JComponent generalOptionsTop = Box.createHorizontalBox();
+        final JComponent generalOptionsBottom = new JPanel (new GridLayout (0, 2));
         
         echoCheckBox = new javax.swing.JCheckBox("Echo Commands", null, prefs.echoCommands);
         echoCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -159,7 +156,7 @@ public class PrefsDialog extends JDialog {
                 echoCheckBoxActionPerformed(evt);
             }
         });
-        generalOptionsTopPanel.add(echoCheckBox);
+        generalOptionsTop.add(echoCheckBox);
 
         // Does this work? No idea...
         antiAliasTextCheckBox = new javax.swing.JCheckBox("Antialias Text", null, prefs.antiAliasText);
@@ -168,7 +165,7 @@ public class PrefsDialog extends JDialog {
                 antiAliasTextCheckBoxActionPerformed(evt);
             }
         });
-        generalOptionsTopPanel.add(antiAliasTextCheckBox);
+        generalOptionsTop.add(antiAliasTextCheckBox);
         
         highlightMyHexCheckBox = new javax.swing.JCheckBox("Highlight My Hex", null, prefs.highlightMyHex);
         highlightMyHexCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -176,10 +173,10 @@ public class PrefsDialog extends JDialog {
                 highlightMyHexCheckBoxActionPerformed(evt);
             }
         });
-        generalOptionsTopPanel.add(highlightMyHexCheckBox);
+        generalOptionsTop.add(highlightMyHexCheckBox);
         
         speedLengthLabel.setText("Speed Indicator Divisor");
-        generalOptionsBottomPanel.add(speedLengthLabel);
+        generalOptionsBottom.add(speedLengthLabel);
         
         speedLengthBox.addItem(new Float(1.0));
         speedLengthBox.addItem(new Float(1.5));
@@ -189,10 +186,10 @@ public class PrefsDialog extends JDialog {
         speedLengthBox.addItem(new Float(3.5));
         speedLengthBox.addItem(new Float(4.0));
         speedLengthBox.setSelectedItem(new Float(prefs.speedIndicatorLength));
-        generalOptionsBottomPanel.add(speedLengthBox);
+        generalOptionsBottom.add(speedLengthBox);
 
         scrollbackSizeLabel.setText("Lines of Text in Scrollback");
-        generalOptionsBottomPanel.add(scrollbackSizeLabel);
+        generalOptionsBottom.add(scrollbackSizeLabel);
         
         scrollbackSizeBox.addItem(new Integer(500));        
         scrollbackSizeBox.addItem(new Integer(1000));
@@ -202,10 +199,10 @@ public class PrefsDialog extends JDialog {
         scrollbackSizeBox.addItem(new Integer(10000));
         scrollbackSizeBox.addItem(new Integer(20000));
         scrollbackSizeBox.setSelectedItem(new Integer(prefs.maxScrollbackSize));
-        generalOptionsBottomPanel.add(scrollbackSizeBox);
+        generalOptionsBottom.add(scrollbackSizeBox);
         
         contactsAgeLabel.setText("Time to Keep Old Contacts (sec)");
-        generalOptionsBottomPanel.add(contactsAgeLabel);
+        generalOptionsBottom.add(contactsAgeLabel);
         
         contactsAgeBox.addItem(new Integer(5));
         contactsAgeBox.addItem(new Integer(10));
@@ -220,10 +217,10 @@ public class PrefsDialog extends JDialog {
         contactsAgeBox.addItem(new Integer(55));
         contactsAgeBox.addItem(new Integer(60));
         contactsAgeBox.setSelectedItem(new Integer(prefs.contactsAge));        
-        generalOptionsBottomPanel.add(contactsAgeBox);
-        
-        GeneralOptionsTab.add(generalOptionsTopPanel);
-        GeneralOptionsTab.add(generalOptionsBottomPanel);
+        generalOptionsBottom.add(contactsAgeBox);
+       
+        GeneralOptionsTab.add(generalOptionsTop);
+        GeneralOptionsTab.add(generalOptionsBottom);
         TabbedPane.addTab("General", GeneralOptionsTab);
 
         // --- MAP COLOR OPTIONS ---
@@ -301,7 +298,6 @@ public class PrefsDialog extends JDialog {
         TabbedPane.addTab("Fonts", FontTab);
         
         // --- WINDOW OPTIONS ---
-        WindowTab.setLayout(new GridLayout(4,1));
         mainAlwaysOnTopCheckBox = new JCheckBox("Main Window Always On Top",null,prefs.mainAlwaysOnTop);
         mainAlwaysOnTopCheckBox.addActionListener(new ActionListener()  {
         	public void actionPerformed(ActionEvent evt) {
