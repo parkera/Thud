@@ -31,14 +31,13 @@ public class MUTacticalMap extends JFrame
 
     MUMapComponent			map = null;
         
-    public MUTacticalMap(final Thud owner, MUConnection conn, MUData data, MUPrefs prefs)
-    {
+    public MUTacticalMap (final Thud owner) {
         super("Tactical Map");
         setIconImage(owner.getIconImage());
 
-        this.data = data;
-        this.conn = conn;
-        this.prefs = prefs;
+        this.data = owner.data;
+        this.conn = owner.conn;
+        this.prefs = owner.prefs;
 
         // Setup our new tactical map pane
         map = new MUMapComponent(data, prefs);

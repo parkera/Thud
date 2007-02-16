@@ -3,7 +3,7 @@
 //  Thud
 //
 //  Created by asp on Wed Nov 28 2001.
-//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  Copyright (c) 2001-2007 Anthony Parker & the THUD team. 
 //  All rights reserved. See LICENSE.TXT for more information.
 //
 package net.sourceforge.btthud.ui;
@@ -43,14 +43,13 @@ public class MUContactList extends JFrame
     MutableAttributeSet	conExpired;
     MutableAttributeSet	conDestroyed;
     
-    public MUContactList(final Thud owner, MUConnection conn, MUData data, MUPrefs prefs)
-    {
+    public MUContactList (final Thud owner) {
         super("Contact List");
         setIconImage(owner.getIconImage());
         
-        this.data = data;
-        this.conn = conn;
-        this.prefs = prefs;
+        this.data = owner.data;
+        this.conn = owner.conn;
+        this.prefs = owner.prefs;
 
         mFont = new Font(prefs.mainFont, Font.PLAIN, prefs.contactFontSize);
         

@@ -3,7 +3,7 @@
 //  Thud
 //
 //  Created by Anthony Parker on Sat Dec 22 2001.
-//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  Copyright (c) 2001-2007 Anthony Parker & the THUD team. 
 //  All rights reserved. See LICENSE.TXT for more information.
 //
 package net.sourceforge.btthud.data;
@@ -13,15 +13,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;
 
-import java.io.Serializable;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+public class MUPrefs implements Cloneable {
 
-public class MUPrefs implements Cloneable, Serializable
-{
     public boolean				showTacMap, showContacts;
 
     public Point				mainLoc, tacLoc, contactsLoc, armorLoc, statusLoc;
@@ -70,11 +63,10 @@ public class MUPrefs implements Cloneable, Serializable
     public ArrayList<MUHost>	hosts = new ArrayList<MUHost>();
 
     public boolean mainAlwaysOnTop, contactsAlwaysOnTop, statusAlwaysOnTop, tacticalAlwaysOnTop;
-    public MUPrefs()
-    {
-        
-    }
-    
+
+	public MUPrefs () {
+	}
+
     /**
      * Set default prefs
      */
@@ -176,8 +168,8 @@ public class MUPrefs implements Cloneable, Serializable
         tacticalAlwaysOnTop = false;
         
         MUHost bt3030 = new MUHost("btech.dhs.org", 3030);
-        MUHost frontiers = new MUHost("btmux.com", 5555);
-        MUHost bt3065 = new MUHost("btmux.com", 3065);
+        MUHost frontiers = new MUHost("frontiermux.com", 5555);
+        MUHost bt3065 = new MUHost("3065.btmux.com", 3065);
         
 
         hosts.add(bt3030);
@@ -204,46 +196,48 @@ public class MUPrefs implements Cloneable, Serializable
     }
 
 
-    /**
-     * Deep clone the preferences object. (This used to be ObjectCloner.java.)
-     *
-     * From: http://www.javaworld.com/javaworld/javatips/jw-javatip76-p2.html
-     * Provides a class useful for making deep copies of objects that are
-     * serializable... ie MUPrefs.
-     */
-    public Object clone () {
-        ByteArrayOutputStream bos = null;
-        ObjectOutputStream oos = null;
+	/**
+	 * Deep clone the preferences object.
+	 */
+	public Object clone () throws CloneNotSupportedException {
+		// Get shallow copy.
+		final MUPrefs newObject = (MUPrefs)super.clone();
 
-        ByteArrayInputStream bin = null;
-        ObjectInputStream ois = null;
+		// Deep copy specific fields.  This is much faster than using
+		// Serialization to clone(), although also less convenient.
+		//
+		// Normal rules for clone() apply: Basically, if it's not a
+		// primitive, and it's not shareable (generally immutable) like
+		// a String, then it needs to be copied.  Also, remember that
+		// clones of Collections from java.util return shallow copies.
+		//
+		// TODO: This information could be useful to PreferencesStore.
+		// Perhaps we should store the information in a common place.
+		//
+		// None of these should be null, by the way.
 
-        try {
-            // Serialize.
-            bos = new ByteArrayOutputStream ();
-            oos = new ObjectOutputStream (bos);
+		// Points.
+		newObject.mainLoc = (Point)mainLoc.clone();
+		newObject.tacLoc = (Point)tacLoc.clone();
+		newObject.contactsLoc = (Point)contactsLoc.clone();
+		newObject.armorLoc = (Point)armorLoc.clone();
+		newObject.statusLoc = (Point)statusLoc.clone();
 
-            oos.writeObject(this);
-            oos.flush();
+		// Colors.
+		// XXX: Colors are immutable, more or less.  Unless you invent
+		// some sort of Color subclass that's mutable.  Then you're
+		// being a bad monkey.
+		//
+		// We still need to clone arrays, though.
+		newObject.terrainColors = (Color[])terrainColors.clone();
 
-            // Unserialize.
-            bin = new ByteArrayInputStream (bos.toByteArray());
-            ois = new ObjectInputStream (bin);
+		// ArrayList<MUHost>.
+		// FIXME: A shallow copy is enough for now, but a future
+		// connection manager will mean MUHosts are no longer
+		// immutable, and so we'll need to do a deep copy and implement
+		// clone() on MUHost.
+		newObject.hosts = (ArrayList<MUHost>)hosts.clone();
 
-            return ois.readObject();
-        } catch (Exception e) {
-            System.err.println("Exception in MUPrefs.clone(): " + e);
-            throw new Error (e);
-        } finally {
-            try {
-                if (bos != null) bos.close();
-                if (oos != null) oos.close();
-                if (bin != null) bin.close();
-                if (ois != null) ois.close();
-            } catch (IOException e) {
-                System.err.println("Exception in MUPrefs.clone(): " + e);
-                throw new Error (e);
-            }
-        }
-    }
+		return newObject;
+	}
 }

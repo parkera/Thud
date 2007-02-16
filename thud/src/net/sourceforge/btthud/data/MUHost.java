@@ -3,14 +3,16 @@
 //  Thud
 //
 //  Created by Anthony Parker on Wed Sep 25 2002.
-//  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
+//  Copyright (c) 2001-2007 Anthony Parker & the THUD team. 
 //  All rights reserved. See LICENSE.TXT for more information.
 //
 package net.sourceforge.btthud.data;
 
 import java.io.*;
 
-public class MUHost implements Serializable {
+// XXX: If you make this mutable, implement Cloneable/clone() and update the
+// clone() in MUPrefs to do a deep copy of the host list.
+public class MUHost {
 
     String			host;
     int				port;

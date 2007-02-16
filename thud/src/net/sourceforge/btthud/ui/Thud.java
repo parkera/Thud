@@ -57,6 +57,10 @@ public class Thud extends JFrame implements Runnable {
 
     // ------------------
 
+	private PrefsDialog prefsDialog;
+
+	private ThudAction taFocusInputField;
+
 	// Private InputMap for numeric keypad.
 	private final InputMap numpadInputMap = new InputMap ();
 
@@ -80,6 +84,16 @@ public class Thud extends JFrame implements Runnable {
 	private ThudAction taEraseCurrentCommand;
 	private ThudAction taMuteMainWindowText;
 
+	private JMenu hudMenu;
+	private JMenuItem[] miConnections;
+	private ThudAction taPreferences;
+	private ThudAction taStartStop;
+	private ThudAction taUpdateTacticalMapNow;
+	private ThudAction taConnect;
+	private ThudAction taAddNewHost;
+	private ThudAction taRemoveHost;
+	private ThudAction taDisconnect;
+
 	private JMenu mapMenu;
 	private ThudAction taZoomIn;
 	private ThudAction taZoomOut;
@@ -99,16 +113,6 @@ public class Thud extends JFrame implements Runnable {
 	private ThudAction taCenterMapOnUnit;
 	private ThudAction taShowCliffs;
 	private ThudAction taShowHeatArmoronTactical;
-
-	private JMenu hudMenu;
-	private JMenuItem[] miConnections;
-	private ThudAction taPreferences;
-	private ThudAction taStartStop;
-	private ThudAction taUpdateTacticalMapNow;
-	private ThudAction taConnect;
-	private ThudAction taAddNewHost;
-	private ThudAction taRemoveHost;
-	private ThudAction taDisconnect;
 
 	private JMenu debugMenu;
 	private ThudAction taDumpDocumentStructure;
@@ -144,6 +148,8 @@ public class Thud extends JFrame implements Runnable {
 		readPrefs();
 
 		mainFontChanged();			// setup a new font
+
+		prefsDialog = new PrefsDialog (this);
 
 		// Create an about box
 		aboutBox = new AboutBox();
@@ -217,8 +223,8 @@ public class Thud extends JFrame implements Runnable {
 
 		addFileMenu();
 		addEditMenu();
-		addMapMenu();
 		addHUDMenu();
+		addMapMenu();
 		addDebugMenu();
 		addWindowMenu();
 	}
@@ -276,49 +282,6 @@ public class Thud extends JFrame implements Runnable {
 		mainMenuBar.add(editMenu);
 	}
 
-	// "Map" menu.
-	private void addMapMenu () {
-		if (mapMenu != null)
-			return;
-
-		mapMenu = new JMenu ("Map");
-
-		mapMenu.add(taZoomIn);
-		mapMenu.add(taZoomOut);
-
-		mapMenu.addSeparator();
-
-		addCheckBoxItem(mapMenu, taShowWeaponsArcs);
-		addCheckBoxItem(mapMenu, taMakeArcsWeaponRanges);
-		mapMenu.add(taRetractArcRange);
-		mapMenu.add(taExtendArcRange);
-
-		mapMenu.addSeparator();
-
-		addCheckBoxItem(mapMenu, taShowHexNumbers);
-		addCheckBoxItem(mapMenu, taShowUnitNames);
-		addCheckBoxItem(mapMenu, taDarkenElevations);
-		addCheckBoxItem(mapMenu, taShowArmorDiagram);
-		addCheckBoxItem(mapMenu, taShowLOSInfo);
-
-		mapMenu.addSeparator();
-
-		mapMenu.add(taMoveMapLeft);
-		mapMenu.add(taMoveMapRight);
-		mapMenu.add(taMoveMapUp);
-		mapMenu.add(taMoveMapDown);
-		mapMenu.add(taCenterMapOnUnit);
-
-		mapMenu.addSeparator();
-
-		addCheckBoxItem(mapMenu, taShowCliffs);
-		addCheckBoxItem(mapMenu, taShowHeatArmoronTactical);
-
-		// Disable the map menu until we're actually connected
-		mapMenu.setEnabled(false);
-		mainMenuBar.add(mapMenu);
-	}
-
 	// "HUD" menu.
 	private void addHUDMenu () {
 		boolean firstTime;
@@ -365,6 +328,49 @@ public class Thud extends JFrame implements Runnable {
 		}
 	}
 
+	// "Map" menu.
+	private void addMapMenu () {
+		if (mapMenu != null)
+			return;
+
+		mapMenu = new JMenu ("Map");
+
+		mapMenu.add(taZoomIn);
+		mapMenu.add(taZoomOut);
+
+		mapMenu.addSeparator();
+
+		addCheckBoxItem(mapMenu, taShowWeaponsArcs);
+		addCheckBoxItem(mapMenu, taMakeArcsWeaponRanges);
+		mapMenu.add(taRetractArcRange);
+		mapMenu.add(taExtendArcRange);
+
+		mapMenu.addSeparator();
+
+		addCheckBoxItem(mapMenu, taShowHexNumbers);
+		addCheckBoxItem(mapMenu, taShowUnitNames);
+		addCheckBoxItem(mapMenu, taDarkenElevations);
+		addCheckBoxItem(mapMenu, taShowArmorDiagram);
+		addCheckBoxItem(mapMenu, taShowLOSInfo);
+
+		mapMenu.addSeparator();
+
+		mapMenu.add(taMoveMapLeft);
+		mapMenu.add(taMoveMapRight);
+		mapMenu.add(taMoveMapUp);
+		mapMenu.add(taMoveMapDown);
+		mapMenu.add(taCenterMapOnUnit);
+
+		mapMenu.addSeparator();
+
+		addCheckBoxItem(mapMenu, taShowCliffs);
+		addCheckBoxItem(mapMenu, taShowHeatArmoronTactical);
+
+		// Disable the map menu until we're actually connected
+		mapMenu.setEnabled(false);
+		mainMenuBar.add(mapMenu);
+	}
+
 	// "Debug" menu.
 	private void addDebugMenu () {
 		if (DEBUG == 0 || debugMenu != null)
@@ -399,6 +405,26 @@ public class Thud extends JFrame implements Runnable {
 	//
 
 	private void registerActions () {
+		//
+		// Generic actions.
+		//
+
+		// Switch focus to this window's input text field whenever
+		// someone tries to type without input text field focus.  Also,
+		// relay the typed character to the text field, so we don't
+		// lose the input.
+		//
+		// This action will usually be paired with a
+		// WHEN_ANCESTOR_OF_FOCUSED_COMPONENT input mapping, so there's
+		// no problem with specific components capturing input.  Only
+		// unhandled input will be passed up to trigger this action.
+		taFocusInputField = new ThudSimpleAction ("Focus Input Field") {
+			protected void doAction () {
+				//doLoadMap();
+			}
+		};
+
+
 		//
 		// Key bindings.
 		//
@@ -492,6 +518,7 @@ public class Thud extends JFrame implements Runnable {
 		bindCommand(KeyEvent.VK_NUMPAD8, Event.ALT_MASK, "rottorso c");
 		bindCommand(KeyEvent.VK_NUMPAD9, Event.ALT_MASK, "rottorso r");
 
+
 		//
 		// Menu-related actions.
 		//
@@ -554,6 +581,53 @@ public class Thud extends JFrame implements Runnable {
 				doMuteMainWindow();
 			}
 		};
+
+		// Register HUD menu actions.
+		taPreferences = new ThudSimpleAction ("Preferences...") {
+			protected void doAction () {
+				doPreferences();
+			}
+		};
+
+		taStartStop = new ThudSimpleAction ("Start/Stop", KeyEvent.VK_G) {
+			protected void doAction () {
+				doStartStop();
+			}
+		};
+		taStartStop.setEnabled(false);
+
+		taUpdateTacticalMapNow =  new ThudSimpleAction ("Update Tactical Map Now", KeyEvent.VK_N) {
+			protected void doAction () {
+				commands.forceTactical();
+			}
+		};
+		taUpdateTacticalMapNow.setEnabled(false);
+
+		taConnect = new ThudAction ("Connect") {
+			public void actionPerformed (final ActionEvent ae) {
+				doNewConnection(ae.getActionCommand());
+			}
+		};
+
+		taAddNewHost = new ThudSimpleAction ("Add New Host...") {
+			protected void doAction () {
+				doAddNewHost();
+			}
+		};
+
+		taRemoveHost = new ThudSimpleAction ("Remove Host...") {
+			protected void doAction () {
+				doRemoveHost();
+			}
+		};
+
+		taDisconnect = new ThudSimpleAction ("Disconnect", KeyEvent.VK_Q,
+		                          Event.SHIFT_MASK) {
+			protected void doAction () {
+				stopConnection();
+			}
+		};
+		taDisconnect.setEnabled(false);
 
 		// Register map menu actions.
 		// TODO: Maybe we should move these actions to MUTacticalMap.
@@ -676,53 +750,6 @@ public class Thud extends JFrame implements Runnable {
 			}
 		};
 		taShowHeatArmoronTactical.setSelected(prefs.tacShowIndicators);
-
-		// Register HUD menu actions.
-		taPreferences = new ThudSimpleAction ("Preferences...") {
-			protected void doAction () {
-				doPreferences();
-			}
-		};
-
-		taStartStop = new ThudSimpleAction ("Start/Stop", KeyEvent.VK_G) {
-			protected void doAction () {
-				doStartStop();
-			}
-		};
-		taStartStop.setEnabled(false);
-
-		taUpdateTacticalMapNow =  new ThudSimpleAction ("Update Tactical Map Now", KeyEvent.VK_N) {
-			protected void doAction () {
-				commands.forceTactical();
-			}
-		};
-		taUpdateTacticalMapNow.setEnabled(false);
-
-		taConnect = new ThudAction ("Connect") {
-			public void actionPerformed (final ActionEvent ae) {
-				doNewConnection(ae.getActionCommand());
-			}
-		};
-
-		taAddNewHost = new ThudSimpleAction ("Add New Host...") {
-			protected void doAction () {
-				doAddNewHost();
-			}
-		};
-
-		taRemoveHost = new ThudSimpleAction ("Remove Host...") {
-			protected void doAction () {
-				doRemoveHost();
-			}
-		};
-
-		taDisconnect = new ThudSimpleAction ("Disconnect", KeyEvent.VK_Q,
-		                          Event.SHIFT_MASK) {
-			protected void doAction () {
-				stopConnection();
-			}
-		};
-		taDisconnect.setEnabled(false);
 
 		// Register debug menu actions.
 		taDumpDocumentStructure = new ThudSimpleAction ("Dump Document Structure") {
@@ -1151,9 +1178,9 @@ public class Thud extends JFrame implements Runnable {
             conn = new MUConnection(lh, host, port, this);
 
             // Setup the rest of the helper classes.
-            status = new MUStatus(this, conn, data, prefs);
-            conList = new MUContactList(this, conn, data, prefs);
-            tacMap = new MUTacticalMap(this, conn, data, prefs);
+            status = new MUStatus (this);
+            conList = new MUContactList (this);
+            tacMap = new MUTacticalMap (this);
             
             commands = new MUCommands(conn, data, prefs);
             
@@ -1224,7 +1251,6 @@ public class Thud extends JFrame implements Runnable {
     /** Display the preferences dialog */
     public void doPreferences()
     {
-        PrefsDialog prefsDialog = new PrefsDialog(this);
         prefsDialog.setVisible(true);
 
         // Send messages around in case something changed
