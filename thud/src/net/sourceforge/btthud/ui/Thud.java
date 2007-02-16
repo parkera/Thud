@@ -1181,6 +1181,7 @@ public class Thud extends JFrame implements Runnable {
             
             // Setup the connection
             conn = new MUConnection(lh, host, port, this);
+            this.setTitle("Thud - " + host + " " + port);
 
             // Setup the rest of the helper classes.
             status = new MUStatus (this);
@@ -1220,6 +1221,7 @@ public class Thud extends JFrame implements Runnable {
         {
             connected = false;
             
+            
             if (commands != null)
                 commands.endTimers();
 
@@ -1237,6 +1239,8 @@ public class Thud extends JFrame implements Runnable {
 
             if (parse != null)
                 parse.messageLine("*** Disconnected ***");
+            
+            this.setTitle("Thud");
 
             // Disable some menu stuff
             taStartStop.setEnabled(false);

@@ -16,6 +16,7 @@ Version History:
    * Thud now has an icon!
    * Keybindings have been implemented, mirroring XpertMUD's keys for users' convenience. The number pad is bound to headings, F1-F3 fires tics, shift-F1-F3 lists tics, ctrl-number keys sights weapons, alt-number keys fires weapons, ctrl-numpad targets body parts, alt-numpad-7/8/9 rotates torso.
    * Connection shortcuts (formerly ctrl-#) have been moved to ctrl-shift-# to allow keybindings to function. They no longer work while you're already connected somewhere else. The 'Update' menu has been removed, with 'Update Tactical Map Now' moved to the HUD menu.
+   * When connected to a MUX, its address is displayed in the Thud title bar.
 
   Bug Fixes:
    * Cliff detection now functions properly between water and land hexes.
