@@ -165,11 +165,6 @@ public class Thud extends JFrame implements Runnable {
 		setJMenuBar(mainMenuBar);
 		setupListeners();
 
-		// Locate the window properly
-		setSize(prefs.mainSizeX, prefs.mainSizeY);
-		setLocation(prefs.mainLoc);
-		setAlwaysOnTop(prefs.mainAlwaysOnTop);
-
 		// Initialization strings
 		final Package pkg = Package.getPackage("btthud.ui");
 		String buildNumber = null;
@@ -199,6 +194,14 @@ public class Thud extends JFrame implements Runnable {
 
 	// Finish setting up GUI from event dispatch thread.
 	public void run () {
+		// Locate the window properly
+		pack();
+		textField.requestFocusInWindow();
+
+		setSize(prefs.mainSizeX, prefs.mainSizeY);
+		setLocation(prefs.mainLoc);
+		setAlwaysOnTop(prefs.mainAlwaysOnTop);
+
 		setVisible(true);
 
 		// Show version notes
@@ -1079,6 +1082,8 @@ public class Thud extends JFrame implements Runnable {
         textPane.setBackground(Color.black);
         textPane.setEditable(false);
         textPane.setFont(mFont);
+        textPane.setRequestFocusEnabled(false);
+	textPane.setFocusable(true);
         
         JScrollPane scrollPane = new JScrollPane(textPane,
                                                  JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
