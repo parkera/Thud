@@ -7,7 +7,7 @@ For basic help on how to use Thud, please visit the web site at: http://bt-thud.
 
 Version History:
 
-1.4 (not yet released)
+1.4 February 20, 2007
   New Features:
    * MUX-format map files can now be loaded via File -> Load Map.
    * Weather information is retrieved and displayed on the bottom of the tactical window.
