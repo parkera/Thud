@@ -1,35 +1,46 @@
-<project name="thud" default="package" basedir=".">	
+<project name="thud" default="package" basedir=".">
+
+    <!-- Bootstrap custom Ant tasks. -->
+    <!-- TODO: See if there's an existing Ant task for this. -->
+    <target name="bootstrap">
+        <javac srcdir="lib" destdir="lib" target="1.5"
+               classpath="lib/svnkit.jar" />
+        <taskdef name="my.svn.info" classname="MySVNInfo"
+                 classpath="lib:lib/svnkit.jar" />
+    </target>
+
+    <!-- Project targets. -->
     <path id="project.classpath">
-        <pathelement location="src"/>
-        <pathelement location="${JRE_LIB}"/>
+        <pathelement location="src" />
+        <pathelement location="${JRE_LIB}" />
     </path>
-	<target name="compile">
-		<mkdir dir="bin"/>
-		<javac destdir="bin" target="1.5" debug="on">
-		            <src path="src"/>
-		            <classpath refid="project.classpath"/>
-		           
-		</javac>
-	</target>
-	<target name="package" depends="compile">
-		<copy file="CHANGES.RTF" todir="bin"/>
-		<copy file="media/icon/icon.gif" todir="bin/media/icon/"/>
-		<jar destfile="Thud.jar" basedir="bin">	
-			<manifest>
-			    <attribute name="Built-By" value="${user.name}"/>
-			    <attribute name="Main-Class" value="net.sourceforge.btthud.ui.Thud"/>
-			    <section name="common">
-			      <attribute name="Specification-Title" value="btthud"/>
-			      <attribute name="Specification-Version" value="${version} ${TODAY}"/>
-			      <attribute name="Specification-Vendor" value="The THUD Team"/>
-			    </section>
-			</manifest>
-		</jar>
-		<delete file="MANIFEST.MF"/>
-	</target>
-	<target name="sign" depends="package">		
-		<input message="Enter key name (alias):" addproperty="sign.alias" defaultvalue="mykey"/>
-		<input message="Enter passphrase for keystore:" addproperty="sign.keystorepw"/>
-		<signjar jar="Thud.jar" alias="${sign.alias}" storepass="${sign.keystorepw}"/>
-	</target>
+
+    <target name="compile" depends="bootstrap">
+        <mkdir dir="bin" />
+        <javac srcdir="src" destdir="bin" target="1.5" debug="on">
+            <classpath refid="project.classpath" />
+        </javac>
+    </target>
+
+    <target name="package" depends="compile">
+        <my.svn.info revisionproperty="svn.revision" />
+        <copy file="CHANGES.RTF" todir="bin" />
+        <copy file="media/icon/icon.gif" todir="bin/media/icon/" />
+        <jar destfile="Thud.jar" basedir="bin">
+            <manifest>
+                <attribute name="Built-By" value="${user.name}" />
+                <attribute name="Main-Class" value="net.sourceforge.btthud.ui.Thud" />
+                <attribute name="Specification-Title" value="btthud" />
+                <attribute name="Specification-Version" value="1.4" />
+                <attribute name="Specification-Vendor" value="The THUD Team" />
+                <attribute name="Implementation-Version" value="${svn.revision}" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="sign" depends="package">
+        <input message="Enter key name (alias):" addproperty="sign.alias" defaultvalue="mykey" />
+        <input message="Enter passphrase for keystore:" addproperty="sign.keystorepw" />
+        <signjar jar="Thud.jar" alias="${sign.alias}" storepass="${sign.keystorepw}" />
+    </target>
 </project>

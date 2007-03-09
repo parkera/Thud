@@ -13,6 +13,9 @@ import java.awt.event.*;
 import javax.swing.*;
 
 // FIXME: All of this stuff probably shouldn't go into one class.
+public class ThudActions {
+	// FIXME: This class only exists to keep Ant from rebuilding this file.
+}
 
 // Action class to send a fixed command string.
 class SendCommandAction extends AbstractAction {

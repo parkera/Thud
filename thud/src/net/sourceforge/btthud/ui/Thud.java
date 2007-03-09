@@ -139,15 +139,16 @@ public class Thud extends JFrame implements Runnable {
 		super("Thud");
 		this.args = arguments;
 
+		final ClassLoader loader = getClass().getClassLoader();
+
 		// Set frame icon.
 		try {
-			final ClassLoader loader = getClass().getClassLoader();
 			final URL appIconURL = loader.getResource("media/icon/icon.gif");
 			final ImageIcon appIcon = new ImageIcon (appIconURL,
 			                                         "application icon");
 			setIconImage(appIcon.getImage());
-		} catch(Exception e) {
-			System.out.println("Couldn't load Thud icon");
+		} catch (Exception e) {
+			System.err.println("Couldn't load Thud icon");
 		}
 
 		// Read preferences.
@@ -172,18 +173,15 @@ public class Thud extends JFrame implements Runnable {
 		setupListeners();
 
 		// Initialization strings
-		final Package pkg = Package.getPackage("btthud.ui");
-		String buildNumber = null;
-
-		if (pkg != null)
-			buildNumber = pkg.getImplementationVersion();
-
+		String buildNumber = getClass().getPackage().getImplementationVersion();
 		if (buildNumber == null)
-			buildNumber = "Unknown";
+			buildNumber = "";
+		else
+			buildNumber = "(r" + buildNumber + ")";
 
 		bsd.insertPlainString(" *** Thud, (c) 2001-2007 Anthony Parker & the THUD team      ***");
 		bsd.insertPlainString(" *** bt-thud.sourceforge.net                                 ***");
-		bsd.insertPlainString(" *** Version: 1.4 (February 20, 2007)                        ***");
+		bsd.insertPlainString(String.format(" *** Version: 1.4 %-42s ***", buildNumber));
 		bsd.insertPlainString(" *** To get started, connect to a MUX via the HUD menu,      ***");
 		bsd.insertPlainString(" *** then hit Ctrl-G when in a combat unit to activate Thud! ***\n");
 
