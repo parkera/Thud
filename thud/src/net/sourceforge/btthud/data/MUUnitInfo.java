@@ -330,7 +330,7 @@ public class MUUnitInfo extends Object implements Comparable {
         }
     }
 
-    public String rightJust(String l, int w, boolean trunc)
+    static public String rightJust(String l, int w, boolean trunc)
     {
         if (l.length() < w)
         {

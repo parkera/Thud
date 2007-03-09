@@ -8,198 +8,69 @@
 //
 package net.sourceforge.btthud.ui;
 
-import net.sourceforge.btthud.data.*;
-import net.sourceforge.btthud.engine.*;
-import net.sourceforge.btthud.util.*;
+import net.sourceforge.btthud.ui.contacts.MUContactListComponent;
 
-import java.awt.*;
-import java.awt.event.*;
+import net.sourceforge.btthud.data.MUPrefs;
 
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.text.DefaultStyledDocument.ElementSpec;
+import javax.swing.JFrame;
 
-import java.util.*;
+public class MUContactList extends JFrame implements Runnable {
+	private final MUContactListComponent contactList;
 
-public class MUContactList extends JFrame
-                           implements Runnable,
-                                      ActionListener
-{
-    MUConnection		conn;
-    MUData				data;
-    MUPrefs				prefs;
+	private final Thud thud;
 
-    Font				mFont;
-    
-    JTextPane			contactPane;
-    Thread				thread = null;
-    
-    boolean				go = true;
+	private Thread thread = null;
+	private boolean go = true;
 
-    MutableAttributeSet	conRegular;
-    MutableAttributeSet	conEnemy;
-    MutableAttributeSet	conLocked;
-    MutableAttributeSet	conFriend;
-    MutableAttributeSet	conExpired;
-    MutableAttributeSet	conDestroyed;
-    
-    public MUContactList (final Thud owner) {
-        super("Contact List");
-        setIconImage(owner.getIconImage());
-        
-        this.data = owner.data;
-        this.conn = owner.conn;
-        this.prefs = owner.prefs;
+	public MUContactList (final Thud thud) {
+		super ("Contact List");
+		setIconImage(thud.getIconImage());
 
-        mFont = new Font(prefs.mainFont, Font.PLAIN, prefs.contactFontSize);
-        
-        // Setup our new contact list pane
-        BulkStyledDocument	bsd = new BulkStyledDocument(prefs.contactFontSize, 1000, mFont);        // Yes, max of 1000 contacts. So sue me.
-        contactPane = new JTextPane(bsd);
-        contactPane.setBackground(Color.black);
-        contactPane.setEditable(false);
-        contactPane.setDoubleBuffered(true);
+		this.thud = thud;
 
-        contactPane.setFont(mFont);
-        initAttributeSets();
+		contactList = new MUContactListComponent (thud.prefs);
+		add(contactList);
 
-        JScrollPane scrollPane = new JScrollPane(contactPane,
-                                                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                                                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		setSize(thud.prefs.contactsSizeX, thud.prefs.contactsSizeY);
+		setLocation(thud.prefs.contactsLoc);
 
-        scrollPane.setDoubleBuffered(true);
+		setAlwaysOnTop(thud.prefs.contactsAlwaysOnTop);
 
-        JPanel contentPane = new JPanel();
-        contentPane.setLayout(new BorderLayout());
-        contentPane.add(scrollPane);
-        contentPane.setDoubleBuffered(true);
-        
-        setContentPane(contentPane);
+		// Show the window now
+		setVisible(true);
 
-        setSize(prefs.contactsSizeX, prefs.contactsSizeY);
-        setLocation(prefs.contactsLoc);
-        
-        this.setAlwaysOnTop(prefs.contactsAlwaysOnTop);
-        
-        // Show the window now
+		start();
+	}
 
-        this.setVisible(true);
-        
-        start();
-    }
+	public void newPreferences (final MUPrefs prefs) {
+		contactList.newPreferences(prefs);
+		setAlwaysOnTop(prefs.contactsAlwaysOnTop);
+	}
 
-    protected void initAttributeSets()
-    {
-        conRegular = new SimpleAttributeSet();
-        StyleConstants.setFontFamily(conRegular, prefs.mainFont);        
-        StyleConstants.setFontSize(conRegular, prefs.contactFontSize);
-        StyleConstants.setForeground(conRegular, Color.white);
-    }
-    
-    public void newPreferences(MUPrefs prefs)
-    {
-        this.prefs = prefs;
-        mFont = new Font(prefs.mainFont, Font.PLAIN, prefs.contactFontSize);
-        contactPane.setFont(mFont);
-        this.setAlwaysOnTop(prefs.contactsAlwaysOnTop);
-        initAttributeSets();
-    }
-    
-    // --------------------
-    public void start()
-    {
-        if (thread == null)
-        {
-            thread = new Thread(this, "MUContactList");
-            thread.start();
-        }
-    }
-    
-    public void run()
-    {
-        MUUnitInfo								unit = new MUUnitInfo();
-        BulkStyledDocument 						doc = (BulkStyledDocument) contactPane.getDocument();
-        ArrayList<ElementSpec>					elements = new ArrayList<ElementSpec>();
-        
-        while (go)
-        {
-            try
-            {
-                if (data.hudRunning)
-                {                    
-                    elements.clear();
-                    
-                    synchronized (data)
-                    {
-                        Iterator		contacts = data.getContactsIterator(true);		// Sorted list
-                                                
-                        while (contacts.hasNext())
-                        {
-                            unit = (MUUnitInfo) contacts.next();
+	private void start () {
+		if (thread == null) {
+			thread = new Thread(this, "MUContactList");
+			thread.start();
+		}
+	}
 
-                            elements.add(new DefaultStyledDocument.ElementSpec(conRegular, DefaultStyledDocument.ElementSpec.EndTagType));
-                            elements.add(new DefaultStyledDocument.ElementSpec(conRegular, DefaultStyledDocument.ElementSpec.StartTagType));
+	public void run () {
+		while (go) {
+			try {
+				// TODO: Refresh only after we get new data.
+				synchronized (thud.data) {
+					contactList.refresh(thud.data);
+				}
 
-                            SimpleAttributeSet		whichAttrs = new SimpleAttributeSet(conRegular);
-                                                        
-                            if(unit.isFriend() && !unit.isOld()) 
-                            	StyleConstants.setForeground(whichAttrs, Color.white);
-                            
-                            if(unit.isFriend() && unit.isOld())
-                            	StyleConstants.setForeground(whichAttrs, Color.gray);
-                                                       
-                            if(!unit.isOld() && !unit.isFriend())
-                                StyleConstants.setBold(whichAttrs, true);
-                                                    
-                            if (!unit.isFriend())                            
-                            	StyleConstants.setForeground(whichAttrs, Color.yellow);                            
-                            
-                            if (unit.isTarget())                            
-                                StyleConstants.setForeground(whichAttrs, Color.red);
-                            
-                            if (unit.isDestroyed())
-                            	StyleConstants.setStrikeThrough(whichAttrs, true);
-                            
-                            elements.add(new DefaultStyledDocument.ElementSpec(whichAttrs,
-                                                                               DefaultStyledDocument.ElementSpec.ContentType,
-                                                                               unit.makeContactString().toCharArray(),
-                                                                               0,
-                                                                               unit.makeContactString().length()));
-                        }
-                    }
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// no big deal
+			}
+		}
+	}
 
-                    doc.clearAndInsertParsedString(elements);
-                    
-                    // Don't scroll
-                    // contactPane.setCaretPosition(doc.getLength());
-                }
-
-                // This should probably sleep until notified or something
-                Thread.sleep(1000);
-
-            }
-            catch (InterruptedException e)
-            {
-                // no big deal
-            }
-            catch (Exception e)
-            {
-                System.out.println("Error: contacts refresh: " + e);
-            }
-        }
-    }
-    
-    public void pleaseStop()
-    {
-        go = false;
-        this.dispose();
-    }
-
-    /* ---------------------- */
-
-    public void actionPerformed(ActionEvent newEvent)
-    {
-
-    }	
-    
+	public void pleaseStop () {
+		go = false;
+		dispose();
+	}
 }
