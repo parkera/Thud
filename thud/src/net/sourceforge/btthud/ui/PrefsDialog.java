@@ -122,6 +122,7 @@ public class PrefsDialog extends JDialog {
 	private JComboBox hexNumberSizeBox;
 
 	// "Window" tab widgets.
+	private AbstractButton childrenAreFramesCheckBox;
 	private AbstractButton mainAlwaysOnTopCheckBox;
 	private AbstractButton contactsAlwaysOnTopCheckBox;
 	private AbstractButton statusAlwaysOnTopCheckBox;
@@ -287,6 +288,9 @@ public class PrefsDialog extends JDialog {
 		windowTab.setLayout(new BoxLayout (windowTab, BoxLayout.PAGE_AXIS));
 		windowTab.setName("Window");
 
+		childrenAreFramesCheckBox = new JCheckBox ("Independent Child Windows");
+		windowTab.add(childrenAreFramesCheckBox);
+
 		mainAlwaysOnTopCheckBox = new JCheckBox ("Main Window Always On Top");
 		windowTab.add(mainAlwaysOnTopCheckBox);
 
@@ -360,6 +364,7 @@ public class PrefsDialog extends JDialog {
 		tacStatusBarSizeBox.setSelectedItem(new Integer (prefs.tacStatusFontSize));
 
 		// "Window" preferences.
+		childrenAreFramesCheckBox.setSelected(prefs.childrenAreFrames);
 		mainAlwaysOnTopCheckBox.setSelected(prefs.mainAlwaysOnTop);
 		contactsAlwaysOnTopCheckBox.setSelected(prefs.contactsAlwaysOnTop);
 		statusAlwaysOnTopCheckBox.setSelected(prefs.statusAlwaysOnTop);
@@ -389,6 +394,7 @@ public class PrefsDialog extends JDialog {
 		prefs.maxScrollbackSize = ((Integer)scrollbackSizeBox.getSelectedItem()).intValue();
 		prefs.contactsAge = ((Integer)contactsAgeBox.getSelectedItem()).intValue();
 
+		prefs.childrenAreFrames = childrenAreFramesCheckBox.isSelected();
 		prefs.mainAlwaysOnTop = mainAlwaysOnTopCheckBox.isSelected();
 		prefs.contactsAlwaysOnTop = contactsAlwaysOnTopCheckBox.isSelected();
 		prefs.statusAlwaysOnTop = statusAlwaysOnTopCheckBox.isSelected();

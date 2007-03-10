@@ -182,6 +182,14 @@ public class MUMapComponent extends JComponent implements ComponentListener
         
         repaint();
     }
+
+	public void refresh (final MUData data) {
+		if (!data.hudRunning)
+			return;
+
+		repaint();
+	}
+
     /**
       * The purpose of this function is to take some CPU-intensive stuff that mostly stays the same and move it outside
       * of the main drawing loops, for efficiency. This one deals with saving the Images for each color of hex, to avoid 'fill' costs.

@@ -1,4 +1,4 @@
-
+ 
 Thud, by Anthony Parker & the Thud Team
 
 You can access this file at any time by choosing "View Release Notes..." from the File menu.
@@ -6,6 +6,10 @@ You can access this file at any time by choosing "View Release Notes..." from th
 For basic help on how to use Thud, please visit the web site at: http://bt-thud.sourceforge.net
 
 Version History:
+
+1.5 (not yet released)
+  New Features:
+   * Thud can now run its subwindows as dialogs instead of frames, meaning that they won't take up a taskbar entry. This is configurable in Preferences -> Window -> Independent Child Windows.
 
 1.4 February 20, 2007
   New Features:

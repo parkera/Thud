@@ -62,6 +62,7 @@ public class MUPrefs implements Cloneable {
     
     public ArrayList<MUHost>	hosts = new ArrayList<MUHost>();
 
+	public boolean childrenAreFrames;
     public boolean mainAlwaysOnTop, contactsAlwaysOnTop, statusAlwaysOnTop, tacticalAlwaysOnTop;
 
 	public MUPrefs () {
@@ -161,7 +162,8 @@ public class MUPrefs implements Cloneable {
         elevationFontSize = 10;
 
         maxScrollbackSize = 2000;
-        
+
+	childrenAreFrames = false;
         mainAlwaysOnTop = false;
         contactsAlwaysOnTop = false;
         statusAlwaysOnTop = false;

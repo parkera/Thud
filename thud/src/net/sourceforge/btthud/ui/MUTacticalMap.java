@@ -9,104 +9,70 @@
 package net.sourceforge.btthud.ui;
 
 import net.sourceforge.btthud.ui.map.MUMapComponent;
-import net.sourceforge.btthud.data.*;
-import net.sourceforge.btthud.engine.*;
 
-import java.awt.*;
-import java.awt.event.*;
+import net.sourceforge.btthud.data.MUPrefs;
 
-import javax.swing.*;
+public class MUTacticalMap extends ChildWindow implements Runnable {
+	private final MUMapComponent map;
 
+	private final Thud thud;
 
-public class MUTacticalMap extends JFrame
-                           implements Runnable, ActionListener
-{
+	private Thread thread = null;
+	private boolean go = true;
 
-    MUData					data;
-    MUConnection			conn;
-    MUPrefs					prefs;
-    
-    Thread					thread = null;
-    private boolean			go = true;
+	public MUTacticalMap (final Thud thud) {
+		super (thud, "Tactical Map");
 
-    MUMapComponent			map = null;
-        
-    public MUTacticalMap (final Thud owner) {
-        super("Tactical Map");
-        setIconImage(owner.getIconImage());
+		this.thud = thud;
 
-        this.data = owner.data;
-        this.conn = owner.conn;
-        this.prefs = owner.prefs;
+		map = new MUMapComponent (thud.data, thud.prefs);
+		window.add(map);
 
-        // Setup our new tactical map pane
-        map = new MUMapComponent(data, prefs);
+		window.setSize(thud.prefs.tacSizeX, thud.prefs.tacSizeY);
+		window.setLocation(thud.prefs.tacLoc);
 
-        map.setDoubleBuffered(true);
+		window.setAlwaysOnTop(thud.prefs.tacticalAlwaysOnTop);
 
-        JPanel contentPane = new JPanel();
-        contentPane.setLayout(new BorderLayout());
-        contentPane.add(map);
-        setContentPane(contentPane);
+		// Show the window now
+		window.setVisible(true);
 
-        setSize(prefs.tacSizeX, prefs.tacSizeY);
-        setLocation(prefs.tacLoc);
-        
-        setAlwaysOnTop(prefs.tacticalAlwaysOnTop);
-        
-        // Show the window now
-        this.setVisible(true);
+		start();
+	}
 
-        start();
-    }
+	public void newPreferences (final MUPrefs prefs) {
+		super.newPreferences(prefs);
+		window.setAlwaysOnTop(prefs.tacticalAlwaysOnTop);
+		map.newPreferences(prefs);
+	}
 
-    public void start()
-    {
-        if (thread == null)
-        {
-            thread = new Thread(this, "MUTacticalMap");
-            thread.start();
-        }
-    }
+	public void start () {
+		if (thread == null) {
+			thread = new Thread (this, "MUTacticalMap");
+			thread.start();
+		}
+	}
 
-    public void run()
-    {
-        while (go)
-        {
-            try
-            {
-                if (data.hudRunning)
-                    map.repaint(map.getBounds());
+	public void run () {
+		while (go) {
+			try {
+				synchronized (thud.data) {
+					// TODO: Make MUMapComponent only
+					// access MUData at this well-defined
+					// point.  This will let us consolidate
+					// all the refresh() procedures.
+					map.refresh(thud.data);
+				}
 
-                Thread.sleep(1000);
-            }
-            catch (InterruptedException e)
-            {
-                // No big deal
-            }
-            catch (Exception e)
-            {
-                System.out.println("Error: TacticalMap refresh: " + e);
-            }
-        }
-    }
+				// TODO: Refresh only after we get new data.
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// no big deal
+			}
+		}
+	}
 
-    public void pleaseStop()
-    {
-        go = false;
-        this.dispose();
-    }
-
-    
-    public void actionPerformed(ActionEvent newEvent)
-    {
-        map.repaint(map.getBounds());
-    }
-
-
-    public void newPreferences(MUPrefs prefs)
-    {
-        map.newPreferences(prefs);
-        this.setAlwaysOnTop(prefs.tacticalAlwaysOnTop);
-    }
+	public void pleaseStop () {
+		go = false;
+		window.dispose();
+	}
 }

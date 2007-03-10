@@ -181,7 +181,7 @@ public class Thud extends JFrame implements Runnable {
 
 		bsd.insertPlainString(" *** Thud, (c) 2001-2007 Anthony Parker & the THUD team      ***");
 		bsd.insertPlainString(" *** bt-thud.sourceforge.net                                 ***");
-		bsd.insertPlainString(String.format(" *** Version: 1.4 %-42s ***", buildNumber));
+		bsd.insertPlainString(String.format(" *** Version: 1.5B %-41s ***", buildNumber));
 		bsd.insertPlainString(" *** To get started, connect to a MUX via the HUD menu,      ***");
 		bsd.insertPlainString(" *** then hit Ctrl-G when in a combat unit to activate Thud! ***\n");
 

@@ -12,9 +12,7 @@ import net.sourceforge.btthud.ui.contacts.MUContactListComponent;
 
 import net.sourceforge.btthud.data.MUPrefs;
 
-import javax.swing.JFrame;
-
-public class MUContactList extends JFrame implements Runnable {
+public class MUContactList extends ChildWindow implements Runnable {
 	private final MUContactListComponent contactList;
 
 	private final Thud thud;
@@ -23,33 +21,33 @@ public class MUContactList extends JFrame implements Runnable {
 	private boolean go = true;
 
 	public MUContactList (final Thud thud) {
-		super ("Contact List");
-		setIconImage(thud.getIconImage());
+		super (thud, "Contact List");
 
 		this.thud = thud;
 
 		contactList = new MUContactListComponent (thud.prefs);
-		add(contactList);
+		window.add(contactList);
 
-		setSize(thud.prefs.contactsSizeX, thud.prefs.contactsSizeY);
-		setLocation(thud.prefs.contactsLoc);
+		window.setSize(thud.prefs.contactsSizeX, thud.prefs.contactsSizeY);
+		window.setLocation(thud.prefs.contactsLoc);
 
-		setAlwaysOnTop(thud.prefs.contactsAlwaysOnTop);
+		window.setAlwaysOnTop(thud.prefs.contactsAlwaysOnTop);
 
 		// Show the window now
-		setVisible(true);
+		window.setVisible(true);
 
 		start();
 	}
 
 	public void newPreferences (final MUPrefs prefs) {
+		super.newPreferences(prefs);
 		contactList.newPreferences(prefs);
-		setAlwaysOnTop(prefs.contactsAlwaysOnTop);
+		window.setAlwaysOnTop(prefs.contactsAlwaysOnTop);
 	}
 
 	private void start () {
 		if (thread == null) {
-			thread = new Thread(this, "MUContactList");
+			thread = new Thread (this, "MUContactList");
 			thread.start();
 		}
 	}
@@ -71,6 +69,6 @@ public class MUContactList extends JFrame implements Runnable {
 
 	public void pleaseStop () {
 		go = false;
-		dispose();
+		window.dispose();
 	}
 }

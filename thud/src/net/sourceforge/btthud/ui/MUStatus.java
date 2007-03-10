@@ -11,14 +11,12 @@ import net.sourceforge.btthud.ui.status.MUStatusComponent;
 
 import net.sourceforge.btthud.data.MUPrefs;
 
-import javax.swing.JFrame;
-
 /**
  * Implements a status report window that displays heading, speed, heat, and
  * weapon information very similar to the MUX's 'status'.
  * @author tkrajcar
  */
-public class MUStatus extends JFrame implements Runnable {
+public class MUStatus extends ChildWindow implements Runnable {
 	private final MUStatusComponent status;
 
 	private final Thud thud;
@@ -27,33 +25,33 @@ public class MUStatus extends JFrame implements Runnable {
 	private boolean go = true;
 
 	public MUStatus (final Thud thud) {
-		super ("Status Report");
-		setIconImage(thud.getIconImage());
+		super (thud, "Status Report");
 
 		this.thud = thud;
 
 		status = new MUStatusComponent (thud.prefs);
-		add(status);
+		window.add(status);
 
-		setSize(thud.prefs.statusSizeX, thud.prefs.statusSizeY);
-		setLocation(thud.prefs.statusLoc);
+		window.setSize(thud.prefs.statusSizeX, thud.prefs.statusSizeY);
+		window.setLocation(thud.prefs.statusLoc);
 
-		setAlwaysOnTop(thud.prefs.statusAlwaysOnTop);
+		window.setAlwaysOnTop(thud.prefs.statusAlwaysOnTop);
 
 		// Show the window now
-		setVisible(true);
+		window.setVisible(true);
 
 		start();
 	}
 
 	public void newPreferences (final MUPrefs prefs) {
+		super.newPreferences(prefs);
 		status.newPreferences(prefs);
-		setAlwaysOnTop(prefs.statusAlwaysOnTop);
+		window.setAlwaysOnTop(prefs.statusAlwaysOnTop);
 	}
 
 	private void start () {
 		if (thread == null) {
-			thread = new Thread(this, "MUStatusReport");
+			thread = new Thread (this, "MUStatusReport");
 			thread.start();
 		}
 	}
@@ -75,6 +73,6 @@ public class MUStatus extends JFrame implements Runnable {
 
 	public void pleaseStop () {
 		go = false;
-		dispose();
+		window.dispose();
 	}
 }
