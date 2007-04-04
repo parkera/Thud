@@ -11,6 +11,9 @@ import net.sourceforge.btthud.data.*;
 import net.sourceforge.btthud.engine.*;
 import net.sourceforge.btthud.util.*;
 
+import net.sourceforge.btthud.engine.commands.HUDSession;
+import net.sourceforge.btthud.engine.commands.UserCommand;
+
 import java.io.*;
 import java.net.URL;
 
@@ -189,7 +192,7 @@ public class Thud extends JFrame implements Runnable {
 		if(args.length == 2) {
 			try {
 				bsd.insertPlainString(" *** Auto-connecting to " + args[0] + " port " + args[1] + "...\n");
-				startConnection(args[0],Integer.parseInt(args[1]));
+				startConnection(new MUHost (args[0], Integer.parseInt(args[1])));
 			} catch (Exception e) {
 				System.out.println("Error auto-connecting to " + args[0] + "  port " + args[1]);
 			}
@@ -314,9 +317,10 @@ public class Thud extends JFrame implements Runnable {
 		hudMenu.addSeparator();
 
 		for (int ii = 0; ii < prefs.hosts.size(); ii++) {
-			MUHost nextHost = (MUHost)prefs.hosts.get(ii);
+			final MUHost host = prefs.hosts.get(ii);
 			miConnections[ii] = new JMenuItem (taConnect);
-			miConnections[ii].setText(nextHost.toString());
+			miConnections[ii].setText(host.toString());
+			miConnections[ii].setActionCommand(Integer.toString(ii));
 			acceleratorForConnectionItem(miConnections[ii], ii);
 			hudMenu.add(miConnections[ii]);
 		}
@@ -612,7 +616,7 @@ public class Thud extends JFrame implements Runnable {
 
 		taConnect = new ThudAction ("Connect") {
 			public void actionPerformed (final ActionEvent ae) {
-				doNewConnection(ae.getActionCommand());
+				doNewConnection(Integer.valueOf(ae.getActionCommand()));
 			}
 		};
 
@@ -1138,7 +1142,7 @@ public class Thud extends JFrame implements Runnable {
 
 				if (!parse.isHudCommand(text)) {
 					try {
-						conn.sendCommand(text);
+						conn.sendCommand(new UserCommand (text));
 					} catch (IOException e) {
 						parse.commandLine("> Couldn't send: " + e);
 						// TODO: Break connection?
@@ -1169,7 +1173,7 @@ public class Thud extends JFrame implements Runnable {
     }
 
     /** Start the connection, including creating new objects */
-    public void startConnection(String host, int port)
+    public void startConnection (final MUHost host)
     {        
         if (connected)		// We must already have a connection. Let's clean up that one, then go to this new one
             stopConnection();
@@ -1184,8 +1188,8 @@ public class Thud extends JFrame implements Runnable {
             parse.messageLine("*** Connecting... ***");
             
             // Setup the connection
-            conn = new MUConnection(lh, host, port, this);
-            this.setTitle("Thud - " + host + " " + port);
+            conn = new MUConnection(lh, host, this);
+            this.setTitle("Thud - " + host.getHost() + " " + host.getPort());
 
             // Setup the rest of the helper classes.
             status = new MUStatus (this);
@@ -1359,7 +1363,7 @@ public class Thud extends JFrame implements Runnable {
              try
              {
                  // Set the HUDINFO key
-                 conn.sendCommand("hudinfo key=" + sessionKey);
+                 conn.sendCommand(new HUDSession (sessionKey));
              }
              catch (Exception e)
              {
@@ -1556,31 +1560,13 @@ public class Thud extends JFrame implements Runnable {
         prefs.foregroundColor = JColorChooser.showDialog(this, "Choose a foreground color", prefs.foregroundColor);
     }
 
-    /** Did someone choose a connection menu item? */
-    public boolean matchesConnectionMenu(String action)
-    {
-        boolean match = false;
+	/** Start a new connection */
+	public void doNewConnection (final int ii) {
+		if (connected) // Clear our current connection first
+			stopConnection();
 
-        for (int i = 0; i < prefs.hosts.size(); i++)
-        {
-            MUHost			nextHost = (MUHost) prefs.hosts.get(i);
-            
-            if (action.equals(nextHost.getHost() + " " + nextHost.getPort()))
-                match = true;
-        }
-
-        return match;
-    }
-
-    /** Start a new connection */
-    public void doNewConnection(String action)
-    {
-        if (connected)			// Clear our current connection first
-            stopConnection();
-        
-        StringTokenizer st = new StringTokenizer(action);
-        startConnection(st.nextToken(), Integer.parseInt(st.nextToken().trim()));
-    }
+		startConnection(prefs.hosts.get(ii));
+	}
 
     /** Called when main font size changes */
     public void mainFontChanged()

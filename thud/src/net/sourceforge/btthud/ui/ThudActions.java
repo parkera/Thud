@@ -7,6 +7,8 @@
 //
 package net.sourceforge.btthud.ui;
 
+import net.sourceforge.btthud.engine.commands.UserCommand;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -39,7 +41,7 @@ class SendCommandAction extends AbstractAction {
 			return;
 
 		try {
-			thud.conn.sendCommand(realCommand);
+			thud.conn.sendCommand(new UserCommand (realCommand));
 		} catch (Exception e) {
 			// TODO: Seems like it'd be more friendly to report
 			// these errors in the main window, or in a modal

@@ -8,6 +8,13 @@
 //
 package net.sourceforge.btthud.engine;
 
+import net.sourceforge.btthud.engine.commands.HUDVersion;
+import net.sourceforge.btthud.engine.commands.HUDGeneralStatic;
+import net.sourceforge.btthud.engine.commands.HUDArmorOriginal;
+import net.sourceforge.btthud.engine.commands.HUDWeaponList;
+import net.sourceforge.btthud.engine.commands.HUDWeaponStatus;
+import net.sourceforge.btthud.engine.commands.HUDConditions;
+
 import net.sourceforge.btthud.data.*;
 import java.util.*;
 
@@ -28,16 +35,6 @@ public class MUCommands
         this.prefs = prefs;
     }
 
-    public void sendCommand(String c)
-    {
-        try {
-            if (this.conn != null)
-                conn.sendCommand(c);
-        } catch (Exception e) {
-            System.out.println("Error: MUCommands: sendCommand: " + e);
-        }
-    }
-
     public void forceTactical()
     {
         commandSendingTask.forceTactical = true;
@@ -49,12 +46,12 @@ public class MUCommands
         // Send some initial commands
         try
         {
-            conn.sendCommand("hudinfo");		// Get the version
-            conn.sendCommand("hudinfo sgi");
-            conn.sendCommand("hudinfo oas");
-            conn.sendCommand("hudinfo wl");
-            conn.sendCommand("hudinfo we");
-            conn.sendCommand("hudinfo co");
+            conn.sendCommand(new HUDVersion ()); // Get the version
+            conn.sendCommand(new HUDGeneralStatic ());
+            conn.sendCommand(new HUDArmorOriginal ());
+            conn.sendCommand(new HUDWeaponList ());
+            conn.sendCommand(new HUDWeaponStatus ());
+            conn.sendCommand(new HUDConditions ());
         }
         catch (Exception e)
         {

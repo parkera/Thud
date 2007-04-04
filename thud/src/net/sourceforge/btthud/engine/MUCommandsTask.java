@@ -8,6 +8,17 @@
 //
 package net.sourceforge.btthud.engine;
 
+import net.sourceforge.btthud.engine.commands.HUDGeneralStatic;
+import net.sourceforge.btthud.engine.commands.HUDGeneralStatus;
+import net.sourceforge.btthud.engine.commands.HUDContacts;
+import net.sourceforge.btthud.engine.commands.HUDContactsBuildings;
+import net.sourceforge.btthud.engine.commands.HUDTactical;
+import net.sourceforge.btthud.engine.commands.HUDArmorStatus;
+import net.sourceforge.btthud.engine.commands.HUDWeaponStatus;
+import net.sourceforge.btthud.engine.commands.HUDAmmoStatus;
+import net.sourceforge.btthud.engine.commands.HUDArmorOriginal;
+import net.sourceforge.btthud.engine.commands.HUDConditions;
+
 import java.util.*;
 import net.sourceforge.btthud.data.*;
 
@@ -61,22 +72,22 @@ public class MUCommandsTask extends TimerTask {
             	// Do we send a static general info? (See if we've changed units)
                 if (data.hudStarted && conn != null && count % (4 * prefs.fastCommandUpdate) == 0)
                 {
-                    conn.sendCommand("hudinfo sgi");
+                    conn.sendCommand(new HUDGeneralStatic ());
                 }
             	
             	// Do we send general status?
                 if (data.hudRunning && (forceGeneralStatus || (count % (4 * prefs.fastCommandUpdate) == 0)))
                 {
-                    conn.sendCommand("hudinfo gs");
+                    conn.sendCommand(new HUDGeneralStatus ());
                     forceGeneralStatus = false;
                 }
 
                 // Do we send a contacts?
                 if (!data.myUnit.status.matches("S|s") && data.hudRunning && (forceContacts || (count % (4 * prefs.fastCommandUpdate) == 0)))
                 {
-                    conn.sendCommand("hudinfo c");
+                    conn.sendCommand(new HUDContacts ());
                     if (data.hiSupportsBuildingContacts())
-                        conn.sendCommand("hudinfo cb");
+                        conn.sendCommand(new HUDContactsBuildings ());
                     synchronized (data)
                     {
                         data.expireAllContacts();
@@ -89,7 +100,7 @@ public class MUCommandsTask extends TimerTask {
                 // If we know we're on an LOS-only map, send it at a faster pace
                 if (data.hudRunning && (forceTactical || (count % (4 * (data.mapLOSOnly ? prefs.mediumCommandUpdate : prefs.slugCommandUpdate)) == 0)))
                 {
-                    conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight);
+                    conn.sendCommand(new HUDTactical (prefs.hudinfoTacHeight));
                     forceTactical = false;                    		
                 }
                 
@@ -99,7 +110,7 @@ public class MUCommandsTask extends TimerTask {
                 					   forceLOS)) {
                 	// We've moved since last LOS update, request one.
                 	data.clearLOS();
-                    conn.sendCommand("hudinfo t " + prefs.hudinfoTacHeight + " 0 0 l"); //
+                    conn.sendCommand(new HUDTactical (prefs.hudinfoTacHeight, true)); //
                     data.lastLOSX = data.myUnit.position.getHexX();
                     data.lastLOSY = data.myUnit.position.getHexY();
                     data.lastLOSZ = data.myUnit.position.getHexZ();
@@ -109,22 +120,22 @@ public class MUCommandsTask extends TimerTask {
                 // Do we send an armor status?
                 if (data.hudRunning && (forceArmorStatus || (count % (4 * prefs.mediumCommandUpdate) == 0)))
                 {
-                    conn.sendCommand("hudinfo as");
+                    conn.sendCommand(new HUDArmorStatus ());
                     // Also send weapon & ammo status at this time
-                    conn.sendCommand("hudinfo we");
-                    conn.sendCommand("hudinfo am");
+                    conn.sendCommand(new HUDWeaponStatus ());
+                    conn.sendCommand(new HUDAmmoStatus ());
                     forceArmorStatus = false;
                 }
                 
                 // Do we send an original armor status? Only do this on startup (or if reset by auto leave/enter code)
                 if(conn != null && data.lastDataTime == 0) {
-                	conn.sendCommand("hudinfo oas");
+                	conn.sendCommand(new HUDArmorOriginal ());
                 }
                 
                 // Do we send a weather condition update?
                 if (data.hudRunning && (count % (30 * prefs.mediumCommandUpdate) == 0))
                 {
-                    conn.sendCommand("hudinfo co");
+                    conn.sendCommand(new HUDConditions ());
                 }
             }           
         }
