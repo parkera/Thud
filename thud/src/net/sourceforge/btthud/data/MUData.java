@@ -12,6 +12,8 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
+import java.awt.event.ActionListener;
+
 /**
  * Stores all the information from contacts and tactical.
  *
@@ -24,7 +26,7 @@ import java.util.regex.*;
  */
 
 
-public class MUData {
+public class MUData implements Runnable {
 
     // Making these public sorta defeats the purpose of hiding them in the class in the first place, but
     // I just want to make it easier on myself at this point. Maybe I'll fix it later.
@@ -81,7 +83,8 @@ public class MUData {
         LOSinfo = new Hashtable();
         
         map = new MUHex[MAX_X][MAX_Y];		// individual hexes will be allocated if they are needed.. this is not very memory efficient still
-        
+
+	start();
     }
         
     public void createHexCache()
@@ -498,4 +501,49 @@ public class MUData {
             }
         }
     }
+
+
+	//
+	// Data update thread.
+	//
+
+	private final List<ActionListener> listenerList = new ArrayList<ActionListener> ();
+
+	public void addActionListener (final ActionListener listener) {
+		listenerList.add(listener);
+	}
+
+	private void runActionListeners () {
+		for (final ActionListener listener: listenerList) {
+			listener.actionPerformed(null);
+		}
+	}
+
+
+	private boolean go = true;
+
+	private void start () {
+		new Thread (this, "MUData").start();
+	}
+
+	public void run () {
+		synchronized (this) {
+			while (go) {
+				runActionListeners();
+
+				try {
+					this.wait(1000);
+				} catch (final InterruptedException e) {
+					// No big deal.
+				}
+			}
+		}
+	}
+
+	public void pleaseStop () {
+		synchronized (this) {
+			go = false;
+			this.notify();
+		}
+	}
 }

@@ -132,6 +132,10 @@ public abstract class ChildWindow {
 	// Proxy methods.
 	//
 
+	public void dispose () {
+		window.dispose();
+	}
+
 	public void setVisible (boolean visible) {
 		window.setVisible(visible);
 	}

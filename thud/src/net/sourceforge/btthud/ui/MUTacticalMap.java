@@ -12,13 +12,13 @@ import net.sourceforge.btthud.ui.map.MUMapComponent;
 
 import net.sourceforge.btthud.data.MUPrefs;
 
-public class MUTacticalMap extends ChildWindow implements Runnable {
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class MUTacticalMap extends ChildWindow implements ActionListener {
 	private final MUMapComponent map;
 
 	private final Thud thud;
-
-	private Thread thread = null;
-	private boolean go = true;
 
 	public MUTacticalMap (final Thud thud) {
 		super (thud, "Tactical Map");
@@ -35,8 +35,6 @@ public class MUTacticalMap extends ChildWindow implements Runnable {
 
 		// Show the window now
 		window.setVisible(true);
-
-		start();
 	}
 
 	public void newPreferences (final MUPrefs prefs) {
@@ -45,34 +43,11 @@ public class MUTacticalMap extends ChildWindow implements Runnable {
 		map.newPreferences(prefs);
 	}
 
-	public void start () {
-		if (thread == null) {
-			thread = new Thread (this, "MUTacticalMap");
-			thread.start();
-		}
-	}
-
-	public void run () {
-		while (go) {
-			try {
-				synchronized (thud.data) {
-					// TODO: Make MUMapComponent only
-					// access MUData at this well-defined
-					// point.  This will let us consolidate
-					// all the refresh() procedures.
-					map.refresh(thud.data);
-				}
-
-				// TODO: Refresh only after we get new data.
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// no big deal
-			}
-		}
-	}
-
-	public void pleaseStop () {
-		go = false;
-		window.dispose();
+	public void actionPerformed (final ActionEvent ae) {
+		// TODO: Make MUMapComponent only access MUData at this
+		// well-defined point.  This will let us consolidate all the
+		// refresh() procedures.
+		// TODO: Ensure this is only called with sync at thud.data.
+		map.refresh(thud.data);
 	}
 }

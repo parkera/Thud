@@ -1,5 +1,11 @@
 <project name="thud" default="package" basedir=".">
 
+    <!-- Resource sets -->
+    <path id="project.classpath">
+        <pathelement location="lib/js.jar" />
+        <pathelement location="${JRE_LIB}" />
+    </path>
+
     <!-- Bootstrap custom Ant tasks. -->
     <!-- TODO: See if there's an existing Ant task for this. -->
     <target name="bootstrap">
@@ -10,11 +16,6 @@
     </target>
 
     <!-- Project targets. -->
-    <path id="project.classpath">
-        <pathelement location="src" />
-        <pathelement location="${JRE_LIB}" />
-    </path>
-
     <target name="compile" depends="bootstrap">
         <mkdir dir="bin" />
         <javac srcdir="src" destdir="bin" target="1.5" debug="on">
@@ -22,25 +23,56 @@
         </javac>
     </target>
 
-    <target name="package" depends="compile">
+    <target name="package-only" depends="compile">
+        <property name="thud.version" value="1.4" />
         <my.svn.info revisionproperty="svn.revision" />
+
         <copy file="CHANGES.RTF" todir="bin" />
-        <copy file="media/icon/icon.gif" todir="bin/media/icon/" />
+        <copy todir="bin/media">
+            <fileset dir="media">
+                <include name="icon/icon.gif" /> 
+            </fileset>
+        </copy>
+        <copy todir="bin/scripts">
+            <fileset dir="scripts">
+                <include name="**/*.js" />
+                <exclude name="test.js" />
+            </fileset>
+        </copy>
+
+        <jar destfile="Thud-only.jar" basedir="bin">
+            <manifest>
+                <attribute name="Built-By" value="${user.name}" />
+                <attribute name="Main-Class" value="net.sourceforge.btthud.ui.Thud" />
+                <attribute name="Specification-Title" value="btthud" />
+                <attribute name="Specification-Version" value="${thud.version}" />
+                <attribute name="Specification-Vendor" value="The THUD Team" />
+                <attribute name="Implementation-Version" value="${svn.revision}" />
+                <attribute name="Class-Path" value="lib/js.jar" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="package-smoosh" depends="package-only">
         <jar destfile="Thud.jar" basedir="bin">
             <manifest>
                 <attribute name="Built-By" value="${user.name}" />
                 <attribute name="Main-Class" value="net.sourceforge.btthud.ui.Thud" />
                 <attribute name="Specification-Title" value="btthud" />
-                <attribute name="Specification-Version" value="1.4" />
+                <attribute name="Specification-Version" value="${thud.version}" />
                 <attribute name="Specification-Vendor" value="The THUD Team" />
                 <attribute name="Implementation-Version" value="${svn.revision}" />
             </manifest>
+            <zipfileset src="lib/js.jar" />
         </jar>
     </target>
+
+    <target name="package" depends="package-only,package-smoosh" />
 
     <target name="sign" depends="package">
         <input message="Enter key name (alias):" addproperty="sign.alias" defaultvalue="mykey" />
         <input message="Enter passphrase for keystore:" addproperty="sign.keystorepw" />
+        <signjar jar="Thud-only.jar" alias="${sign.alias}" storepass="${sign.keystorepw}" />
         <signjar jar="Thud.jar" alias="${sign.alias}" storepass="${sign.keystorepw}" />
     </target>
 </project>

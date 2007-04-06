@@ -1,6 +1,6 @@
 //
 //  MUConnection.java
-//  JavaTelnet
+//  Thud
 //
 //  Created by asp on Fri Nov 16 2001.
 //  Copyright (c) 2001-2007 Anthony Parker & the THUD team. 
@@ -12,7 +12,6 @@ import net.sourceforge.btthud.engine.commands.Command;
 
 import net.sourceforge.btthud.ui.Thud;
 import net.sourceforge.btthud.data.MUHost;
-import net.sourceforge.btthud.util.LineHolder;
 
 import java.net.Socket;
 import java.net.SocketException;
@@ -44,10 +43,11 @@ public class MUConnection implements Runnable {
 	private Thud errorHandler = null;
 	private BufferedReader rd;
 	private BufferedWriter wr;
-	private LineHolder lh = null;
 
 	private Thread connThread = null;
 	private boolean go = true;
+
+	private MUParse parse = null;
 
 	/**
 	 * Creates a new MUConnection object, connects to the host, and starts
@@ -58,11 +58,11 @@ public class MUConnection implements Runnable {
 	 * @see check
 	 * @see endConnection
 	 */
-	public MUConnection (LineHolder lh, final MUHost host,
-	                     Thud errorHandler)
+	public MUConnection (final MUHost host, Thud errorHandler,
+	                     final MUParse parse)
 	                    throws UnknownHostException, IOException {
-		this.lh = lh;
 		this.errorHandler = errorHandler;
+		this.parse = parse;
 
 		conn = new Socket (host.getHost(), host.getPort());
 
@@ -124,7 +124,7 @@ public class MUConnection implements Runnable {
 	public void run () {
 		while (go) {
 			try {
-				lh.put(rd.readLine());
+				parse.parseLine(rd.readLine());
 			} catch (IOException e) {
 				errorHandler.stopConnection();
 			} catch (Exception e) {

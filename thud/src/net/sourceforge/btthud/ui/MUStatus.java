@@ -11,18 +11,18 @@ import net.sourceforge.btthud.ui.status.MUStatusComponent;
 
 import net.sourceforge.btthud.data.MUPrefs;
 
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
 /**
  * Implements a status report window that displays heading, speed, heat, and
  * weapon information very similar to the MUX's 'status'.
  * @author tkrajcar
  */
-public class MUStatus extends ChildWindow implements Runnable {
+public class MUStatus extends ChildWindow implements ActionListener {
 	private final MUStatusComponent status;
 
 	private final Thud thud;
-
-	private Thread thread = null;
-	private boolean go = true;
 
 	public MUStatus (final Thud thud) {
 		super (thud, "Status Report");
@@ -39,8 +39,6 @@ public class MUStatus extends ChildWindow implements Runnable {
 
 		// Show the window now
 		window.setVisible(true);
-
-		start();
 	}
 
 	public void newPreferences (final MUPrefs prefs) {
@@ -49,30 +47,7 @@ public class MUStatus extends ChildWindow implements Runnable {
 		window.setAlwaysOnTop(prefs.statusAlwaysOnTop);
 	}
 
-	private void start () {
-		if (thread == null) {
-			thread = new Thread (this, "MUStatusReport");
-			thread.start();
-		}
-	}
-
-	public void run () {
-		while (go) {
-			try {
-				synchronized (thud.data) {
-					status.refresh(thud.data);
-				}
-
-				// TODO: Refresh only after we get new data.
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// no big deal
-			}
-		}
-	}
-
-	public void pleaseStop () {
-		go = false;
-		window.dispose();
+	public void actionPerformed (final ActionEvent ae) {
+		status.refresh(thud.data);
 	}
 }

@@ -14,6 +14,9 @@ import net.sourceforge.btthud.util.*;
 import net.sourceforge.btthud.engine.commands.HUDSession;
 import net.sourceforge.btthud.engine.commands.UserCommand;
 
+import net.sourceforge.btthud.script.ScriptRunner;
+import net.sourceforge.btthud.script.Interactor;
+
 import java.io.*;
 import java.net.URL;
 
@@ -28,6 +31,8 @@ import java.util.*;
 import java.lang.ref.WeakReference;
 
 public class Thud extends JFrame implements Runnable {
+	// TODO: Make the escape character configurable?
+	static private final char COMMAND_CHAR = '/';
 
     Font	mFont = new Font("Monospaced", Font.PLAIN, 10);		// default main font
     AboutBox aboutBox = null;
@@ -38,7 +43,6 @@ public class Thud extends JFrame implements Runnable {
 
     boolean					connected = false;
 
-    LineHolder				lh = null;
     MUConnection 			conn = null;
     MUParse					parse = null;
     
@@ -57,6 +61,11 @@ public class Thud extends JFrame implements Runnable {
     private String[]		args;
 
     boolean					firstLaunch = false;
+
+	private DataStore dataStore = null;
+
+	private ScriptRunner scriptRunner = null;
+	private Interactor interactor = null;
 
     // ------------------
 
@@ -163,6 +172,16 @@ public class Thud extends JFrame implements Runnable {
 
 		// Create an about box
 		aboutBox = new AboutBox();
+		// Initialize data store.
+		dataStore = new DataStore ();
+
+		// Initialize scripting support system.
+		scriptRunner = new ScriptRunner ();
+		interactor = new Interactor (scriptRunner);
+
+		// TODO: If we ever want to run an rc script sometime.
+		//dataStore.getReader("scripts/test.js");
+		//scriptRunner.execute(scriptReader, "test.js");
 
 		// Setup the main text areas
 		setupNewTextFields();
@@ -1134,40 +1153,76 @@ public class Thud extends JFrame implements Runnable {
 	textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "btthud.ENTER");
 	textField.getActionMap().put("btthud.ENTER", new AbstractAction () {
 		public void actionPerformed (final ActionEvent ae) {
-			final String text = textField.getText();
+			final String typedText = textField.getText();
+			String text = typedText;
 
-			if (conn != null && text != null && conn.connected) {
-				if (prefs.echoCommands)
-					parse.commandLine("> " + text);
+			boolean isThudCommand = false;
 
-				if (!parse.isHudCommand(text)) {
-					try {
-						conn.sendCommand(new UserCommand (text));
-					} catch (IOException e) {
-						parse.commandLine("> Couldn't send: " + e);
-						// TODO: Break connection?
-					}
+			if (text.length() > 0
+			    && text.charAt(0) == COMMAND_CHAR) {
+				// Thud command.
+				text = text.substring(1);
+
+				if (text.length() > 0
+				    && text.charAt(0) == COMMAND_CHAR) {
+					// Escaped COMMAND_CHAR.
+					isThudCommand = false;
+				} else {
+					// COMMAND_CHAR-prefixed command.
+					isThudCommand = true;
+				}
+			}
+
+			if (!isThudCommand
+			    && (conn == null || !conn.connected)) {
+				// Not connected.
+				bsd.insertMessageString("*** Can't Send Text: Not Connected ***");
+				return;
+			}
+
+			// Execute command.
+			if (isThudCommand) {
+				if (prefs.echoCommands) {
+					bsd.insertMessageString(COMMAND_CHAR + text);
 				}
 
-				// Clear the text field
-				textField.setText(null);
-
-				// Add this command to our history
-				if (commandHistory.size() == 0
-				    || (String)commandHistory.getLast() != text)
-					commandHistory.add(text);
-
-				// If we're over our preferred history size,
-				// remove the next line (in FIFO order).
-				if (commandHistory.size() > prefs.commandHistory)
-					commandHistory.removeFirst();
-
-				// Reset our history location counter
-				historyLoc = 1;
+				interactor.doCommand(text);
 			} else {
-				// Trying to talk while not connected
-				bsd.insertMessageString("*** Can't Send Text: Not Connected ***");
+				if (prefs.echoCommands) {
+					// FIXME: This used to be parse.commandLine(),
+					// but it seemed very silly there.
+					bsd.insertCommandString("> " + text);
+					textPane.setCaretPosition(bsd.getLength());
+				}
+
+				try {
+					conn.sendCommand(new UserCommand (text));
+				} catch (IOException e) {
+					// FIXME: This used to be
+					// parse.commandLine(), but it seemed
+					// very silly there.
+					bsd.insertCommandString("> Couldn't send: " + e);
+					textPane.setCaretPosition(bsd.getLength());
+
+					// TODO: Break connection?
+				}
 			}
+
+			// Clear the text field
+			textField.setText(null);
+
+			// Add this command to our history
+			if (commandHistory.size() == 0
+			    || (String)commandHistory.getLast() != typedText)
+				commandHistory.add(typedText);
+
+			// If we're over our preferred history size,
+			// remove the next line (in FIFO order).
+			if (commandHistory.size() > prefs.commandHistory)
+				commandHistory.removeFirst();
+
+			// Reset our history location counter
+			historyLoc = 1;
 		}
 	});
     }
@@ -1183,19 +1238,22 @@ public class Thud extends JFrame implements Runnable {
             // Setup some of the helper classes
             data = new MUData();
 
-            lh = new LineHolder();
-            parse = new MUParse(lh, textPane, data, bsd, prefs);
+            parse = new MUParse(textPane, data, bsd, prefs);
             parse.messageLine("*** Connecting... ***");
             
             // Setup the connection
-            conn = new MUConnection(lh, host, this);
+            conn = new MUConnection(host, this, parse);
             this.setTitle("Thud - " + host.getHost() + " " + host.getPort());
 
-            // Setup the rest of the helper classes.
-            status = new MUStatus (this);
-            conList = new MUContactList (this);
-            tacMap = new MUTacticalMap (this);
-            
+	    // Setup the rest of the helper classes.
+	    tacMap = new MUTacticalMap (this);
+	    status = new MUStatus (this);
+	    conList = new MUContactList (this);
+
+	    data.addActionListener(tacMap);
+	    data.addActionListener(status);
+	    data.addActionListener(conList);
+
             commands = new MUCommands(conn, data, prefs);
             
             // Let our parsing class know where to send commands
@@ -1228,19 +1286,22 @@ public class Thud extends JFrame implements Runnable {
         if (connected)
         {
             connected = false;
-            
-            
+
             if (commands != null)
                 commands.endTimers();
 
+	    // TODO: Are all these null checks really necessary?
+	    if (data != null)
+	        data.pleaseStop();
+
             if (conList != null)
-                conList.pleaseStop();
+                conList.dispose();
 
             if (status != null)
-                status.pleaseStop();
+                status.dispose();
 
             if (tacMap != null)
-                tacMap.pleaseStop();
+                tacMap.dispose();
 
             if (conn != null)
                 conn.pleaseStop();
@@ -1257,12 +1318,6 @@ public class Thud extends JFrame implements Runnable {
             mapMenu.setEnabled(false);
             windowMenu.setEnabled(false);
         }
-    }
-
-    /** Display our about box */
-    public void doAbout() {
-        aboutBox.setResizable(false);
-        aboutBox.setVisible(true);        
     }
 
     /** Display the preferences dialog */
@@ -1299,7 +1354,7 @@ public class Thud extends JFrame implements Runnable {
         RemoveHostDialog	removeDialog = new RemoveHostDialog(this, true);
         removeDialog.setVisible(true);
     }
-    
+
     // -----------------------
 
     /** Insert the previous command into the text box */

@@ -1,6 +1,6 @@
 //
 //  MUParse.java
-//  JavaTelnet
+//  Thud
 //
 //  Created by asp on Mon Nov 19 2001.
 //  Copyright (c) 2001-2006 Anthony Parker & the THUD team. 
@@ -19,7 +19,7 @@ import net.sourceforge.btthud.util.*;
 /* Note: We use a lot of == comparison in this class, because it's faster than .equals(). When coding here, we have to make sure to intern() the temporary strings so they compare properly.
 */
 
-public class MUParse implements Runnable {
+public class MUParse {
 
     // Variables
     JTextPane				textPane = null;
@@ -31,30 +31,20 @@ public class MUParse implements Runnable {
     String					sessionKey;
     String					hudInfoStart = new String("#HUD:");
 
-    boolean					go;
-    private Thread			parseThread = null;
-
-    LineHolder				lh = null;
-
     // ---------------------
     
     /**
      * Constructor
      */
-    public MUParse(LineHolder lh, JTextPane textPane, MUData data, BulkStyledDocument doc, MUPrefs prefs)
+    public MUParse(JTextPane textPane, MUData data, BulkStyledDocument doc, MUPrefs prefs)
     {
         // Init here
-        this.lh = lh;
         this.textPane = textPane;
         this.data = data;
         this.doc = doc;
         this.prefs = prefs;
-
-        go = true;
-        
-        // Start the thread
-        start();
     }
+
     public String getSessionKey() {
         return sessionKey;
     }
@@ -71,37 +61,33 @@ public class MUParse implements Runnable {
 
     // -------------------------------------------------------
     
-    /**
-     * Check to see if a line needs to be matched, then insert it into the document.
-     * @param l The line we are parsing
-     */
-    protected void parseLine(String l)
-    {
-        // Don't output if we get a match
-        boolean		matched = false;
+	/**
+	 * Check to see if a line needs to be matched, then insert it into the
+	 * document.
+	 *
+	 * @param l The line we are parsing
+	 */
+	void parseLine (final String l) {
+		if (l == null)
+			return;
 
-        if (l == null)
-            return;
+		try {
+			final boolean matched = matchHudInfoCommand(l);
 
-        try
-        {
-            matched = matchHudInfoCommand(l);
-            matchForCommandSending(l);
-            
-            if (!matched && !data.mainWindowMuted)
-            {
-                if (l.length() == 0)
-                    doc.insertNewLine();
-                
-                doc.insertParsedString(doc.parseString(l));
-                textPane.setCaretPosition(doc.getLength());                
-            }
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error: parseLine: " + e);
-        }
-    }
+			matchForCommandSending(l);
+
+			if (!matched && !data.mainWindowMuted) {
+				if (l.length() == 0)
+					doc.insertNewLine();
+				// TODO: Why would we insert a blank line?
+
+				doc.insertParsedString(doc.parseString(l));
+				textPane.setCaretPosition(doc.getLength());
+			}
+		} catch (final Exception e) {
+			System.out.println("Error: parseLine: " + e);
+		}
+	}
 
     /**
      * Just like parseLine, but designed for messages from the HUD. These don't need to be matched, so we can save ourselves some CPU time.
@@ -111,87 +97,6 @@ public class MUParse implements Runnable {
     {
         doc.insertMessageString(l);
         textPane.setCaretPosition(doc.getLength());
-    }
-
-    public void commandLine(String l)
-    {
-        doc.insertCommandString(l);
-        textPane.setCaretPosition(doc.getLength());
-    }
-
-    /**
-     * Checks to see if a specified line is a HUD command. If so, then do something about it.
-     * @param l The text line that contains the potential command.
-     */
-    public boolean isHudCommand(String l)
-    {
-        if (l.startsWith("setzoom"))
-        {
-            int newHeight;
-            
-            StringTokenizer	st = new StringTokenizer(l);
-            st.nextToken();
-
-            try
-            {
-                newHeight = Integer.parseInt(st.nextToken().trim());
-
-                if (newHeight < 5)
-                    newHeight = 5;
-                else if (newHeight > 200)
-                    newHeight = 200;
-
-                prefs.hexHeight = newHeight;
-                messageLine(": Zoom set to " + newHeight);
-            }
-            catch (NumberFormatException e)
-            {
-                messageLine(": Invalid height for setzoom");
-            }
-
-            return true;
-        }
-        else if (l.startsWith("setupdate"))
-        {
-            double newDelay;
-
-            StringTokenizer	st = new StringTokenizer(l);
-            st.nextToken();
-
-            try
-            {
-                newDelay = Double.parseDouble(st.nextToken().trim());
-
-                if (newDelay < 1.0)
-                    newDelay = 1.0;
-
-                prefs.fastCommandUpdate = newDelay;
-                prefs.mediumCommandUpdate = 2 * newDelay;
-                prefs.slowCommandUpdate = 5 * newDelay;
-                prefs.slugCommandUpdate = 15 * newDelay;
-                
-                if (data.hudRunning)
-                {
-                    commands.endTimers();
-                    commands.startTimers();
-                }
-                
-                messageLine(": Update set to " + newDelay);
-            }
-            catch (NumberFormatException e)
-            {
-                messageLine(": Invalid time for setupdate");
-            }
-
-            return true;
-        }
-        else if (l.startsWith("cleardoc"))
-        {
-            doc.clearDocument();
-            return true;
-        }
-        
-        return false;
     }
 
     public boolean matchForCommandSending(String l)
@@ -933,37 +838,5 @@ public class MUParse implements Runnable {
         }
 
         MUUnitInfo.newWeapon(w);
-    }
-    
-    // --------------------------------------------
-
-    public void run()
-    {
-        while (go)
-        {
-            String			l = null;
-
-            l = lh.get();
-            
-            if (l != null)
-                parseLine(l);
-        }
-    }
-
-    /**
-     * Start the MUParse thread
-     */
-    public void start()
-    {
-        if (parseThread == null)
-        {
-            parseThread = new Thread(this, "MUParse");
-            parseThread.start();
-        }
-    }
-    
-    public void pleaseStop()
-    {    
-        go = false;
     }
 }
