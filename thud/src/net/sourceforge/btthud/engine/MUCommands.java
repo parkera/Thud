@@ -37,6 +37,11 @@ public class MUCommands
 
     public void forceTactical()
     {
+	// FIXME: This is poorly coded.
+	if (commandSendingTask == null) {
+		return;
+	}
+
         commandSendingTask.forceTactical = true;
         commandSendingTask.forceLOS = true;
     }

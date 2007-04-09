@@ -24,6 +24,10 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
+
+import javax.swing.event.DocumentListener;
+import javax.swing.event.DocumentEvent;
+
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Keymap;
 
@@ -36,10 +40,12 @@ public class Thud extends JFrame implements Runnable {
 
     Font	mFont = new Font("Monospaced", Font.PLAIN, 10);		// default main font
     
-    JTextField				textField;
-    JTextPane				textPane;
-    BulkStyledDocument		bsd;
-	JTextPaneWriter textPaneWriter;
+	private JTextField textField;
+	private DocumentWatcher textFieldWatcher;
+
+	private JTextPane textPane;
+	private BulkStyledDocument bsd;
+	private JTextPaneWriter textPaneWriter;
 
     boolean					connected = false;
 
@@ -53,9 +59,10 @@ public class Thud extends JFrame implements Runnable {
     MUPrefs					prefs = null;
     MUCommands				commands = null;
 
-    LinkedList<String>		commandHistory = new LinkedList<String>();
-    int						historyLoc = 1;							// how far we are from end of history list
-    
+	private LinkedList<String> commandHistory = new LinkedList<String> ();
+	private ListIterator<String> historyCursor = null;
+	private boolean historyForward = true;
+
     static final int		DEBUG = 1;
     
     private String[]		args;
@@ -93,6 +100,7 @@ public class Thud extends JFrame implements Runnable {
 	private ThudAction taClear;
 	private ThudAction taSelectAll;
 	private ThudAction taRepeatPreviousCommand;
+	private ThudAction taRepeatNextCommand;
 	private ThudAction taEraseCurrentCommand;
 	private ThudAction taMuteMainWindowText;
 
@@ -305,6 +313,7 @@ public class Thud extends JFrame implements Runnable {
 		editMenu.addSeparator();
 
 		editMenu.add(taRepeatPreviousCommand);
+		editMenu.add(taRepeatNextCommand);
 		editMenu.add(taEraseCurrentCommand);
 
 		editMenu.addSeparator();
@@ -603,6 +612,12 @@ public class Thud extends JFrame implements Runnable {
 			}
 		};
 
+		taRepeatNextCommand = new ThudSimpleAction ("Repeat Next Command", KeyEvent.VK_N) {
+			protected void doAction () {
+				doNextCommand();
+			}
+		};
+
 		taEraseCurrentCommand = new ThudSimpleAction ("Erase Current Command", KeyEvent.VK_U) {
 			protected void doAction () {
 				doEraseCommand();
@@ -629,7 +644,7 @@ public class Thud extends JFrame implements Runnable {
 		};
 		taStartStop.setEnabled(false);
 
-		taUpdateTacticalMapNow =  new ThudSimpleAction ("Update Tactical Map Now", KeyEvent.VK_N) {
+		taUpdateTacticalMapNow =  new ThudSimpleAction ("Update Tactical Map Now", KeyEvent.VK_N, Event.SHIFT_MASK) {
 			protected void doAction () {
 				commands.forceTactical();
 			}
@@ -1126,6 +1141,9 @@ public class Thud extends JFrame implements Runnable {
 	textField.setFont(mFont);
 	textField.setEnabled(true);
 
+	textFieldWatcher = new DocumentWatcher ();
+	textField.getDocument().addDocumentListener(textFieldWatcher);
+
 	add(textField, BorderLayout.SOUTH);
 
 	// Link a few key bindings.
@@ -1215,17 +1233,7 @@ public class Thud extends JFrame implements Runnable {
 			textField.setText(null);
 
 			// Add this command to our history
-			if (commandHistory.size() == 0
-			    || (String)commandHistory.getLast() != typedText)
-				commandHistory.add(typedText);
-
-			// If we're over our preferred history size,
-			// remove the next line (in FIFO order).
-			if (commandHistory.size() > prefs.commandHistory)
-				commandHistory.removeFirst();
-
-			// Reset our history location counter
-			historyLoc = 1;
+			addCommand(typedText);
 		}
 	});
     }
@@ -1360,26 +1368,152 @@ public class Thud extends JFrame implements Runnable {
 
     // -----------------------
 
-    /** Insert the previous command into the text box */
-    public void doPreviousCommand()
-    {
-        if (commandHistory.size() - historyLoc > 0)		// make sure we're not going past what we have
-        {
-            textField.setText((String) commandHistory.get(commandHistory.size() - historyLoc));
-            textField.setCaretPosition(textField.getDocument().getLength());
-            historyLoc++;
-        }
-        else
-        {
-            historyLoc = 1;
-        }
-    }
+	// A thread-safe DocumentListener, to watch for changes to the input
+	// text field.  It doesn't really need to be thread-safe, but we might
+	// need it later.  For example, the scripting engine, which runs in a
+	// separate thread, might modify the user's input field, to implement a
+	// /grab-like feature.
+	static private class DocumentWatcher implements DocumentListener {
+		private boolean modified;
+
+		private boolean wasModified () {
+			boolean oldModified;
+
+			// Only clearing needs to be synchronized, as Java
+			// guarantees atomicity for boolean reads/writes.  Thus
+			// we only need to ensure that multiple threads don't
+			// clear the flag simultaneously.
+			//
+			// Of course, the only time we're really going to call
+			// this is from the Swing thread, so even this level of
+			// synchronization is unnecessary.
+			synchronized (this) {
+				oldModified = modified;
+				modified = false;
+			}
+
+			return oldModified;
+		}
+
+		public void changedUpdate (final DocumentEvent e) {
+			modified = true;
+		}
+
+		public void insertUpdate (final DocumentEvent e) {
+			modified = true;
+		}
+
+		public void removeUpdate (final DocumentEvent e) {
+			modified = true;
+		}
+	}
+
+	/** Add command to history.  */
+	private void addCommand (final String command) {
+		// Check history cursor.
+		if (historyCursor != null) {
+			// Stop traversing history.
+			historyCursor = null;
+			commandHistory.removeFirst(); // forget temp
+		}
+
+		// Check if we need to add anything to the history.
+		if (command.length() == 0) {
+			// Don't add empty commands to the history.
+			return;
+		}
+
+		if (!commandHistory.isEmpty()
+		    && commandHistory.getFirst().equals(command)) {
+			// Don't add redundant commands to the history.
+			return;
+		}
+
+		// Add command as most recent.
+		commandHistory.addFirst(command);
+
+		if (commandHistory.size() > prefs.commandHistory) {
+			// Exceeded history size, remove least recent.
+			commandHistory.removeLast();
+		}
+	}
+
+	/** Step to the previous command in the history.  */
+	private void doPreviousCommand () {
+		// Check history cursor.
+		if (historyCursor != null && textFieldWatcher.wasModified()) {
+			// Stop traversing history.
+			historyCursor = null;
+			commandHistory.removeFirst(); // forget temp
+		}
+
+		if (historyCursor == null) {
+			// Start traversing history.
+			commandHistory.addFirst(textField.getText()); // temp
+
+			historyCursor = commandHistory.listIterator();
+
+			historyForward = false; // skip temp
+		}
+
+		// Recall command from history.
+		if (!historyForward) {
+			// Reversed direction.  Java iterators return the same
+			// item twice if you go forward, then backwards.  This
+			// is obviously not what a human would expect, so we
+			// remember by setting a flag.
+			historyCursor.next(); // skip past last previous()
+			historyForward = true;
+		}
+
+		if (!historyCursor.hasNext()) {
+			// Already at least recent.
+			return;
+		}
+
+		textField.setText(historyCursor.next());
+		textField.setCaretPosition(textField.getDocument().getLength());
+		textFieldWatcher.wasModified(); // clear modification state
+	}
+
+	/** Step to the next command in the history.  */
+	private void doNextCommand () {
+		// Check history cursor.
+		if (historyCursor != null && textFieldWatcher.wasModified()) {
+			// Stop traversing history.
+			historyCursor = null;
+			commandHistory.removeFirst(); // forget temp
+		}
+
+		if (historyCursor == null) {
+			// Not traversing history.
+			return;
+		}
+
+		// Recall command from history.
+		if (historyForward) {
+			// Reversed direction.  Java iterators return the same
+			// item twice if you go forward, then backwards.  This
+			// is obviously not what a human would expect, so we
+			// remember by setting a flag.
+			historyCursor.previous(); // skip past last next()
+			historyForward = false;
+		}
+
+		if (!historyCursor.hasPrevious()) {
+			// Already at most recent.
+			return;
+		}
+
+		textField.setText(historyCursor.previous());
+		textField.setCaretPosition(textField.getDocument().getLength());
+		textFieldWatcher.wasModified(); // clear modification state
+	}
     
-    /** Erase the current command from the text box */
-    public void doEraseCommand()
-    {
-        textField.setText(null);
-    }
+	/** Erase the current command from the text box.  */
+	private void doEraseCommand () {
+		textField.setText(null);
+	}
 
     /** Mute the text in the main window */
     public void doMuteMainWindow()

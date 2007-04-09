@@ -11,6 +11,12 @@ Version History:
   New Features:
    * Scripting engine support added. See a development team member for details at this point.
    * Thud can now run its subwindows as dialogs instead of frames, meaning that they won't take up a taskbar entry. This is configurable in Preferences -> Window -> Independent Child Windows.
+   * Thud now handles command history like most modern clients, allowing you to move forward and backward through command history using Ctrl-N and Ctrl-P. The shortcut for 'Update Tactical Map Now' has been changed to Ctrl-Shift-N.
+
+  Bug Fixes:
+   * ANSI emulation has been improved.
+   * Some bugs in command history handling have been fixed.
+
 
 1.4 February 20, 2007
   New Features:
