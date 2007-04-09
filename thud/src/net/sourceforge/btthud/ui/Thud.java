@@ -35,7 +35,6 @@ public class Thud extends JFrame implements Runnable {
 	static private final char COMMAND_CHAR = '/';
 
     Font	mFont = new Font("Monospaced", Font.PLAIN, 10);		// default main font
-    AboutBox aboutBox = null;
     
     JTextField				textField;
     JTextPane				textPane;
@@ -170,8 +169,6 @@ public class Thud extends JFrame implements Runnable {
 
 		prefsDialog = new PrefsDialog (this);
 
-		// Create an about box
-		aboutBox = new AboutBox();
 		// Initialize data store.
 		dataStore = new DataStore ();
 
