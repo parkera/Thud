@@ -16,9 +16,10 @@ Version History:
   Bug Fixes:
    * ANSI emulation has been improved.
    * Some bugs in command history handling have been fixed.
-
+   * Tab handling has been fixed.
 
 1.4 February 20, 2007
+
   New Features:
    * MUX-format map files can now be loaded via File -> Load Map.
    * Weather information is retrieved and displayed on the bottom of the tactical window.

@@ -57,15 +57,22 @@ public class BulkStyledDocument extends DefaultStyledDocument {
 	}
 
 	public void setFont (final Font font) {
-		final FontRenderContext frc = new FontRenderContext (new AffineTransform(), false, false);
+		// Computes the advance for a space character.  We've only
+		// really thought this code through for your basic Latin
+		// scripts, but that should be all we need, considering that
+		// we're using a protocol that only supports US-ASCII anyway.
+		final FontRenderContext frc = new FontRenderContext (null, false, false);
 
-		final Rectangle2D maxCharSize = font.getMaxCharBounds(frc);
-		final int maxWidth = (int)maxCharSize.getWidth();
+		final GlyphVector spaceVec = font.createGlyphVector(frc, " ");
+		final GlyphMetrics spaceMetrics = spaceVec.getGlyphMetrics(0);
 
+		final int spaceAdvance = (int)spaceMetrics.getAdvance();
+
+		// Compute tab stops.
 		final TabStop[] tabStops = new TabStop[NUM_TAB_STOPS];
 
 		for (int i = 0; i < NUM_TAB_STOPS; i++) {
-			tabStops[i] = new TabStop (i * maxWidth * 8);
+			tabStops[i] = new TabStop (i * spaceAdvance * 8);
 		}
 
 		StyleConstants.setTabSet(getStyle(StyleContext.DEFAULT_STYLE),
