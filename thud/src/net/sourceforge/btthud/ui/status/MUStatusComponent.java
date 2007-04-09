@@ -9,7 +9,6 @@ package net.sourceforge.btthud.ui.status;
 
 import net.sourceforge.btthud.data.MUData;
 import net.sourceforge.btthud.data.MUPrefs;
-import net.sourceforge.btthud.util.BulkStyledDocument;
 
 import net.sourceforge.btthud.data.MUConstants;
 import net.sourceforge.btthud.data.MUColors;
@@ -18,6 +17,9 @@ import net.sourceforge.btthud.data.MUMyInfo;
 import net.sourceforge.btthud.data.MUUnitInfo;
 import net.sourceforge.btthud.data.MUUnitWeapon;
 import net.sourceforge.btthud.data.MUUnitAmmo;
+
+import net.sourceforge.btthud.util.JTextPaneWriter;
+import net.sourceforge.btthud.util.BulkStyledDocument;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -38,6 +40,7 @@ public class MUStatusComponent extends JScrollPane {
 	private MUPrefs prefs;
 
 	private final JTextPane statusPane;
+	private final JTextPaneWriter statusPaneWriter;
 
 	private Font mFont;
 
@@ -52,9 +55,11 @@ public class MUStatusComponent extends JScrollPane {
 		statusPane.setBackground(Color.black);
 		statusPane.setEditable(false);
 
+		statusPaneWriter = new JTextPaneWriter (statusPane);
+
 		newPreferences(prefs);
 
-		statusPane.setStyledDocument(new BulkStyledDocument (prefs.statusFontSize, 100, mFont));
+		statusPane.setStyledDocument(new BulkStyledDocument (100, mFont));
 
 		setViewportView(statusPane);
 	}
@@ -82,8 +87,6 @@ public class MUStatusComponent extends JScrollPane {
 	public void refresh (final MUData data) {
 		if (!data.hudRunning)
 			return;
-
-		final BulkStyledDocument doc = (BulkStyledDocument) statusPane.getDocument();
 
 		final MUMyInfo mydata = data.myUnit;
 
@@ -309,7 +312,10 @@ public class MUStatusComponent extends JScrollPane {
 			addBlankLine();
 		}
 
-		doc.clearAndInsertParsedString(elements);
+		final BulkStyledDocument doc = (BulkStyledDocument)statusPane.getDocument();
+
+		statusPaneWriter.reset();
+		doc.insertParsedString(elements.toArray(new ElementSpec[0]));
 	}
 
 	/**

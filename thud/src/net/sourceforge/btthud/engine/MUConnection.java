@@ -31,6 +31,8 @@ import java.io.OutputStreamWriter;
  * It offers limited support for TELNET (RFC 854), mostly for the purpose of
  * ignoring TELNET option negotiation.
  *
+ * TODO: Implement the RFC 854 support.
+ *
  * @author Anthony Parker
  */
 public class MUConnection implements Runnable {
@@ -69,8 +71,8 @@ public class MUConnection implements Runnable {
 		in = new BufferedInputStream (conn.getInputStream());
 		out = new BufferedOutputStream (conn.getOutputStream());
 
-		rd = new BufferedReader (new InputStreamReader (in));
-		wr = new BufferedWriter (new OutputStreamWriter (out));
+		rd = new BufferedReader (new InputStreamReader (in, "US-ASCII"));
+		wr = new BufferedWriter (new OutputStreamWriter (out, "US-ASCII"));
 
 		this.connected = true;
 		start();
@@ -101,7 +103,7 @@ public class MUConnection implements Runnable {
 	private void sendLine (String command) throws IOException {
 		try {
 			wr.write(command);
-			wr.newLine();
+			wr.write("\r\n");
 			wr.flush();
 		} catch (SocketException e) {
 			// If we get a socket exception - disconnect.
@@ -124,6 +126,15 @@ public class MUConnection implements Runnable {
 	public void run () {
 		while (go) {
 			try {
+				// TODO: readLine() isn't smart enough, because
+				// we need to parse TELNET sequences (IACs) at
+				// the byte stream level.
+				//
+				// It also might be appropriate to parse ANSI
+				// escapes at the byte stream level, but we're
+				// probably OK on that count, since ANSI
+				// sequences are all encoded within the bounds
+				// of the US-ASCII charset.
 				parse.parseLine(rd.readLine());
 			} catch (IOException e) {
 				errorHandler.stopConnection();

@@ -39,6 +39,7 @@ public class Thud extends JFrame implements Runnable {
     JTextField				textField;
     JTextPane				textPane;
     BulkStyledDocument		bsd;
+	JTextPaneWriter textPaneWriter;
 
     boolean					connected = false;
 
@@ -55,7 +56,7 @@ public class Thud extends JFrame implements Runnable {
     LinkedList<String>		commandHistory = new LinkedList<String>();
     int						historyLoc = 1;							// how far we are from end of history list
     
-    static final int		DEBUG = 0;
+    static final int		DEBUG = 1;
     
     private String[]		args;
 
@@ -165,6 +166,8 @@ public class Thud extends JFrame implements Runnable {
 		// Read preferences.
 		readPrefs();
 
+		// TODO: Shouldn't we call this /after/ we set up the text
+		// areas? Or maybe we need a better way of updating fonts.
 		mainFontChanged();			// setup a new font
 
 		prefsDialog = new PrefsDialog (this);
@@ -198,16 +201,19 @@ public class Thud extends JFrame implements Runnable {
 		else
 			buildNumber = "(r" + buildNumber + ")";
 
-		bsd.insertPlainString(" *** Thud, (c) 2001-2007 Anthony Parker & the THUD team      ***");
-		bsd.insertPlainString(" *** bt-thud.sourceforge.net                                 ***");
-		bsd.insertPlainString(String.format(" *** Version: 1.5B %-41s ***", buildNumber));
-		bsd.insertPlainString(" *** To get started, connect to a MUX via the HUD menu,      ***");
-		bsd.insertPlainString(" *** then hit Ctrl-G when in a combat unit to activate Thud! ***\n");
+		textPaneWriter.println(" *** Thud, (c) 2001-2007 Anthony Parker & the THUD team      ***");
+		textPaneWriter.println(" *** bt-thud.sourceforge.net                                 ***");
+		textPaneWriter.format(" *** Version: 1.5B %-41s ***", buildNumber);
+		textPaneWriter.println();
+		textPaneWriter.println(" *** To get started, connect to a MUX via the HUD menu,      ***");
+		textPaneWriter.println(" *** then hit Ctrl-G when in a combat unit to activate Thud! ***");
 
 		// Attempt auto-connect, if given parameters
-		if(args.length == 2) {
+		if (args.length == 2) {
 			try {
-				bsd.insertPlainString(" *** Auto-connecting to " + args[0] + " port " + args[1] + "...\n");
+				textPaneWriter.println();
+				textPaneWriter.println(" *** Auto-connecting to " + args[0] + " port " + args[1] + "...");
+
 				startConnection(new MUHost (args[0], Integer.parseInt(args[1])));
 			} catch (Exception e) {
 				System.out.println("Error auto-connecting to " + args[0] + "  port " + args[1]);
@@ -1095,29 +1101,32 @@ public class Thud extends JFrame implements Runnable {
     
     protected void setupNewTextFields()
     {
-        bsd = new BulkStyledDocument(prefs.mainFontSize, prefs.maxScrollbackSize, mFont);
+	// Setup the text pane
+	bsd = new BulkStyledDocument (prefs.maxScrollbackSize, mFont);
 
-        textField = new JTextField(80);
-        textField.setFont(mFont);
-        textField.setEnabled(true);
-        
-        textPane = new JTextPane(bsd);
-        textPane.setDocument(bsd);
-        textPane.setBackground(Color.black);
-        textPane.setEditable(false);
-        textPane.setFont(mFont);
-        textPane.setRequestFocusEnabled(false);
+	textPane = new JTextPane (bsd);
+	textPane.setStyledDocument(bsd);
+	textPane.setForeground(Color.white);
+	textPane.setBackground(Color.black);
+	textPane.setEditable(false);
+	textPane.setFont(mFont);
+	textPane.setRequestFocusEnabled(false);
 	textPane.setFocusable(true);
-        
-        JScrollPane scrollPane = new JScrollPane(textPane,
-                                                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                                                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        // Setup the text pane
-        add(scrollPane, BorderLayout.CENTER);
+	textPaneWriter = new JTextPaneWriter (textPane);
 
-        // Setup the text field
-        add(textField, BorderLayout.SOUTH);
+	JScrollPane scrollPane = new JScrollPane(textPane,
+	                                         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+	                                         JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+	add(scrollPane, BorderLayout.CENTER);
+
+	// Setup the text field
+	textField = new JTextField (80);
+	textField.setFont(mFont);
+	textField.setEnabled(true);
+
+	add(textField, BorderLayout.SOUTH);
 
 	// Link a few key bindings.
 	final InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT); // we can also use WHEN_IN_FOCUSED_WINDOW in any subcomponent, but it's messier
@@ -1173,33 +1182,30 @@ public class Thud extends JFrame implements Runnable {
 			if (!isThudCommand
 			    && (conn == null || !conn.connected)) {
 				// Not connected.
-				bsd.insertMessageString("*** Can't Send Text: Not Connected ***");
+				textPaneWriter.println();
+				textPaneWriter.println("*** Can't Send Text: Not Connected ***", BulkStyledDocument.STYLE_HUD_MESSAGE);
 				return;
 			}
 
 			// Execute command.
 			if (isThudCommand) {
 				if (prefs.echoCommands) {
-					bsd.insertMessageString(COMMAND_CHAR + text);
+					textPaneWriter.println();
+					textPaneWriter.println(COMMAND_CHAR + text, BulkStyledDocument.STYLE_HUD_MESSAGE);
 				}
 
 				interactor.doCommand(text);
 			} else {
 				if (prefs.echoCommands) {
-					// FIXME: This used to be parse.commandLine(),
-					// but it seemed very silly there.
-					bsd.insertCommandString("> " + text);
-					textPane.setCaretPosition(bsd.getLength());
+					textPaneWriter.println();
+					textPaneWriter.println("> " + text, BulkStyledDocument.STYLE_COMMAND);
 				}
 
 				try {
 					conn.sendCommand(new UserCommand (text));
 				} catch (IOException e) {
-					// FIXME: This used to be
-					// parse.commandLine(), but it seemed
-					// very silly there.
-					bsd.insertCommandString("> Couldn't send: " + e);
-					textPane.setCaretPosition(bsd.getLength());
+					textPaneWriter.println();
+					textPaneWriter.println("> Couldn't send: " + e, BulkStyledDocument.STYLE_COMMAND);
 
 					// TODO: Break connection?
 				}
@@ -1235,7 +1241,7 @@ public class Thud extends JFrame implements Runnable {
             // Setup some of the helper classes
             data = new MUData();
 
-            parse = new MUParse(textPane, data, bsd, prefs);
+            parse = new MUParse(textPaneWriter, data, prefs);
             parse.messageLine("*** Connecting... ***");
             
             // Setup the connection
@@ -1620,18 +1626,20 @@ public class Thud extends JFrame implements Runnable {
 		startConnection(prefs.hosts.get(ii));
 	}
 
-    /** Called when main font size changes */
-    public void mainFontChanged()
-    {
-        
-        mFont = new Font(prefs.mainFont, Font.PLAIN, prefs.mainFontSize);
+	/** Called when main font size changes */
+	public void mainFontChanged () {
+		mFont = new Font(prefs.mainFont, Font.PLAIN, prefs.mainFontSize);
 
-        if (bsd != null)        	
-            bsd.setFont(prefs.mainFontSize, mFont);
-        if (textField != null)
-            textField.setFont(mFont);
-    }
-    
+		if (bsd != null)
+			bsd.setFont(mFont);
+
+		if (textPane != null)
+			textPane.setFont(mFont);
+
+		if (textField != null)
+			textField.setFont(mFont);
+	}
+
     /** Read our prefs from disk */
     public void readPrefs()
     {

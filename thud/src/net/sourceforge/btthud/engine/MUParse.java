@@ -21,10 +21,12 @@ import net.sourceforge.btthud.util.*;
 
 public class MUParse {
 
-    // Variables
-    JTextPane				textPane = null;
+	private final JTextPaneWriter textPaneWriter;
+	private final BulkStyledDocument doc;
+
+	private final ANSIEmulation emulation = new ANSIEmulation ();
+
     MUData					data = null;
-    BulkStyledDocument		doc = null;
     MUPrefs					prefs = null;
     MUCommands				commands = null;
 
@@ -32,18 +34,18 @@ public class MUParse {
     String					hudInfoStart = new String("#HUD:");
 
     // ---------------------
-    
-    /**
-     * Constructor
-     */
-    public MUParse(JTextPane textPane, MUData data, BulkStyledDocument doc, MUPrefs prefs)
-    {
-        // Init here
-        this.textPane = textPane;
-        this.data = data;
-        this.doc = doc;
-        this.prefs = prefs;
-    }
+
+	/**
+	 * Constructor.
+	 */
+	public MUParse (final JTextPaneWriter textPaneWriter,
+	                final MUData data, final MUPrefs prefs) {
+		this.textPaneWriter = textPaneWriter;
+		doc = (BulkStyledDocument)textPaneWriter.getDocument();
+
+		this.data = data;
+		this.prefs = prefs;
+	}
 
     public String getSessionKey() {
         return sessionKey;
@@ -72,33 +74,60 @@ public class MUParse {
 			return;
 
 		try {
-			final boolean matched = matchHudInfoCommand(l);
+			// Technically, we should probably parse everything for
+			// ANSI codes first, but we're pretty sure hudinfo
+			// lines won't contain any.
+			if (matchHudInfoCommand(l))
+				return;
 
+			// Perform ANSI terminal emulation.  We need to do this
+			// even when we mute the main window text, although in
+			// that case, we just discard the text.
+			final List<ANSIEmulation.StyledString> styledLine = emulation.parseLine(l, data.mainWindowMuted);
+
+			// TODO: This should probably take into account the
+			// ANSI-parsed text, but we'll probably just foist it
+			// on to the scripting engine anyway.  Anyway, it
+			// doesn't currently match any colorized lines.
 			matchForCommandSending(l);
 
-			if (!matched && !data.mainWindowMuted) {
-				if (l.length() == 0)
-					doc.insertNewLine();
-				// TODO: Why would we insert a blank line?
+			// Output to main window.
+			if (!data.mainWindowMuted) {
+				for (final ANSIEmulation.StyledString element: styledLine) {
+					printStyledString(element);
+				}
 
-				doc.insertParsedString(doc.parseString(l));
-				textPane.setCaretPosition(doc.getLength());
+				textPaneWriter.println();
 			}
 		} catch (final Exception e) {
 			System.out.println("Error: parseLine: " + e);
 		}
 	}
 
-    /**
-     * Just like parseLine, but designed for messages from the HUD. These don't need to be matched, so we can save ourselves some CPU time.
-     * @param l The line that we are parsing
-     */
-    public void messageLine(String l)
-    {
-        doc.insertMessageString(l);
-        textPane.setCaretPosition(doc.getLength());
-    }
+	private void printStyledString (final ANSIEmulation.StyledString str) {
+		final String style = str.style;
+		final String text = str.text;
 
+		if (!textPaneWriter.hasStyle(style)) {
+			textPaneWriter.addStyle(style,
+			                        ANSIEmulation.getStyle(style));
+		}
+
+		textPaneWriter.print(text, style);
+	}
+
+	/**
+	 * Just like parseLine, but designed for messages from the HUD. These
+	 * don't need to be matched, so we can save ourselves some CPU time.
+	 *
+	 * @param l The line that we are parsing
+	 */
+	public void messageLine (String l) {
+		textPaneWriter.println();
+		textPaneWriter.println(l, BulkStyledDocument.STYLE_HUD_MESSAGE);
+	}
+
+    // Triggers.
     public boolean matchForCommandSending(String l)
     {
         if (l.startsWith("Pos changed to ") && data.hudRunning)

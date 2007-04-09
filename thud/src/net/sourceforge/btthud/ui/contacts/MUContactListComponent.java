@@ -9,9 +9,11 @@ package net.sourceforge.btthud.ui.contacts;
 
 import net.sourceforge.btthud.data.MUData;
 import net.sourceforge.btthud.data.MUPrefs;
-import net.sourceforge.btthud.util.BulkStyledDocument;
 
 import net.sourceforge.btthud.data.MUUnitInfo;
+
+import net.sourceforge.btthud.util.JTextPaneWriter;
+import net.sourceforge.btthud.util.BulkStyledDocument;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -31,6 +33,7 @@ public class MUContactListComponent extends JScrollPane {
 	private MUPrefs prefs;
 
 	private final JTextPane contactPane;
+	private final JTextPaneWriter contactPaneWriter;
 
 	private Font mFont;
 
@@ -45,9 +48,11 @@ public class MUContactListComponent extends JScrollPane {
 		contactPane.setBackground(Color.black);
 		contactPane.setEditable(false);
 
+		contactPaneWriter = new JTextPaneWriter (contactPane);
+
 		newPreferences(prefs);
 
-		contactPane.setStyledDocument(new BulkStyledDocument (prefs.contactFontSize, 1000, mFont)); // Yes, max of 1000 contacts. So sue me.
+		contactPane.setStyledDocument(new BulkStyledDocument (1000, mFont)); // Yes, max of 1000 contacts. So sue me.
 
 		setViewportView(contactPane);
 	}
@@ -69,8 +74,6 @@ public class MUContactListComponent extends JScrollPane {
 	public void refresh (final MUData data) {
 		if (!data.hudRunning)
 			return;
-
-		final BulkStyledDocument doc = (BulkStyledDocument)contactPane.getDocument();
 
 		final Iterator contacts = data.getContactsIterator(true); // Sorted list
 
@@ -107,10 +110,10 @@ public class MUContactListComponent extends JScrollPane {
 			addString(unit.makeContactString(), whichAttrs);
 		}
 
-		doc.clearAndInsertParsedString(elements);
+		final BulkStyledDocument doc = (BulkStyledDocument)contactPane.getDocument();
 
-		// Don't scroll
-		// contactPane.setCaretPosition(doc.getLength());
+		contactPaneWriter.reset();
+		doc.insertParsedString(elements.toArray(new ElementSpec[0]));
 	}
 
 	/**
