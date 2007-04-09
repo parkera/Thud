@@ -23,23 +23,27 @@
         </javac>
     </target>
 
-    <target name="package-only" depends="compile">
+    <target name="package-common" depends="compile">
         <property name="thud.version" value="1.4" />
         <my.svn.info revisionproperty="svn.revision" />
 
         <copy file="CHANGES.RTF" todir="bin" />
+
         <copy todir="bin/media">
             <fileset dir="media">
-                <include name="icon/icon.gif" /> 
+                <include name="icon/icon.gif" />
             </fileset>
         </copy>
+
         <copy todir="bin/scripts">
             <fileset dir="scripts">
                 <include name="**/*.js" />
                 <exclude name="test.js" />
             </fileset>
         </copy>
+    </target>
 
+    <target name="package-only" depends="package-common">
         <jar destfile="Thud-only.jar" basedir="bin">
             <manifest>
                 <attribute name="Built-By" value="${user.name}" />
@@ -53,7 +57,7 @@
         </jar>
     </target>
 
-    <target name="package-smoosh" depends="package-only">
+    <target name="package-smoosh" depends="package-common">
         <jar destfile="Thud.jar" basedir="bin">
             <manifest>
                 <attribute name="Built-By" value="${user.name}" />
