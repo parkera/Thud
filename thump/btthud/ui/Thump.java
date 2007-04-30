@@ -736,7 +736,13 @@ public class Thump extends JFrame implements ActionListener, InternalFrameListen
             FileDialog		saveImageDialog = new FileDialog(this, "Save as PNG...", FileDialog.SAVE);
             String              fileName = topFrame().fileName();
             
-            saveImageDialog.setFile(fileName.substring(0, fileName.length() - 3) + "png");
+            final int extDotIndex = fileName.lastIndexOf('.');
+
+            if (extDotIndex != -1) {
+                fileName = fileName.substring(0, extDotIndex);
+            }
+
+            saveImageDialog.setFile(fileName + ".png");
             saveImageDialog.show();
             
             if (saveImageDialog.getFile() != null)      // if null, cancelled
