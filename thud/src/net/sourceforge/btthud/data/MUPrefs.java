@@ -171,12 +171,11 @@ public class MUPrefs implements Cloneable {
         
         MUHost bt3030 = new MUHost("btech.dhs.org", 3030);
         MUHost frontiers = new MUHost("frontiermux.com", 5555);
-        MUHost bt3065 = new MUHost("btech.mushpark.com", 3065);
-        
+        MUHost bt3027 = new MUHost("btmux.com", 3027);        
 
         hosts.add(bt3030);
         hosts.add(frontiers);
-        hosts.add(bt3065);
+        hosts.add(bt3027);
     }
 
     public void addHost(String newHost, int newPort)
