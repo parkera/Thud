@@ -24,7 +24,17 @@ public class MUUnitInfo extends Object implements Comparable {
     public boolean		friend = false;
     public boolean		target = false;
     
-    public String		type = null;
+    protected String 	sTargettedUnit = null;
+    
+    public String getTargettedUnit() {
+		return sTargettedUnit;
+	}
+
+	public void setTargettedUnit(String targettedUnit) {
+		sTargettedUnit = targettedUnit;
+	}
+
+	public String		type = null;
     public String 		team = null;
     public String		id = null;
     public String		name = " ";

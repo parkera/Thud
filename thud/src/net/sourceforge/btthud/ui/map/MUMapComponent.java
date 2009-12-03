@@ -9,6 +9,7 @@
 package net.sourceforge.btthud.ui.map;
 
 import net.sourceforge.btthud.data.*;
+import net.sourceforge.btthud.ui.*;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -18,6 +19,8 @@ import java.awt.image.*;
 
 import javax.swing.*;
 import java.util.*;
+
+import java.awt.geom.Ellipse2D;
 
 /* Notes:
 
@@ -33,8 +36,11 @@ Also needed; a better way to determine exactly what hexes to draw or not. Right 
 
 public class MUMapComponent extends JComponent implements ComponentListener
 {
-    MUData					data;
-    MUPrefs					prefs;
+	private static final long serialVersionUID = 1;
+	
+	public Thud					myThud;
+	public MUData				data;
+	public MUPrefs				prefs;
 
     Font					tacStatusFont;
     Font					hexNumberFont;
@@ -75,19 +81,36 @@ public class MUMapComponent extends JComponent implements ComponentListener
     Point2D					savedTerrainCenter = new Point2D.Float(0,0);
     Rectangle				savedTerrainBounds = new Rectangle(0, 0, 0, 0);
     
-        
-    public MUMapComponent(MUData data, MUPrefs prefs)
+    boolean					bPainting = false;
+    
+    public MUMapActions 	mapActions;
+    
+    public boolean isXPainting() {
+		return bPainting;
+	}
+
+	public void setXPainting(boolean painting) {
+		bPainting = painting;
+	}
+
+	public MUMapComponent(MUData data, MUPrefs prefs, Thud thud)
     {
         super();
 
         this.data = data;
         this.prefs = prefs;
 
+        myThud = thud;
+        
         setupFonts();
 
         setDoubleBuffered(true);
 
-        addMouseListener(new MapMouseListener (this));
+        MapMouseListener myMapListener = new MapMouseListener (this);
+        
+        addMouseListener(myMapListener);
+        addMouseWheelListener (myMapListener);
+        
         addComponentListener(this);
         
         // Do some initial setup
@@ -101,6 +124,7 @@ public class MUMapComponent extends JComponent implements ComponentListener
         rHints.put(RenderingHints.KEY_TEXT_ANTIALIASING,
                    prefs.antiAliasText ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         
+		mapActions = new MUMapActions ();
     }
     
     // --------------
@@ -328,6 +352,8 @@ public class MUMapComponent extends JComponent implements ComponentListener
      */
     public void paint(Graphics gfx)
     {        
+    	bPainting = true;
+    	
         getBounds(bounds);
 
         if (savedTerrain == null)
@@ -383,6 +409,8 @@ public class MUMapComponent extends JComponent implements ComponentListener
         
         // Reset the transform
         g.setTransform(oldTrans);
+        
+    	bPainting = false;
     }
 
     /**
@@ -428,6 +456,45 @@ public class MUMapComponent extends JComponent implements ComponentListener
         drawIDBox(g, data.myUnit, unitPt, true);
     }
     
+    public void drawTarget (Graphics2D g, Point2D conPoint, MUUnitInfo unit)
+    {
+    	if (unit.isTarget ())
+    	{
+//    		System.out.println ("drawTarget");
+//    		System.out.println ("HEX SIZE (" + new java.lang.Double ((double)w).toString () +
+//    			"," + new Integer (h).toString () + ")");
+    		
+            AffineTransform		oldTrans = g.getTransform();
+            Stroke				oldStroke = g.getStroke();
+            float				borderWidth = 4f;
+            float				borderHeight = 4f;
+            float				spacing = 5f;		// Distance between icon and name
+
+            // Setup this transform
+
+            AffineTransform		contactMove = new AffineTransform(oldTrans);
+            contactMove.translate(conPoint.getX() - h/4f, conPoint.getY() - h/4f);
+            g.setTransform(contactMove);
+
+            g.setColor(Color.red);			// or yellow
+
+            Rectangle2D			iconBounds = new Rectangle2D.Float(0, 0, h/2, h/2);
+            g.setStroke(new BasicStroke(1));
+
+            Ellipse2D.Float myEllipse = new Ellipse2D.Float (0, 0, h/2, h/2);
+            g.draw(myEllipse);
+            
+            Line2D.Float myLine = new Line2D.Float (h/4, 0, h/4, h/2);
+            g.draw (myLine);
+            
+            myLine = new Line2D.Float (0, h/4, h/2, h/4);
+            g.draw (myLine);
+            
+            g.setStroke(oldStroke);
+            g.setTransform(oldTrans);
+    	}
+    }
+    
     /**
      * Paint other contacts on the map (not own unit)
      * @param g The graphics context into which we are drawing.
@@ -439,6 +506,8 @@ public class MUMapComponent extends JComponent implements ComponentListener
         MUUnitInfo				unit;
         Point2D					conPoint = new Point2D.Float();
         Iterator				contacts = data.getContactsIterator(false);		// we don't care if it's sorted here
+        
+        //System.out.println ("paintContacts: 001");
         
         // Set the transform that translates everything so as to make our own unit the center of the display
         if (prefs.xOffset != 0 || prefs.yOffset != 0)
@@ -454,6 +523,8 @@ public class MUMapComponent extends JComponent implements ComponentListener
 
         // Paint our own unit first
         paintUnit(g);
+ 
+        //System.out.println ("paintContacts: 002");
         
         // We could sort these by range, so closer units always stay on top... or something
         // But really, who cares
@@ -462,6 +533,10 @@ public class MUMapComponent extends JComponent implements ComponentListener
             // Get the next unit...
             unit = (MUUnitInfo) contacts.next();
 
+//            System.out.println ("paintContacts: 003 unit " + unit.id);
+//            System.out.println ("paintContacts: 004 target :" + new Boolean (unit.isTarget ()).toString ());
+            
+            
             // Figure out where it is supposed to be drawn
             conPoint = realForUnit(unit);
 
@@ -473,7 +548,15 @@ public class MUMapComponent extends JComponent implements ComponentListener
 
             // Draw box for contact ID
             drawIDBox(g, unit, conPoint, false);
+            
+            if (unit.isTarget ())
+            {
+                //System.out.println ("paintContacts: 005");
+            	drawTarget (g, conPoint, unit);
+            }
         }
+        
+        //System.out.println ("paintContacts: 006");
         
         // Reset the transformation
         g.setTransform(oldTrans);
@@ -760,7 +843,7 @@ public class MUMapComponent extends JComponent implements ComponentListener
      * Sets a Point2D representing the (upper left corner) screen coordinates
      * for a given hex.
      */
-    protected void getHexToReal (final Point2D rv, final int hx, final int hy) {
+    public void getHexToReal (final Point2D rv, final int hx, final int hy) {
         pvtMapPt.setHexLocation(hx, hy);
 
         // XXX: MUPoint map coordinates go as low (up) as -0.5, but the old
@@ -774,7 +857,7 @@ public class MUMapComponent extends JComponent implements ComponentListener
     /**
      * Transform component coordinates to center-relative coordinates.
      */
-    void getScreenToOffset (final Point rv, final int x, final int y) {
+    public void getScreenToOffset (final Point rv, final int x, final int y) {
         rv.setLocation(x - bounds.width / 2, y - bounds.height / 2);
     }
 
@@ -782,7 +865,7 @@ public class MUMapComponent extends JComponent implements ComponentListener
      * Transform center-relative coordinates to map coordinates.
      * TODO: We can cache 1/h, but the optimizer can do it for us, can't it?
      */
-    void getOffsetToMap (final Point2D rv, final Point offsetPt) {
+    public void getOffsetToMap (final Point2D rv, final Point offsetPt) {
         final float myFX = data.myUnit.position.getFX();
         final float myFY = data.myUnit.position.getFY();
 
@@ -794,7 +877,7 @@ public class MUMapComponent extends JComponent implements ComponentListener
      * Convenience method to transform map coordinates to hex coordinates.
      * TODO: Might add this as a static method in MUPoint or something.
      */
-    void getMapToHex (final Point rv, final Point2D mapPt) {
+    public void getMapToHex (final Point rv, final Point2D mapPt) {
         pvtMapPt.setLocation(mapPt);
 
         rv.setLocation(pvtMapPt.getHexX(), pvtMapPt.getHexY());
@@ -2078,5 +2161,15 @@ public class MUMapComponent extends JComponent implements ComponentListener
         armorLeft = data.myUnit.percentInternalLeft(MUUnitInfo.indexForSection("AS"));
         g.setColor(MUUnitInfo.colorForPercent(armorLeft, armorTransparency));
         g.fill(asOutline);	
+    }
+    
+    public void setHexHeight (int iVal)
+    {
+    	prefs.hexHeight = iVal;
+    }
+    
+    public int getHexHeight ()
+    {
+    	return prefs.hexHeight;
     }
 }

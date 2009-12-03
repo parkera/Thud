@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<jardesc>
+    <jar path="thud-1.4/Thud.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/thud-1.4/ThudDesc.jardesc" exportErrors="false" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" mainClassHandleIdentifier="=thud-1.4/src&lt;net.sourceforge.btthud.ui{Thud.java[Thud" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <folder path="/thud-1.4/lib"/>
+        <javaElement handleIdentifier="=thud-1.4/src"/>
+        <folder path="/thud-1.4/media/icon"/>
+        <file path="/thud-1.4/README"/>
+        <file path="/thud-1.4/media/ThudDefaultConfig.txt"/>
+        <file path="/thud-1.4/CHANGES.RTF"/>
+        <folder path="/thud-1.4/scripts"/>
+        <folder path="/thud-1.4/org"/>
+        <folder path="/thud-1.4/docs"/>
+    </selectedElements>
+    <fatjar builder="org.eclipse.jdt.ui.plain_jar_builder" launchConfig=""/>
+</jardesc>

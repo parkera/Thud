@@ -30,6 +30,7 @@ import javax.swing.event.DocumentEvent;
 
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Keymap;
+import javax.swing.plaf.basic.BasicTextUI.BasicHighlighter;
 
 import java.util.*;
 import java.lang.ref.WeakReference;
@@ -161,16 +162,27 @@ public class Thud extends JFrame implements Runnable {
 
 		final ClassLoader loader = getClass().getClassLoader();
 
+		System.out.println ("Loading icon");
+		
 		// Set frame icon.
 		try {
-			final URL appIconURL = loader.getResource("media/icon/icon.gif");
+			System.out.println ("Loading Icon 001");
+			//final URL appIconURL = loader.getResource("media/icon/icon.gif");
+			URL appIconURL = getClass().getResource("/media/icon/icon.gif");
+			System.out.println ("Loading Icon 002");
+			if (appIconURL == null)
+				System.out.println ("appIconURL is null");
 			final ImageIcon appIcon = new ImageIcon (appIconURL,
 			                                         "application icon");
+			System.out.println ("Loading Icon 003");
 			setIconImage(appIcon.getImage());
+			System.out.println ("Loading Icon 004");
 		} catch (Exception e) {
 			System.err.println("Couldn't load Thud icon");
 		}
-
+		
+		System.out.println ("Loaded icon");
+		
 		// Read preferences.
 		readPrefs();
 
@@ -1126,8 +1138,9 @@ public class Thud extends JFrame implements Runnable {
 	textPane.setEditable(false);
 	textPane.setFont(mFont);
 	textPane.setRequestFocusEnabled(false);
+textPane.setRequestFocusEnabled(true);
 	textPane.setFocusable(true);
-
+	
 	textPaneWriter = new JTextPaneWriter (textPane);
 
 	JScrollPane scrollPane = new JScrollPane(textPane,
@@ -1828,5 +1841,10 @@ public class Thud extends JFrame implements Runnable {
         }
 
         PreferenceStore.save(prefs);
+    }
+    
+    public MUConnection getConn ()
+    {
+    	return conn;
     }
 }

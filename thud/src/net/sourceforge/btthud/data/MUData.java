@@ -52,7 +52,7 @@ public class MUData implements Runnable {
     MUHex						hexCache[][] = new MUHex[MUHex.TOTAL_TERRAIN][19];
     
     // We store the contact data in a ArrayList, because we need to iterate over it efficiently
-    ArrayList<MUUnitInfo>		contacts = null;
+    public ArrayList<MUUnitInfo>		contacts = null;
     ArrayList<MUUnitInfo>		buildings = null;
     
     // LOS info is in a Hashtable since we don't iterate, we query it
@@ -111,6 +111,8 @@ public class MUData implements Runnable {
             contacts.set(index, con);
         else
             contacts.add(con);
+        
+//System.out.println ("map:newContact unit :" + con.id + ":" + new Boolean (con.isTarget ()).toString ());
     }
 
     /**

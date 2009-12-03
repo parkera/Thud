@@ -73,6 +73,8 @@ public class MUParse {
 		if (l == null)
 			return;
 
+//System.out.println ("parseLine :" + l + ":");
+
 		try {
 			// Technically, we should probably parse everything for
 			// ANSI codes first, but we're pretty sure hudinfo
@@ -259,6 +261,9 @@ public class MUParse {
         try
         {
             StringTokenizer st = new StringTokenizer(l, ",");
+            
+            //System.out.println ("GS PARSE COUNT TOKENS 001 :" + new Integer (st.countTokens ()) + ":");
+
             MUMyInfo		info = data.myUnit;
             String			tempStr;
             
@@ -313,6 +318,45 @@ public class MUParse {
                     info.jumpTargetX = Integer.parseInt(tempStr);
                     info.jumpTargetY = Integer.parseInt(st.nextToken());
                 }
+            }
+            
+            //System.out.println ("GS PARSE COUNT TOKENS 002 :" + new Integer (st.countTokens ()) + ":");
+            
+            String sTk = "";
+            
+            while (st.hasMoreTokens ())
+            {
+            	sTk = st.nextToken ();
+            }
+            
+            //System.out.println ("GS PARSE LAST TOKEN :" + sTk + ":");
+            
+            if (sTk.length () > 0)
+            {
+            	// Check to see if we can see this unit in the contacts list
+            	
+            	int i, iSize;
+            	MUUnitInfo	uiUnit;
+            	
+            	iSize = 0;
+            	if (data.contacts.size () > 0)
+            		iSize = data.contacts.size ();
+            	
+            	for (i = 0; i < iSize; ++i)
+            	{
+            		uiUnit = data.contacts.get(i);
+            		if (uiUnit.id.equals(sTk))
+            		{
+            			uiUnit.target = true;
+            			data.myUnit.setTargettedUnit (sTk);
+            		}
+            		else
+            			uiUnit.target = false;
+            		
+//            		System.out.println ("parse uiUnit [" + new Integer(i).toString () + "] " + uiUnit.id + " Friend " +
+//            		    new Boolean (uiUnit.isFriend ()).toString () + " Target " +
+//            		    new Boolean (uiUnit.isTarget ()).toString ());
+            	}
             }
         }
         catch (Exception e)
@@ -558,6 +602,38 @@ public class MUParse {
                     con.status = st.nextToken();
                 else
                     con.status = "";                
+            }
+            
+
+            
+//            if (con == null)
+//            	System.out.println ("CON IS NULL");
+//            else
+//            	System.out.println ("CON IS NOT NULL");
+//            
+//            if (data.myUnit == null)
+//            	System.out.println ("myUnit IS NULL");
+//            else
+//            {
+//            	System.out.println ("myUnit IS NOT NULL");
+//            	
+//            	String sX = data.myUnit.getTargettedUnit ();
+//            	if (sX == null)
+//                	System.out.println ("targetted IS NULL");
+//                else
+//                	System.out.println ("targetted IS NOT NULL");
+//            }
+            
+            con.target = false;
+            if (con != null &&
+            	data.myUnit != null)
+            {
+            	String sX = data.myUnit.getTargettedUnit ();
+            	if (sX != null)
+            	{
+                    if (sX.equals (con.id))
+                    	con.target = true;
+            	}
             }
             
             // Give our new contact info to the data object

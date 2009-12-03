@@ -1,0 +1,48 @@
+#
+# Thud Configuration File
+#
+# Use this file to configure the keys and mouse actions of the map
+# area in Thud
+#
+
+# Mouse Left Button sets heading
+
+MOUSE::BUTTON1:THUDHEADING
+
+# Mouse Middle Button targets mech
+
+MOUSE::BUTTON2:THUDTARGET
+
+# MouseWheel Forward zooms in
+
+MOUSEWHEEL::FORWARD:THUDZOOMIN 5
+
+# MOUSEWHEEL Backward zooms out
+MOUSEWHEEL::BACKWARD:THUDZOOMOUT 5
+
+# number keys fires that number weapon
+
+KEY::VK_0:fire 0
+KEY::VK_1:fire 1
+KEY::VK_2:fire 2
+KEY::VK_3:fire 3
+KEY::VK_4:fire 4
+KEY::VK_5:fire 5
+KEY::VK_6:fire 6
+KEY::VK_7:fire 7
+KEY::VK_8:fire 8
+KEY::VK_9:fire 9
+
+# Jump to
+
+MOUSE:CTRL:BUTTON1:THUDJUMPTO
+MOUSE:SHIFT:BUTTON1:THUDJUMPDEATH
+
+# Developer Testing
+
+KEY:CTRL:VK_P:THUDMESSAGE CTRL-P
+KEY:ALT:VK_P:THUDMESSAGE ALT-P
+KEY:SHIFT:VK_P:THUDMESSAGE SHIFT-P
+KEY::VK_P:THUDMESSAGE P
+KEY::VK_NUMPAD0:THUDMESSAGE NUMPAD 0
+

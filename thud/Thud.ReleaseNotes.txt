@@ -1,0 +1,18 @@
+Thud post project release
+
+11/27/2009
+
+I have not been added to the project and that might take some doing.  In the meantime this
+is a copy of my changes.
+
+Download Thud.jar and double click it.  You will need JRE 17 or later.
+
+The following has been changed.
+
+1) click the map and the heading of your bot will go in that direction
+2) middle mouse click and you will target the mech nearest the click point note
+   even if you target it you need to wait for your sensors to lock though
+3) mousewheel will zoom
+4) if you hit keys 0-9 you will fire that weapon in your status window.
+
+Julian Brown
